@@ -1,7 +1,7 @@
-@(message: String)
+@(botInstances: List[String])(implicit webJarAssets: WebJarAssets)
 
 @main("Monster Truck Bot") {
-
-    @message
-
+    @for(botInstance <- botInstances) {
+        <p>@botInstance</p>
+    }
 }
