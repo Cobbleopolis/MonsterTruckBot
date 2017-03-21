@@ -32,6 +32,10 @@
 
     <logger name="sx.blah.discord.Discord4J" level="INFO" />
 
+    <logger name="discord-bot" level="DEBUG" />
+
+    <logger name="twitch-bot" level="DEBUG" />
+
     <logger name="org.jdbcdslog.ConnectionLogger" level="OFF"  /> <!-- Won' log connections -->
     <logger name="org.jdbcdslog.StatementLogger"  level="DEBUG" /> <!-- Will log all statements -->
     <logger name="org.jdbcdslog.ResultSetLogger"  level="OFF"  /> <!-- Won' log result sets -->
