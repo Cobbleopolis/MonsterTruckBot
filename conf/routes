@@ -5,6 +5,8 @@
 # Home page
 GET        /                     controllers.Application.index
 
+->         /discord              discord.Routes
+
 GET        /webjars/*file        controllers.WebJarAssets.at(file)
 
 # Map static resources from the /public folder to the /assets URL path

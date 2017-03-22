@@ -1,0 +1,1 @@
+GET        /alive        com.cobble.bot.discord.controllers.Application.alive
