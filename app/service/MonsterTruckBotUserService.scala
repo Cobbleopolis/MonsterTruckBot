@@ -5,7 +5,7 @@
   * you may not use this file except in compliance with the License.
   * You may obtain a copy of the License at
   *
-  *     http://www.apache.org/licenses/LICENSE-2.0
+  * http://www.apache.org/licenses/LICENSE-2.0
   *
   * Unless required by applicable law or agreed to in writing, software
   * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,162 +16,58 @@
   */
 package service
 
-import play.api.Logger
+import javax.inject.{Inject, Singleton}
+
+import auth.DiscordProvider
+import com.cobble.bot.common.models.User
+import play.api.db.Database
 import securesocial.core._
-import securesocial.core.providers.{ UsernamePasswordProvider, MailToken }
+import securesocial.core.providers.MailToken
+import securesocial.core.services.{SaveMode, UserService}
+
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import securesocial.core.services.{ UserService, SaveMode }
 
-/**
-  * A Sample In Memory user service in Scala
-  *
-  * IMPORTANT: This is just a sample and not suitable for a production environment since
-  * it stores everything in memory.
-  */
-class MonsterTruckBotUserService extends UserService[DemoUser] {
-    val logger = Logger("application.controllers.InMemoryUserService")
+@Singleton
+class MonsterTruckBotUserService @Inject()(implicit db: Database) extends UserService[User] {
 
-    //
-    var users = Map[(String, String), DemoUser]()
-    //private var identities = Map[String, BasicProfile]()
-    private var tokens = Map[String, MailToken]()
+    implicit def userToBasicProfile(user: User): BasicProfile = BasicProfile(DiscordProvider.Discord, user.discordId, None, None, Some(user.username), None, Some(user.avatarUrl), AuthenticationMethod.OAuth2, None, Some(OAuth2Info(user.accessToken, Some(user.tokenType), None, Some(user.refreshToken))))
 
-    def find(providerId: String, userId: String): Future[Option[BasicProfile]] = {
-        if (logger.isDebugEnabled) {
-            logger.debug("users = %s".format(users))
-        }
-        val result = for (
-            user <- users.values;
-            basicProfile <- user.identities.find(su => su.providerId == providerId && su.userId == userId)
-        ) yield {
-            basicProfile
-        }
-        Future.successful(result.headOption)
+    implicit def basicProfileToUser(profile: BasicProfile): User = {
+        val oAuth2Info: OAuth2Info = profile.oAuth2Info.get
+        User(profile.userId, profile.fullName.get, profile.avatarUrl.get, oAuth2Info.accessToken, oAuth2Info.tokenType.get, oAuth2Info.refreshToken.get)
     }
 
-    def findByEmailAndProvider(email: String, providerId: String): Future[Option[BasicProfile]] = {
-        if (logger.isDebugEnabled) {
-            logger.debug("users = %s".format(users))
-        }
-        val someEmail = Some(email)
-        val result = for (
-            user <- users.values;
-            basicProfile <- user.identities.find(su => su.providerId == providerId && su.email == someEmail)
-        ) yield {
-            basicProfile
-        }
-        Future.successful(result.headOption)
-    }
+    def find(providerId: String, userId: String): Future[Option[BasicProfile]] = Future(User.get(userId).asInstanceOf[Option[BasicProfile]])
 
-    private def findProfile(p: BasicProfile) = {
-        users.find {
-            case (key, value) if value.identities.exists(su => su.providerId == p.providerId && su.userId == p.userId) => true
-            case _ => false
-        }
-    }
+    def findByEmailAndProvider(email: String, providerId: String): Future[Option[BasicProfile]] = Future.successful(None)
 
-    private def updateProfile(user: BasicProfile, entry: ((String, String), DemoUser)): Future[DemoUser] = {
-        val identities = entry._2.identities
-        val updatedList = identities.patch(identities.indexWhere(i => i.providerId == user.providerId && i.userId == user.userId), Seq(user), 1)
-        val updatedUser = entry._2.copy(identities = updatedList)
-        users = users + (entry._1 -> updatedUser)
-        Future.successful(updatedUser)
-    }
-
-    def save(user: BasicProfile, mode: SaveMode): Future[DemoUser] = {
+    def save(profile: BasicProfile, mode: SaveMode): Future[User] = Future {
         mode match {
             case SaveMode.SignUp =>
-                val newUser = DemoUser(user, List(user))
-                users = users + ((user.providerId, user.userId) -> newUser)
-                Future.successful(newUser)
+                User.insert(profile)
+                profile
             case SaveMode.LoggedIn =>
                 // first see if there is a user with this BasicProfile already.
-                findProfile(user) match {
-                    case Some(existingUser) =>
-                        updateProfile(user, existingUser)
-
-                    case None =>
-                        val newUser = DemoUser(user, List(user))
-                        users = users + ((user.providerId, user.userId) -> newUser)
-                        Future.successful(newUser)
-                }
-
-            case SaveMode.PasswordChange =>
-                findProfile(user).map { entry => updateProfile(user, entry) }.getOrElse(
-                    // this should not happen as the profile will be there
-                    throw new Exception("missing profile)")
-                )
+                if (User.get(profile.userId).isDefined)
+                    User.update(profile.userId, basicProfileToUser(profile).namedParameters: _*)
+                else
+                    User.insert(profile)
+                profile
         }
     }
 
-    def link(current: DemoUser, to: BasicProfile): Future[DemoUser] = {
-        if (current.identities.exists(i => i.providerId == to.providerId && i.userId == to.userId)) {
-            Future.successful(current)
-        } else {
-            val added = to :: current.identities
-            val updatedUser = current.copy(identities = added)
-            users = users + ((current.main.providerId, current.main.userId) -> updatedUser)
-            Future.successful(updatedUser)
-        }
-    }
+    def link(current: User, to: BasicProfile): Future[User] = Future.successful(current)
 
-    def saveToken(token: MailToken): Future[MailToken] = {
-        Future.successful {
-            tokens += (token.uuid -> token)
-            token
-        }
-    }
+    def saveToken(token: MailToken): Future[MailToken] = Future.successful(token)
 
-    def findToken(token: String): Future[Option[MailToken]] = {
-        Future.successful { tokens.get(token) }
-    }
+    def findToken(token: String): Future[Option[MailToken]] = Future.successful(None)
 
-    def deleteToken(uuid: String): Future[Option[MailToken]] = {
-        Future.successful {
-            tokens.get(uuid) match {
-                case Some(token) =>
-                    tokens -= uuid
-                    Some(token)
-                case None => None
-            }
-        }
-    }
+    def deleteToken(uuid: String): Future[Option[MailToken]] = Future.successful(None)
 
-    //  def deleteTokens(): Future {
-    //    tokens = Map()
-    //  }
+    def deleteExpiredTokens(): Unit = {}
 
-    def deleteExpiredTokens() {
-        tokens = tokens.filter(!_._2.isExpired)
-    }
+    override def updatePasswordInfo(user: User, info: PasswordInfo): Future[Option[BasicProfile]] = Future.successful(Some(user))
 
-    override def updatePasswordInfo(user: DemoUser, info: PasswordInfo): Future[Option[BasicProfile]] = {
-        Future.successful {
-            for (
-                found <- users.values.find(_ == user);
-                identityWithPasswordInfo <- found.identities.find(_.providerId == UsernamePasswordProvider.UsernamePassword)
-            ) yield {
-                val idx = found.identities.indexOf(identityWithPasswordInfo)
-                val updated = identityWithPasswordInfo.copy(passwordInfo = Some(info))
-                val updatedIdentities = found.identities.patch(idx, Seq(updated), 1)
-                val updatedEntry = found.copy(identities = updatedIdentities)
-                users = users + ((updatedEntry.main.providerId, updatedEntry.main.userId) -> updatedEntry)
-                updated
-            }
-        }
-    }
-
-    override def passwordInfoFor(user: DemoUser): Future[Option[PasswordInfo]] = {
-        Future.successful {
-            for (
-                found <- users.values.find(u => u.main.providerId == user.main.providerId && u.main.userId == user.main.userId);
-                identityWithPasswordInfo <- found.identities.find(_.providerId == UsernamePasswordProvider.UsernamePassword)
-            ) yield {
-                identityWithPasswordInfo.passwordInfo.get
-            }
-        }
-    }
+    override def passwordInfoFor(user: User): Future[Option[PasswordInfo]] = Future.successful(None)
 }
-
-// a simple User class that can have multiple identities
-case class DemoUser(main: BasicProfile, identities: List[BasicProfile])

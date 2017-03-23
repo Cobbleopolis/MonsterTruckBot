@@ -76,7 +76,7 @@ trait ModelAccessor[T <: Model] {
     def update(id: String, params: NamedParameter*)(implicit db: Database): Int = {
         if (params.nonEmpty)
             db.withConnection(implicit conn => {
-                SQL(s"UPDATE $tableName SET ${params.map(p => s"${p.name} = ${p.value}")} WHERE ${idSymbol.name} = $id").executeUpdate()
+                SQL(s"UPDATE $tableName SET ${params.filterNot(_.name == idSymbol.name).map(p => s"${p.name} = {${p.name}}").mkString(", ")} WHERE ${idSymbol.name} = {${idSymbol.name}}").on(params: _*).executeUpdate()
             })
         else
             0

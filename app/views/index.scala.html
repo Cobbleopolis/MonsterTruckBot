@@ -1,4 +1,4 @@
-@(botInstances: List[String])(implicit webJarAssets: WebJarAssets, userOpt: Option[service.DemoUser])
+@(botInstances: List[String])(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User])
 
 @main("Monster Truck Bot") {
     @for(botInstance <- botInstances) {

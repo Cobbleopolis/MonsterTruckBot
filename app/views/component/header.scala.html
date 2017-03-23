@@ -1,4 +1,4 @@
-@()(implicit userOpt: Option[service.DemoUser])
+@()(implicit userOpt: Option[com.cobble.bot.common.models.User])
 
 <header>
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -15,7 +15,7 @@
             <ul class="nav navbar-nav navbar-right">
                 @if(userOpt.isDefined) {
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">@{userOpt.get.identities.head.fullName} <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">@{userOpt.get.username} <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="/logout">Logout</a></li>
                         </ul>
