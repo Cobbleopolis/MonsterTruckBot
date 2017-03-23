@@ -3,13 +3,25 @@
 # ~~~~
 
 # Home page
-GET        /                     controllers.Application.index
+GET         /                              controllers.Application.index
 
-->         /discord              discord.Routes
+GET         /login                         @securesocial.controllers.ProviderController.authenticate(provider: String = "discord", redirectTo: Option[String])
+POST        /login                         @securesocial.controllers.ProviderController.authenticateByPost(provider: String = "discord", redirectTo: Option[String])
 
-GET        /webjars/*file        controllers.WebJarAssets.at(file)
+GET         /logout                        @securesocial.controllers.LoginPage.logout
+
+GET         /authenticate/:provider        @securesocial.controllers.ProviderController.authenticate(provider, redirectTo: Option[String])
+POST        /authenticate/:provider        @securesocial.controllers.ProviderController.authenticateByPost(provider, redirectTo: Option[String])
+
+GET         /dashboard                     controllers.Application.dashboard
+
+->          /discord                       discord.Routes
+
+
+
+GET         /webjars/*file                 controllers.WebJarAssets.at(file)
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file         controllers.Assets.at(path="/public", file)
+GET         /assets/*file                  controllers.Assets.at(path="/public", file)
 
     

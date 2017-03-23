@@ -10,7 +10,7 @@ trait ModelAccessor[T <: Model] {
     lazy val deleteQuery: SqlQuery = SQL(s"DELETE FROM $tableName WHERE ${idSymbol.name} = {${idSymbol.name}}")
     val tableName: String
     val idSymbol: Symbol
-    val getByQueryList: Map[Class[_ <: Model], SqlQuery]
+    val getByQueryList: Map[Class[_ <: Model], SqlQuery] = Map()
     val insertQuery: String
     val parser: RowParser[T]
 

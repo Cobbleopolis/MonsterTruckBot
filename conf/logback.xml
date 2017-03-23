@@ -31,6 +31,7 @@
     <logger name="application" level="DEBUG" />
 
     <logger name="sx.blah.discord.Discord4J" level="INFO" />
+    <logger name="auth.DiscordProvider" level="DEBUG" />
 
     <logger name="discord-bot" level="DEBUG" />
 

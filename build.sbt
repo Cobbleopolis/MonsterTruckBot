@@ -37,7 +37,8 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala).set
             "org.webjars" %% "webjars-play" % "2.5.0",
             "com.adrianhurt" %% "play-bootstrap" % "1.1-P25-B3" exclude("org.webjars", "bootstrap"),
             "org.webjars.npm" % "bootstrap-sass" % "3.3.7",
-            "org.webjars.bower" % "font-awesome-sass" % "4.6.2"
+            "org.webjars.bower" % "font-awesome-sass" % "4.6.2",
+            "ws.securesocial" %% "securesocial" % "3.0-M7"
         )
     )
     .dependsOn(`monstertruckbot-discord`, `monstertruckbot-twitch`, `monstertruckbot-common`)
