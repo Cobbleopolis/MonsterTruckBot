@@ -27,7 +27,7 @@ lazy val commonSettings = Seq(
     )
 )
 
-lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala).settings(commonSettings: _*)
+lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, JavaServerAppPackaging, DebianPlugin).settings(commonSettings: _*)
     .settings(
         resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
         unmanagedResourceDirectories in Test += baseDirectory(_ / "target/web/public/test").value,
@@ -39,7 +39,11 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala).set
             "org.webjars.npm" % "bootstrap-sass" % "3.3.7",
             "org.webjars.bower" % "font-awesome-sass" % "4.6.2",
             "ws.securesocial" %% "securesocial" % "3.0-M7"
-        )
+        ),
+        maintainer in Linux := "Cobbleopolis <cobbleopolis@gmail.com>",
+        packageSummary in Linux := s"$displayName server",
+        packageDescription := s"A server that runs the $displayName website, Discord bot and, Twitch bot",
+        debianPackageDependencies in Debian ++= Seq("default-jre | java6-runtime")
     )
     .dependsOn(`monstertruckbot-discord`, `monstertruckbot-twitch`, `monstertruckbot-common`)
     .aggregate(`monstertruckbot-discord`, `monstertruckbot-twitch`, `monstertruckbot-common`)
