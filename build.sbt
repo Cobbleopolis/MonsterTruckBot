@@ -16,7 +16,6 @@ lazy val commonSettings = Seq(
     version := projectVersion,
     scalaVersion := "2.11.7",
     isSnapshot := version.value.toLowerCase.contains("snapshot"),
-    target in Compile in doc := baseDirectory.value / "docs",
     crossPaths := false,
     autoAPIMappings := true,
     apiMappings += (scalaInstance.value.libraryJar -> url(s"http://www.scala-lang.org/api/${scalaVersion.value}/")),
@@ -27,7 +26,7 @@ lazy val commonSettings = Seq(
     )
 )
 
-lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, JavaServerAppPackaging, DebianPlugin).settings(commonSettings: _*)
+lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, JavaServerAppPackaging, DebianPlugin, ScalaUnidocPlugin).settings(commonSettings: _*)
     .settings(
         resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
         unmanagedResourceDirectories in Test += baseDirectory(_ / "target/web/public/test").value,
@@ -43,7 +42,14 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
         maintainer in Linux := "Cobbleopolis <cobbleopolis@gmail.com>",
         packageSummary in Linux := s"$displayName server",
         packageDescription := s"A server that runs the $displayName website, Discord bot and, Twitch bot",
-        debianPackageDependencies in Debian ++= Seq("default-jre | java6-runtime")
+        debianPackageDependencies in Debian ++= Seq("default-jre | java6-runtime"),
+        doc in Compile := (doc in ScalaUnidoc).value,
+        target in unidoc in ScalaUnidoc := baseDirectory.value / "docs",
+        scalacOptions in Compile in doc ++= Seq(
+            "-doc-version", version.value,
+            "-doc-title", name.value,
+            "-doc-root-content", baseDirectory.value + "/root-doc.txt"
+        )
     )
     .dependsOn(`monstertruckbot-discord`, `monstertruckbot-twitch`, `monstertruckbot-common`)
     .aggregate(`monstertruckbot-discord`, `monstertruckbot-twitch`, `monstertruckbot-common`)
