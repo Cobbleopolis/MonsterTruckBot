@@ -5,11 +5,10 @@
         @for(server <- servers) {
             <div class="panel panel-default">
                 <div class="panel-body">
-                    @{server.name}
-                    <a href="/dashboard/@{server.id}" class="btn btn-info" role="button">Dashboard</a>
+                    <h4>@{server.name}</h4>
+                    <a href="/dashboard/@{server.id}" class="btn btn-primary" role="button">Dashboard</a>
                 </div>
             </div>
         }
     </div>
-
 }
