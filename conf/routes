@@ -13,6 +13,8 @@ GET         /logout                        @securesocial.controllers.LoginPage.l
 GET         /authenticate/:provider        @securesocial.controllers.ProviderController.authenticate(provider, redirectTo: Option[String])
 POST        /authenticate/:provider        @securesocial.controllers.ProviderController.authenticateByPost(provider, redirectTo: Option[String])
 
+GET         /servers                       controllers.Application.servers
+
 GET         /dashboard                     controllers.Application.dashboard
 
 ->          /discord                       discord.Routes

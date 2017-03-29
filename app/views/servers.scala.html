@@ -1,0 +1,15 @@
+@(servers: Array[models.UserServersResponse])(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User])
+
+@main("Servers") {
+    <div class="container">
+        @for(server <- servers) {
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    @{server.name}
+                    <a href="/dashboard/@{server.id}" class="btn btn-info" role="button">Dashboard</a>
+                </div>
+            </div>
+        }
+    </div>
+
+}
