@@ -1,4 +1,4 @@
-@()(implicit userOpt: Option[com.cobble.bot.common.models.User])
+@()(implicit userOpt: Option[com.cobble.bot.common.models.User], messages: MessagesApi)
 
 <header>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -17,13 +17,13 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">@{userOpt.get.username} <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="@routes.Application.servers()">Servers</a></li>
+                            <li><a href="@routes.Application.servers()">@messages("global.pageNames.servers")</a></li>
                             <li class="divider"></li>
-                            <li><a href="@securesocial.controllers.routes.LoginPage.logout()">Logout</a></li>
+                            <li><a href="@securesocial.controllers.routes.LoginPage.logout()">@messages("global.auth.logout")</a></li>
                         </ul>
                     </li>
                 } else {
-                    <li><a href="/login">Login</a></li>
+                    <li><a href="/login">@messages("global.auth.login")</a></li>
                 }
             </ul>
         </div>

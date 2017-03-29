@@ -1,7 +1,5 @@
-@(botInstances: List[String])(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User])
+@()(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: MessagesApi)
 
-@main("Monster Truck Bot") {
-    @for(botInstance <- botInstances) {
-        <p>@botInstance</p>
-    }
+@main(buildinfo.BuildInfo.displayName) {
+    @messages("index.welcome")
 }

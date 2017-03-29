@@ -5,9 +5,12 @@ import javax.inject.Inject
 
 import com.cobble.bot.common.models.{BotInstance, User}
 import com.cobble.bot.common.util.DiscordApiUtil
+import jsmessages.JsMessagesFactory
 import models.UserServersResponse
 import models.UserServersResponse._
+import play.api.Logger
 import play.api.db.Database
+import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 import play.api.mvc._
@@ -16,13 +19,15 @@ import sx.blah.discord.handle.obj.Permissions
 
 import scala.concurrent.duration._
 
-class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, environment: RuntimeEnvironment, ws: WSClient) extends Controller with SecureSocial {
+class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, environment: RuntimeEnvironment, ws: WSClient, messagesApi: MessagesApi) extends Controller with SecureSocial {
 
     val env: RuntimeEnvironment = environment
 
+    val jsMessagesFactory = new JsMessagesFactory(messagesApi)
+
     def index = UserAwareAction { implicit request => {
         implicit val userOpt: Option[User] = request.user.asInstanceOf[Option[User]]
-        Ok(views.html.index(BotInstance.getAll.map(_.toString)))
+        Ok(views.html.index())
     }
     }
 
@@ -43,6 +48,14 @@ class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, e
         else
             NotFound(s"Bot instance $id not found")
     }
+    }
+
+    def messages(page: String) = Action {
+        val jsMessages = if (page.nonEmpty && jsMessagesFactory.filtering(_.startsWith(page)).allMessages.nonEmpty)
+            jsMessagesFactory.filtering(key => key.startsWith(page) || key.startsWith("error") || key.startsWith("format") || key.startsWith("constraint") || key.startsWith("global"))
+        else
+            jsMessagesFactory.all
+        Ok(jsMessages.all(Some("window.Messages")))
     }
 
 }
