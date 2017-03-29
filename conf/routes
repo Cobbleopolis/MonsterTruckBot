@@ -15,7 +15,7 @@ POST        /authenticate/:provider        @securesocial.controllers.ProviderCon
 
 GET         /servers                       controllers.Application.servers
 
-GET         /dashboard                     controllers.Application.dashboard
+GET         /dashboard/:id                 controllers.Application.dashboard(id: String)
 
 ->          /discord                       discord.Routes
 

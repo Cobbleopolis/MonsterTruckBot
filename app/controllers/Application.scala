@@ -35,9 +35,13 @@ class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, e
     }
     }
 
-    def dashboard = SecuredAction { implicit request => {
+    def dashboard(id: String) = SecuredAction { implicit request => {
         implicit val userOpt: Option[User] = Some(request.user.asInstanceOf[User])
-        Ok(views.html.dashboard())
+        val botInstanceOpt: Option[BotInstance] = BotInstance.get(id)
+        if (botInstanceOpt.isDefined)
+            Ok(views.html.dashboard(botInstanceOpt.get))
+        else
+            NotFound(s"Bot instance $id not found")
     }
     }
 

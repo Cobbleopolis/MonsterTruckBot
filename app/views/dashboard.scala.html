@@ -1,5 +1,6 @@
-@()(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User])
+@import com.cobble.bot.common.models.BotInstance
+@(botInstance: BotInstance)(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User])
 
 @main("Dashboard") {
-    <p>Dash</p>
+    <p>@{botInstance.toString}</p>
 }
