@@ -6,11 +6,12 @@ import buildinfo.BuildInfo
 import com.cobble.bot.discord.event.CommandExecutionEvent
 import com.cobble.bot.discord.util.DiscordMessageUtil
 import play.api.Configuration
+import play.api.i18n.MessagesApi
 import sx.blah.discord.api.events.EventSubscriber
 import sx.blah.discord.handle.impl.events.{MessageReceivedEvent, ReadyEvent}
 import sx.blah.discord.handle.obj.{IMessage, Status}
 
-class DiscordBotEventListener @Inject()(configuration: Configuration, discordBot: Provider[DiscordBot]) {
+class DiscordBotEventListener @Inject()(implicit configuration: Configuration, discordBot: Provider[DiscordBot], messages: MessagesApi) {
 
     val commandPrefix: String = configuration.getString("mtr.commandPrefix").getOrElse("!")
 
@@ -40,7 +41,7 @@ class DiscordBotEventListener @Inject()(configuration: Configuration, discordBot
         implicit val message: IMessage = event.getMessage
         event.getCommand match {
             case "ping" =>
-                DiscordMessageUtil.reply("pong!")
+                DiscordMessageUtil.reply("bot.ping")
             case "version" =>
                 DiscordMessageUtil.reply(BuildInfo.version)
         }
