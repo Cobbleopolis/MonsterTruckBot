@@ -1,6 +1,8 @@
 @import com.cobble.bot.common.models.BotInstance
-@(botInstance: BotInstance)(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: MessagesApi)
+@import com.cobble.bot.common.models.CoreSettings
+@(botInstance: BotInstance, coreSettings: CoreSettings)(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: MessagesApi)
 
 @main("Dashboard") {
     <p>@{botInstance.toString}</p>
+    <p>@{coreSettings.toString}</p>
 }
