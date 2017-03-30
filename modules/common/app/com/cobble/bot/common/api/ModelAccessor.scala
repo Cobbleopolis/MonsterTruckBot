@@ -41,13 +41,13 @@ trait ModelAccessor[T <: Model, A] {
     }
 
 
-    def insert[A](model: T)(implicit db: Database): Unit = {
+    def insert(model: T)(implicit db: Database): Unit = {
         db.withConnection(implicit conn => {
             SQL(insertQuery).on(model.namedParameters: _*).executeInsert(insertParser.singleOpt)
         })
     }
 
-    def insert[A](params: NamedParameter*)(implicit db: Database): Unit = {
+    def insert(params: NamedParameter*)(implicit db: Database): Unit = {
         db.withConnection(implicit conn => {
             SQL(insertQuery).on(params: _*).executeInsert(insertParser.singleOpt)
         })

@@ -54,7 +54,7 @@ class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, e
         if (guildOpt.isDefined) {
             val botInstanceOpt: Option[BotInstance] = BotInstance.get(guildOpt.get)
             if (botInstanceOpt.isEmpty) {
-                BotInstance.insert[String](BotInstance(guildOpt.get))
+                BotInstance.insert(BotInstance(guildOpt.get))
                 Redirect(routes.Application.dashboard(guildOpt.get))
             } else
                 Redirect(routes.Application.dashboard(guildOpt.get))
