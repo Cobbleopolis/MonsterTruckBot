@@ -41,11 +41,10 @@ class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, e
     def dashboard(id: String) = SecuredAction { implicit request => {
         implicit val userOpt: Option[User] = Some(request.user.asInstanceOf[User])
         val botInstanceOpt: Option[BotInstance] = BotInstance.get(id)
-        if (botInstanceOpt.isDefined)
+        if (botInstanceOpt.isDefined && discordBot.client.getGuildByID(id) != null)
             Ok(views.html.dashboard(botInstanceOpt.get))
-        else {
+        else
             Redirect(discordBot.getInviteLink(id, routes.Application.createBot().absoluteURL()))
-        }
     }
     }
 
