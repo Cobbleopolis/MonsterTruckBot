@@ -16,7 +16,9 @@ POST        /authenticate/:provider        @securesocial.controllers.ProviderCon
 GET         /messages                      controllers.Application.messages(page = "")
 GET         /messages/:page                controllers.Application.messages(page)
 
-GET         /servers                       controllers.Application.servers
+GET         /servers                       controllers.Application.servers()
+
+GET         /bot/createBot                 controllers.Application.createBot()
 
 GET         /dashboard/:id                 controllers.Application.dashboard(id: String)
 

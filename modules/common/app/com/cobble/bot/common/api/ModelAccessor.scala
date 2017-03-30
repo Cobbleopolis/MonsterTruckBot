@@ -3,7 +3,7 @@ package com.cobble.bot.common.api
 import anorm._
 import play.api.db.Database
 
-trait ModelAccessor[T <: Model] {
+trait ModelAccessor[T <: Model, A] {
 
     lazy val getQuery: SqlQuery = SQL(s"SELECT * FROM $tableName WHERE ${idSymbol.name} = {${idSymbol.name}}")
     lazy val getAllQuery: SqlQuery = SQL(s"SELECT * FROM $tableName")
@@ -13,6 +13,8 @@ trait ModelAccessor[T <: Model] {
     val getByQueryList: Map[Class[_ <: Model], SqlQuery] = Map()
     val insertQuery: String
     val parser: RowParser[T]
+
+    val insertParser: RowParser[A]
 
 
     def get(id: String)(implicit db: Database): Option[T] = {
@@ -39,15 +41,15 @@ trait ModelAccessor[T <: Model] {
     }
 
 
-    def insert(model: T)(implicit db: Database): Unit = {
+    def insert[A](model: T)(implicit db: Database): Unit = {
         db.withConnection(implicit conn => {
-            SQL(insertQuery).on(model.namedParameters: _*).executeInsert()
+            SQL(insertQuery).on(model.namedParameters: _*).executeInsert(insertParser.singleOpt)
         })
     }
 
-    def insert(params: NamedParameter*)(implicit db: Database): Unit = {
+    def insert[A](params: NamedParameter*)(implicit db: Database): Unit = {
         db.withConnection(implicit conn => {
-            SQL(insertQuery).on(params: _*).executeInsert()
+            SQL(insertQuery).on(params: _*).executeInsert(insertParser.singleOpt)
         })
     }
 

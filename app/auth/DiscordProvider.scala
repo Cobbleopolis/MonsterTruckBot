@@ -1,8 +1,14 @@
 package auth
 
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+import javax.inject.Singleton
+
+import controllers.routes
 import play.api.libs.ws.WSClient
 import securesocial.core._
 import securesocial.core.services.{CacheService, RoutesService}
+import sx.blah.discord.handle.obj.Permissions
 
 import scala.concurrent.Future
 

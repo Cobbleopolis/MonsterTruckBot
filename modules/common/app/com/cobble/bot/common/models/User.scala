@@ -1,6 +1,6 @@
 package com.cobble.bot.common.models
 
-import anorm.{Macro, NamedParameter, RowParser}
+import anorm.{Macro, NamedParameter, RowParser, SqlParser}
 import com.cobble.bot.common.api.{Model, ModelAccessor}
 
 case class User(discordId: String, username: String, avatarUrl: String, accessToken: String, tokenType: String, refreshToken: String) extends Model {
@@ -15,7 +15,7 @@ case class User(discordId: String, username: String, avatarUrl: String, accessTo
     )
 }
 
-object User extends ModelAccessor[User] {
+object User extends ModelAccessor[User, String] {
 
     override val tableName: String = "users"
 
@@ -24,5 +24,7 @@ object User extends ModelAccessor[User] {
     override val insertQuery: String = s"INSERT INTO $tableName (discord_id, username, avatar_url, access_token, token_type, refresh_token) VALUES ({discord_id}, {username}, {avatar_url}, {access_token}, {token_type}, {refresh_token})"
 
     override val parser: RowParser[User] = Macro.parser[User]("discord_id", "username", "avatar_url", "access_token", "token_type", "refresh_token")
+
+    override val insertParser: RowParser[String] = SqlParser.scalar[String]
 
 }
