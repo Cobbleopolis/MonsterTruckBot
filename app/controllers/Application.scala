@@ -3,7 +3,7 @@ package controllers
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.models.{BotInstance, User}
+import com.cobble.bot.common.models.{BotInstance, CoreSettings, User}
 import com.cobble.bot.common.util.DiscordApiUtil
 import com.cobble.bot.discord.DiscordBot
 import jsmessages.JsMessagesFactory
@@ -16,6 +16,8 @@ import play.api.libs.ws.WSClient
 import play.api.mvc._
 import securesocial.core.{RuntimeEnvironment, SecureSocial}
 import sx.blah.discord.handle.obj.Permissions
+
+import scala.concurrent.Future
 
 class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, environment: RuntimeEnvironment, ws: WSClient, messagesApi: MessagesApi, discordBot: DiscordBot, configuration: Configuration) extends Controller with SecureSocial {
 
@@ -41,22 +43,24 @@ class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, e
     def dashboard(id: String) = SecuredAction { implicit request => {
         implicit val userOpt: Option[User] = Some(request.user.asInstanceOf[User])
         val botInstanceOpt: Option[BotInstance] = BotInstance.get(id)
-        if (botInstanceOpt.isDefined && discordBot.client.getGuildByID(id) != null)
-            Ok(views.html.dashboard(botInstanceOpt.get))
+        val coreSettings: Option[CoreSettings] = CoreSettings.get(id)
+        if (botInstanceOpt.isDefined && coreSettings.isDefined && discordBot.client.getGuildByID(id) != null)
+            Ok(views.html.dashboard(botInstanceOpt.get, coreSettings.get))
         else
             Redirect(discordBot.getInviteLink(id, routes.Application.createBot().absoluteURL()))
     }
     }
 
-    def createBot = SecuredAction { implicit request => {
+    def createBot: Action[AnyContent] = SecuredAction.async { implicit request => Future {
         val guildOpt: Option[String] = request.getQueryString("guild_id")
         if (guildOpt.isDefined) {
             val botInstanceOpt: Option[BotInstance] = BotInstance.get(guildOpt.get)
-            if (botInstanceOpt.isEmpty) {
+            val coreSettingsOpt: Option[CoreSettings] = CoreSettings.get(guildOpt.get)
+            if (botInstanceOpt.isEmpty)
                 BotInstance.insert(BotInstance(guildOpt.get))
-                Redirect(routes.Application.dashboard(guildOpt.get))
-            } else
-                Redirect(routes.Application.dashboard(guildOpt.get))
+            if (coreSettingsOpt.isEmpty)
+                CoreSettings.insert(CoreSettings(guildOpt.get))
+            Redirect(routes.Application.dashboard(guildOpt.get))
         } else
             Redirect(routes.Application.servers())
     }
