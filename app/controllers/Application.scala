@@ -1,8 +1,6 @@
 package controllers
 
 
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 import com.cobble.bot.common.models.{BotInstance, User}
@@ -16,9 +14,8 @@ import play.api.db.Database
 import play.api.i18n.MessagesApi
 import play.api.libs.ws.WSClient
 import play.api.mvc._
-import securesocial.core.{OAuth2Constants, RuntimeEnvironment, SecureSocial}
+import securesocial.core.{RuntimeEnvironment, SecureSocial}
 import sx.blah.discord.handle.obj.Permissions
-import sx.blah.discord.util.BotInviteBuilder
 
 class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, environment: RuntimeEnvironment, ws: WSClient, messagesApi: MessagesApi, discordBot: DiscordBot, configuration: Configuration) extends Controller with SecureSocial {
 
@@ -47,12 +44,12 @@ class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, e
         if (botInstanceOpt.isDefined)
             Ok(views.html.dashboard(botInstanceOpt.get))
         else {
-            Redirect(getInviteLink(id, routes.Application.createBot().absoluteURL()))
+            Redirect(discordBot.getInviteLink(id, routes.Application.createBot().absoluteURL()))
         }
     }
     }
 
-    def createBot = Action { implicit request => {
+    def createBot = SecuredAction { implicit request => {
         val guildOpt: Option[String] = request.getQueryString("guild_id")
         if (guildOpt.isDefined) {
             val botInstanceOpt: Option[BotInstance] = BotInstance.get(guildOpt.get)
@@ -61,27 +58,9 @@ class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, e
                 Redirect(routes.Application.dashboard(guildOpt.get))
             } else
                 Redirect(routes.Application.dashboard(guildOpt.get))
-        } else {
+        } else
             Redirect(routes.Application.servers())
-        }
     }
-    }
-
-    def getInviteLink(guildId: String, redirectTo: String): String = {
-        val inviteBuilder: BotInviteBuilder = new BotInviteBuilder(discordBot.client)
-        inviteBuilder.withPermissions(java.util.EnumSet.of[Permissions](
-            Permissions.ADMINISTRATOR,
-            Permissions.KICK,
-            Permissions.BAN,
-            Permissions.READ_MESSAGES,
-            Permissions.SEND_MESSAGES,
-            Permissions.EMBED_LINKS,
-            Permissions.ATTACH_FILES,
-            Permissions.MENTION_EVERYONE,
-            Permissions.VOICE_CONNECT,
-            Permissions.VOICE_SPEAK
-        ))
-        inviteBuilder.build() + "&guild_id=" + guildId + "&" + OAuth2Constants.ResponseType + "=" + OAuth2Constants.Code + "&" + OAuth2Constants.RedirectUri + "=" + URLEncoder.encode(redirectTo, StandardCharsets.UTF_8.name())
     }
 
     def messages(page: String) = Action {
