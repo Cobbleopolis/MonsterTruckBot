@@ -1,4 +1,4 @@
-@()(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: MessagesApi)
+@()(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: Messages)
 
 @main(buildinfo.BuildInfo.displayName) {
     @messages("index.welcome")
