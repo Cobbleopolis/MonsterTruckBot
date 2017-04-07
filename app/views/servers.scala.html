@@ -1,4 +1,4 @@
-@(servers: Array[models.UserServersResponse])(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: Messages)
+@(servers: Seq[models.UserServersResponse])(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: Messages)
 
 @main("Servers") {
     <div class="container">

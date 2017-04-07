@@ -1,0 +1,12 @@
+@()(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: Messages)
+
+@main(messages("error.auth.notAuthorized.page")) {
+    <div class="panel panel-danger">
+        <div class="panel-heading">
+            <h3 class="panel-title">@messages("error.auth.notAuthorized.page")</h3>
+        </div>
+        <div class="panel-body">
+            @messages("error.auth.notAuthorized.message")
+        </div>
+    </div>
+}

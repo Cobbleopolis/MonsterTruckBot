@@ -4,22 +4,19 @@ package controllers
 import javax.inject.Inject
 
 import com.cobble.bot.common.models.{BotInstance, CoreSettings, User}
-import com.cobble.bot.common.util.DiscordApiUtil
 import com.cobble.bot.discord.DiscordBot
 import jsmessages.JsMessagesFactory
-import models.UserServersResponse
-import models.UserServersResponse._
 import play.api.Configuration
 import play.api.db.Database
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.ws.WSClient
 import play.api.mvc._
 import securesocial.core.{RuntimeEnvironment, SecureSocial}
-import sx.blah.discord.handle.obj.Permissions
+import util.AuthUtil
 
 import scala.concurrent.Future
 
-class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, environment: RuntimeEnvironment, ws: WSClient, messages: MessagesApi, discordBot: DiscordBot, configuration: Configuration) extends Controller with SecureSocial with I18nSupport {
+class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, environment: RuntimeEnvironment, ws: WSClient, messages: MessagesApi, discordBot: DiscordBot, configuration: Configuration, authUtil: AuthUtil) extends Controller with SecureSocial with I18nSupport {
 
     val env: RuntimeEnvironment = environment
 
@@ -33,10 +30,7 @@ class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, e
 
     def servers: Action[AnyContent] = SecuredAction.async { implicit request => {
         implicit val userOpt: Option[User] = Some(request.user.asInstanceOf[User])
-        ws.url(DiscordApiUtil.CURRENT_USER_GUILDS).withHeaders("Authorization" -> s"${userOpt.get.tokenType} ${userOpt.get.accessToken}").get().map(res => {
-            val servers: Array[UserServersResponse] = res.json.as[List[UserServersResponse]].toArray.sortBy(_.name)
-            Ok(views.html.servers(servers.filter(s => s.owner || Permissions.MANAGE_SERVER.hasPermission(s.permissions))))
-        })
+        authUtil.getManageableServers(userOpt.get).map(userServers => Ok(views.html.servers(userServers)))
     }
     }
 
