@@ -13,14 +13,15 @@ GET         /logout                        @securesocial.controllers.LoginPage.l
 GET         /authenticate/:provider        @securesocial.controllers.ProviderController.authenticate(provider, redirectTo: Option[String])
 POST        /authenticate/:provider        @securesocial.controllers.ProviderController.authenticateByPost(provider, redirectTo: Option[String])
 
-GET         /messages                      controllers.Application.messages(page = "")
-GET         /messages/:page                controllers.Application.messages(page)
+GET         /messages                      controllers.Application.jsMessages(page = "")
+GET         /messages/:page                controllers.Application.jsMessages(page)
 
 GET         /servers                       controllers.Application.servers()
 
 GET         /bot/createBot                 controllers.Application.createBot()
 
-GET         /dashboard/:id                 controllers.Application.dashboard(id: String)
+GET         /dashboard/:id                 controllers.Dashboard.dashboard(id: String)
+POST        /dashboard/:id/core             controllers.Dashboard.submitCoreSettings(id: String)
 
 ->          /discord                       discord.Routes
 

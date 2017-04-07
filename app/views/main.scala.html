@@ -1,4 +1,4 @@
-@(pageName: String)(content: Html)(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: MessagesApi)
+@(pageName: String)(content: Html)(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: Messages)
 
 <!DOCTYPE html>
 
@@ -16,6 +16,8 @@
     </head>
     <body>
         @component.header()
-        @content
+        <div class="container">
+            @content
+        </div>
     </body>
 </html>

@@ -1,8 +1,48 @@
-@import com.cobble.bot.common.models.BotInstance
-@import com.cobble.bot.common.models.CoreSettings
-@(botInstance: BotInstance, coreSettings: CoreSettings)(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: MessagesApi)
+@import b3.vertical.fieldConstructor
+@import sx.blah.discord.handle.obj.IGuild
+@(guild: IGuild, coreSettingsForm: Form[CoreSettingsForm])(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: Messages, flash: Flash)
 
 @main("Dashboard") {
-    <p>@{botInstance.toString}</p>
-    <p>@{coreSettings.toString}</p>
+    <h2>@{guild.getName}</h2>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">@messages("dashboard.forms.core.title")</h3>
+        </div>
+        <div class="panel-body">
+
+            @if(!flash.isEmpty) {
+                <div class="alert alert-dismissible alert-success">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    @flash.get("success")
+                </div>
+            }
+
+            @if(coreSettingsForm.hasGlobalErrors) {
+                <div class="alert alert-dismissible alert-danger">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Oh snap!</strong>
+                    <ul>
+                        @for(error <- coreSettingsForm.globalErrors) {
+                            <li>@messages(error.messages, error.args)</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <p>@flash.get("error")</p>
+            @b3.form(routes.Dashboard.submitCoreSettings(guild.getID)) {
+                @b3.text(coreSettingsForm("twitchAccount"),
+                    '_label -> "dashboard.forms.core.twitchAccount.label",
+                    'placeholder -> "dashboard.forms.core.twitchAccount.placeholder",
+                    '_help -> "dashboard.forms.core.twitchAccount.help"
+                )
+                @b3.select(coreSettingsForm("moderatorRole"),
+                    guild.getRoles.map(role => (role.getID, role.getName)).toSeq,
+                    '_label -> "dashboard.forms.core.moderatorRole.label",
+                    '_help -> "dashboard.forms.core.moderatorRole.help"
+                )
+                @b3.submit('class -> "btn btn-primary") {@messages("global.forms.save")}
+            }
+        </div>
+    </div>
 }
