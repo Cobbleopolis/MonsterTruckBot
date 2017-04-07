@@ -89,7 +89,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.cobble.bot.discord.DiscordBotEventListener#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(configuration:play.api.Configuration,discordBot:javax.inject.Provider[com.cobble.bot.discord.DiscordBot]):com.cobble.bot.discord.DiscordBotEventListener"></a>
+      <a id="&lt;init&gt;()(implicitconfiguration:play.api.Configuration,implicitdiscordBot:javax.inject.Provider[com.cobble.bot.discord.DiscordBot],implicitmessages:play.api.i18n.MessagesApi):com.cobble.bot.discord.DiscordBotEventListener"></a>
       <a id="&lt;init&gt;:DiscordBotEventListener"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -97,10 +97,10 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">DiscordBotEventListener</span><span class="params">(<span name="configuration">configuration: <span class="extype" name="play.api.Configuration">Configuration</span></span>, <span name="discordBot">discordBot: <span class="extype" name="javax.inject.Provider">Provider</span>[<a href="DiscordBot.html" class="extype" name="com.cobble.bot.discord.DiscordBot">DiscordBot</a>]</span>)</span>
+        <span class="name">DiscordBotEventListener</span><span class="params">()</span><span class="params">(<span class="implicit">implicit </span><span name="configuration">configuration: <span class="extype" name="play.api.Configuration">Configuration</span></span>, <span name="discordBot">discordBot: <span class="extype" name="javax.inject.Provider">Provider</span>[<a href="DiscordBot.html" class="extype" name="com.cobble.bot.discord.DiscordBot">DiscordBot</a>]</span>, <span name="messages">messages: <span class="extype" name="play.api.i18n.MessagesApi">MessagesApi</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.cobble.bot.discord.DiscordBotEventListener@&lt;init&gt;(configuration:play.api.Configuration,discordBot:javax.inject.Provider[com.cobble.bot.discord.DiscordBot]):com.cobble.bot.discord.DiscordBotEventListener" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.cobble.bot.discord.DiscordBotEventListener@&lt;init&gt;()(implicitconfiguration:play.api.Configuration,implicitdiscordBot:javax.inject.Provider[com.cobble.bot.discord.DiscordBot],implicitmessages:play.api.i18n.MessagesApi):com.cobble.bot.discord.DiscordBotEventListener" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -208,6 +208,23 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.cobble.bot.discord.DiscordBotEventListener#commandPrefix" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="commandPrefix:String"></a>
+      <a id="commandPrefix:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">commandPrefix</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.cobble.bot.discord.DiscordBotEventListener@commandPrefix:String" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -367,6 +384,26 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.cobble.bot.discord.DiscordBotEventListener#onCommandExecutionEvent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onCommandExecutionEvent(event:com.cobble.bot.discord.event.CommandExecutionEvent):Unit"></a>
+      <a id="onCommandExecutionEvent(CommandExecutionEvent):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">onCommandExecutionEvent</span><span class="params">(<span name="event">event: <a href="event/CommandExecutionEvent.html" class="extype" name="com.cobble.bot.discord.event.CommandExecutionEvent">CommandExecutionEvent</a></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.11.7/index.html#scala.Unit" class="extype" target="_top">Unit</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.cobble.bot.discord.DiscordBotEventListener@onCommandExecutionEvent(event:com.cobble.bot.discord.event.CommandExecutionEvent):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Annotations</dt><dd>
+                <span class="name">@EventSubscriber</span><span class="args">()</span>
+              
+        </dd></dl></div>
     </li><li name="com.cobble.bot.discord.DiscordBotEventListener#onMessageReceivedEvent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="onMessageReceivedEvent(event:sx.blah.discord.handle.impl.events.MessageReceivedEvent):Unit"></a>
       <a id="onMessageReceivedEvent(MessageReceivedEvent):Unit"></a>
