@@ -31,8 +31,16 @@
 
             <p>@flash.get("error")</p>
             @b3.form(routes.Dashboard.submitCoreSettings(guild.getID)) {
-                @b3.text(coreSettingsForm("twitchAccount"), '_label -> "dashboard.forms.core.twitchAccount.label", 'placeholder -> "dashboard.forms.core.twitchAccount.placeholder")
-                @b3.select(coreSettingsForm("moderatorRole"), guild.getRoles.map(role => (role.getID, role.getName)).toSeq, '_label -> "dashboard.forms.core.moderatorRole.label")
+                @b3.text(coreSettingsForm("twitchAccount"),
+                    '_label -> "dashboard.forms.core.twitchAccount.label",
+                    'placeholder -> "dashboard.forms.core.twitchAccount.placeholder",
+                    '_help -> "dashboard.forms.core.twitchAccount.help"
+                )
+                @b3.select(coreSettingsForm("moderatorRole"),
+                    guild.getRoles.map(role => (role.getID, role.getName)).toSeq,
+                    '_label -> "dashboard.forms.core.moderatorRole.label",
+                    '_help -> "dashboard.forms.core.moderatorRole.help"
+                )
                 @b3.submit('class -> "btn btn-primary") {@messages("global.forms.save")}
             }
         </div>
