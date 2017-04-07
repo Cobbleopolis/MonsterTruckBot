@@ -12,13 +12,13 @@ import sx.blah.discord.api.{ClientBuilder, IDiscordClient}
 import sx.blah.discord.handle.obj.Permissions
 import sx.blah.discord.util.BotInviteBuilder
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DiscordBot @Inject()(configuration: Configuration, eventListener: DiscordBotEventListener, lifecycle: ApplicationLifecycle) {
+class DiscordBot @Inject()(implicit configuration: Configuration, eventListener: DiscordBotEventListener, lifecycle: ApplicationLifecycle, context: ExecutionContext) {
 
     private val token: Option[String] = configuration.getString("mtrBot.discord.token")
-    private val clientBuilder: ClientBuilder = new ClientBuilder()
+    private val clientBuilder: ClientBuilder = new ClientBuilder().setDaemon(true)
     var client: IDiscordClient = _
 
     if (token.isDefined) {
@@ -26,10 +26,11 @@ class DiscordBot @Inject()(configuration: Configuration, eventListener: DiscordB
         client = clientBuilder.login()
         val dispatcher: EventDispatcher = client.getDispatcher
         dispatcher.registerListener(eventListener)
-        lifecycle.addStopHook(() => Future.successful(() => {
-            DiscordLogger.info("Monster Truck Bot logging out")
+        lifecycle.addStopHook(() => Future {
+            DiscordLogger.info("Monster Truck Bot logging out...")
             client.logout()
-        }))
+            DiscordLogger.info("Monster Truck Bot finished logging out")
+        })
     }
 
     def getInviteLink(guildId: String, redirectTo: String): String = {
