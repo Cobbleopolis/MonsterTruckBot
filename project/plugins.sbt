@@ -10,6 +10,6 @@ addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.6.1")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.2.0-M8")
 
-libraryDependencies += "org.vafer" % "jdeb" % "1.3" artifacts (Artifact("jdeb", "jar", "jar"))
+libraryDependencies += "org.vafer" % "jdeb" % "1.3" artifacts Artifact("jdeb", "jar", "jar")
 
 addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.0")
