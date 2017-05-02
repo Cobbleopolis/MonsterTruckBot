@@ -2,16 +2,15 @@ package com.cobble.bot.discord
 
 import javax.inject.{Inject, Provider}
 
-import buildinfo.BuildInfo
+import com.cobble.bot.discord.api.DiscordCommand
 import com.cobble.bot.discord.event.CommandExecutionEvent
-import com.cobble.bot.discord.util.DiscordMessageUtil
 import play.api.Configuration
 import play.api.i18n.MessagesApi
 import sx.blah.discord.api.events.EventSubscriber
 import sx.blah.discord.handle.impl.events.{MessageReceivedEvent, ReadyEvent}
 import sx.blah.discord.handle.obj.{IMessage, Status}
 
-class DiscordBotEventListener @Inject()(implicit configuration: Configuration, discordBot: Provider[DiscordBot], messages: MessagesApi) {
+class DiscordBotEventListener @Inject()(implicit configuration: Configuration, discordBot: Provider[DiscordBot], messages: MessagesApi, discordCommandRegistry: DiscordCommandRegistry) {
 
     val commandPrefix: String = configuration.getString("mtr.commandPrefix").getOrElse("!")
 
@@ -39,12 +38,9 @@ class DiscordBotEventListener @Inject()(implicit configuration: Configuration, d
     @EventSubscriber
     def onCommandExecutionEvent(event: CommandExecutionEvent): Unit = {
         implicit val message: IMessage = event.getMessage
-        event.getCommand match {
-            case "ping" =>
-                DiscordMessageUtil.reply("bot.ping")
-            case "version" =>
-                DiscordMessageUtil.reply(BuildInfo.version)
-        }
+        val commandOpt: Option[DiscordCommand] = discordCommandRegistry.commands.get(event.getCommand)
+        if (commandOpt.isDefined)
+            commandOpt.get.execute(event)
     }
 
 }
