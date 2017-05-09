@@ -1,9 +1,10 @@
-package com.cobble.bot.twitch
+package twitch
 
 import javax.inject.{Inject, Singleton}
+
+import play.api.Configuration
 import play.api.db.Database
 import play.api.inject.ApplicationLifecycle
-import play.api.Configuration
 
 import scala.concurrent.ExecutionContext
 

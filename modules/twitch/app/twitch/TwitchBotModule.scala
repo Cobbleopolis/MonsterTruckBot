@@ -1,4 +1,4 @@
-package com.cobble.bot.twitch
+package twitch
 
 import com.google.inject.AbstractModule
 
