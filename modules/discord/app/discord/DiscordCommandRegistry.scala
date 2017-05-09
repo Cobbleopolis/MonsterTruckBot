@@ -2,23 +2,20 @@ package discord
 
 import javax.inject.{Inject, Singleton}
 
-import com.cobble.bot.common.api.commands.{PingCommand, VersionCommand}
 import discord.api.DiscordCommand
-import discord.commands.{DiscordPingCommand, DiscordVersionCommand}
+import discord.commands.{DiscordPingCommand, DiscordSoSCommand, DiscordVersionCommand}
 
 @Singleton
 class DiscordCommandRegistry @Inject()(
-                                          discordPingCommand: DiscordPingCommand,
-                                          discordVersionCommand: DiscordVersionCommand
+                                          val pingCommand: DiscordPingCommand,
+                                          val versionCommand: DiscordVersionCommand,
+                                          val soSCommand: DiscordSoSCommand
                                       ) {
 
     val commands: Map[String, DiscordCommand] = Map(
-        discordPingCommand.name -> discordPingCommand,
-        discordVersionCommand.name -> discordVersionCommand
+        pingCommand.name -> pingCommand,
+        versionCommand.name -> versionCommand,
+        soSCommand.name -> soSCommand
     )
-
-    val pingCommand: PingCommand = discordPingCommand
-
-    val versionCommand: VersionCommand = discordVersionCommand
 
 }
