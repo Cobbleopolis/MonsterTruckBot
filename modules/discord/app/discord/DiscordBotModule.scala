@@ -1,4 +1,4 @@
-package com.cobble.bot.discord
+package discord
 
 import com.google.inject.AbstractModule
 

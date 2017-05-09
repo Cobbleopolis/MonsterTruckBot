@@ -1,9 +1,9 @@
-package com.cobble.bot.discord.util
+package discord.util
 
 import javax.inject.{Inject, Singleton}
 
 import com.cobble.bot.common.util.MessageUtil
-import com.cobble.bot.discord.event.CommandExecutionEvent
+import discord.event.CommandExecutionEvent
 import play.api.i18n.MessagesApi
 import sx.blah.discord.handle.obj.IMessage
 

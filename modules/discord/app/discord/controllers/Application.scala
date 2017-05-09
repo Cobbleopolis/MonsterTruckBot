@@ -1,8 +1,8 @@
-package com.cobble.bot.discord.controllers
+package discord.controllers
 
 import javax.inject.Inject
 
-import com.cobble.bot.discord.DiscordBot
+import discord.DiscordBot
 import play.api.mvc.{Action, Controller}
 
 class Application @Inject()(discordBot: DiscordBot) extends Controller {

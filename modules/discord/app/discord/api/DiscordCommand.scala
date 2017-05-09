@@ -1,8 +1,8 @@
-package com.cobble.bot.discord.api
+package discord.api
 
 import com.cobble.bot.common.api.Command
-import com.cobble.bot.discord.event.CommandExecutionEvent
-import com.cobble.bot.discord.util.DiscordMessageUtil
+import discord.event.CommandExecutionEvent
+import discord.util.DiscordMessageUtil
 
 trait DiscordCommand extends Command {
 

@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import auth.HasPermission
 import com.cobble.bot.common.models.{BotInstance, CoreSettings, User}
-import com.cobble.bot.discord.DiscordBot
+import discord.DiscordBot
 import models.CoreSettingsForm
 import play.api.Configuration
 import play.api.db.Database

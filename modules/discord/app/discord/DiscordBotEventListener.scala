@@ -1,9 +1,9 @@
-package com.cobble.bot.discord
+package discord
 
 import javax.inject.{Inject, Provider}
 
-import com.cobble.bot.discord.api.DiscordCommand
-import com.cobble.bot.discord.event.CommandExecutionEvent
+import discord.api.DiscordCommand
+import discord.event.CommandExecutionEvent
 import play.api.Configuration
 import play.api.i18n.MessagesApi
 import sx.blah.discord.api.events.EventSubscriber
@@ -18,7 +18,7 @@ class DiscordBotEventListener @Inject()(implicit configuration: Configuration, d
     def onReadyEvent(event: ReadyEvent): Unit = {
         DiscordLogger.info("Monster Truck Bot ready")
         discordBot.get().client.changeUsername(configuration.getString("mtrBot.discord.username").getOrElse("Monster Truck Bot"))
-        discordBot.get().client.changeStatus(Status.game(configuration.getString("mtrBot.discord.game").getOrElse("Hap Hap Hap")))
+        discordBot.get().client.changeStatus(Status.game(configuration.getString("mtrBot.discord.game").getOrElse("Hap! Hap! Hap!")))
     }
 
     @EventSubscriber

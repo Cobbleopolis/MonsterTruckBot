@@ -4,7 +4,7 @@ package controllers
 import javax.inject.Inject
 
 import com.cobble.bot.common.models.{BotInstance, CoreSettings, User}
-import com.cobble.bot.discord.DiscordBot
+import discord.DiscordBot
 import jsmessages.JsMessagesFactory
 import play.api.Configuration
 import play.api.db.Database

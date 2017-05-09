@@ -1,4 +1,4 @@
-package com.cobble.bot.discord.event
+package discord.event
 
 import sx.blah.discord.api.events.Event
 import sx.blah.discord.handle.obj.{IMessage, IUser}

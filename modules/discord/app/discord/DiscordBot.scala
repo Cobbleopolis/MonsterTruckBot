@@ -1,4 +1,4 @@
-package com.cobble.bot.discord
+package discord
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
