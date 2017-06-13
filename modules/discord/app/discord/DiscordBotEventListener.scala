@@ -7,12 +7,13 @@ import discord.api.DiscordCommand
 import discord.event.CommandExecutionEvent
 import discord.filters.DiscordCapsFilter
 import play.api.Configuration
+import play.api.db.Database
 import play.api.i18n.MessagesApi
 import sx.blah.discord.api.events.EventSubscriber
 import sx.blah.discord.handle.impl.events.{MessageReceivedEvent, ReadyEvent}
 import sx.blah.discord.handle.obj.{IMessage, Status}
 
-class DiscordBotEventListener @Inject()(implicit configuration: Configuration, discordBot: Provider[DiscordBot], messages: MessagesApi, discordCommandRegistry: DiscordCommandRegistry, capsFilter: DiscordCapsFilter) {
+class DiscordBotEventListener @Inject()(implicit configuration: Configuration, discordBot: Provider[DiscordBot], messages: MessagesApi, discordCommandRegistry: DiscordCommandRegistry, capsFilter: DiscordCapsFilter, database: Database) {
 
     val commandPrefix: String = configuration.getString("mtr.commandPrefix").getOrElse("!")
 
@@ -36,8 +37,9 @@ class DiscordBotEventListener @Inject()(implicit configuration: Configuration, d
                     message.getAuthor
                 ))
             } else {
-                //TODO actually pull filter settings from the database.
-                capsFilter.filterMessage(message, FilterSettings(message.getGuild.getID, capsFilterEnabled = true))
+                val filterSettings: Option[FilterSettings] = FilterSettings.get(message.getGuild.getID)
+                if (filterSettings.isDefined)
+                    capsFilter.filterMessage(message, filterSettings.get)
                 //TODO figure out what mods want about warnings/bans/things
             }
     }
