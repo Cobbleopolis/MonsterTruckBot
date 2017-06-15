@@ -21,7 +21,8 @@ GET         /servers                       controllers.Application.servers()
 GET         /bot/createBot                 controllers.Application.createBot()
 
 GET         /dashboard/:id                 controllers.Dashboard.dashboard(id: String)
-POST        /dashboard/:id/core             controllers.Dashboard.submitCoreSettings(id: String)
+POST        /dashboard/:id/core            controllers.Dashboard.submitCoreSettings(id: String)
+POST        /dashboard/:id/filters         controllers.Dashboard.submitFilterSettings(id: String)
 
 ->          /discord                       discord.Routes
 

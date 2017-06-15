@@ -3,7 +3,7 @@ package controllers
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.models.{BotInstance, CoreSettings, User}
+import com.cobble.bot.common.models.{BotInstance, CoreSettings, FilterSettings, User}
 import discord.DiscordBot
 import jsmessages.JsMessagesFactory
 import play.api.Configuration
@@ -40,10 +40,13 @@ class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, e
             if (guildOpt.isDefined) {
                 val botInstanceOpt: Option[BotInstance] = BotInstance.get(guildOpt.get)
                 val coreSettingsOpt: Option[CoreSettings] = CoreSettings.get(guildOpt.get)
+                val filterSettingsOpt: Option[FilterSettings] = FilterSettings.get(guildOpt.get)
                 if (botInstanceOpt.isEmpty)
                     BotInstance.insert(BotInstance(guildOpt.get))
                 if (coreSettingsOpt.isEmpty)
                     CoreSettings.insert(CoreSettings(guildOpt.get))
+                if (filterSettingsOpt.isEmpty)
+                    FilterSettings.insert(FilterSettings(guildOpt.get))
                 Redirect(routes.Dashboard.dashboard(guildOpt.get))
             } else
                 Redirect(routes.Application.servers())
