@@ -2,9 +2,9 @@ val projectName: String = "MonsterTruckBot"
 
 val displayName: String = "Monster Truck Bot"
 
-val projectVersion: String = "1.0.0-SNAPSHOT"
+val projectVersion: String = "0.0.1"
 
-val discord4JVersion: String = "2.7.0"
+val discord4JVersion: String = "2.8.2"
 
 lazy val commonDependencies = Seq(
     "com.typesafe.play" %% "anorm" % "2.5.3"
