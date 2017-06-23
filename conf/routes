@@ -17,7 +17,6 @@ GET         /messages                      controllers.Application.jsMessages(pa
 GET         /messages/:page                controllers.Application.jsMessages(page)
 
 GET         /dashboard                     controllers.Dashboard.dashboard()
-POST        /dashboard/core                controllers.Dashboard.submitCoreSettings()
 POST        /dashboard/filters             controllers.Dashboard.submitFilterSettings()
 
 ->          /discord                       discord.Routes

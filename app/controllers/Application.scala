@@ -3,7 +3,6 @@ package controllers
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.models.{BotInstance, CoreSettings, FilterSettings}
 import discord.DiscordBot
 import jsmessages.JsMessagesFactory
 import play.api.Configuration

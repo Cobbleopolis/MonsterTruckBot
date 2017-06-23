@@ -3,10 +3,10 @@ package controllers
 import javax.inject.Inject
 
 import auth.HasPermission
-import com.cobble.bot.common.models.{CoreSettings, FilterSettings}
+import com.cobble.bot.common.models.FilterSettings
 import com.cobble.bot.common.ref.MtrConfigRef
 import discord.DiscordBot
-import models.{CoreSettingsForm, FilterSettingsForm}
+import models.FilterSettingsForm
 import play.api.db.Database
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.ws.WSClient
@@ -21,34 +21,16 @@ class Dashboard @Inject()(implicit db: Database, webJarAssets: WebJarAssets, ove
 
     def dashboard(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
         implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
-        val coreSettings: Option[CoreSettings] = CoreSettings.get(config.guildId)
         val filterSettings: Option[FilterSettings] = FilterSettings.get(config.guildId)
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
-        if (coreSettings.isDefined
-            && filterSettings.isDefined
+        if (filterSettings.isDefined
             && guild != null
         ) {
             Ok(views.html.dashboard(guild,
-                CoreSettingsForm.form.fill(coreSettings.get),
                 FilterSettingsForm.form.fill(filterSettings.get))
             )
         } else
             Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
-    }
-
-    def submitCoreSettings(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
-        CoreSettingsForm.form.bindFromRequest().fold(
-            formWithErrors => {
-                val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
-                BadRequest(views.html.dashboard(guild, formWithErrors, FilterSettingsForm.form.fill(FilterSettings.get(config.guildId).get)))
-            },
-            coreSettings => {
-                CoreSettings.update(coreSettings.guildId, coreSettings.namedParameters: _*)
-                Redirect(routes.Dashboard.dashboard()).flashing("success" -> messages("dashboard.settingsSaved", messages("dashboard.core")))
-            }
-        )
     }
 
     def submitFilterSettings(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
@@ -56,7 +38,7 @@ class Dashboard @Inject()(implicit db: Database, webJarAssets: WebJarAssets, ove
         FilterSettingsForm.form.bindFromRequest().fold(
             formWithErrors => {
                 val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
-                BadRequest(views.html.dashboard(guild, CoreSettingsForm.form.fill(CoreSettings.get(config.guildId).get), formWithErrors))
+                BadRequest(views.html.dashboard(guild, formWithErrors))
             },
             filterSettings => {
                 FilterSettings.update(filterSettings.guildId, filterSettings.namedParameters: _*)

@@ -3,7 +3,6 @@ package discord.commands
 import javax.inject.Inject
 
 import com.cobble.bot.common.api.commands.SoSCommand
-import com.cobble.bot.common.models.CoreSettings
 import com.cobble.bot.common.ref.MtrConfigRef
 import discord.api.DiscordCommand
 import discord.event.CommandExecutionEvent
@@ -21,19 +20,12 @@ class DiscordSoSCommand @Inject()(implicit val messageUtil: DiscordMessageUtil, 
         else
             try {
                 event.getMessage.delete()
-                val coreSettingsOpt: Option[CoreSettings] = CoreSettings.get(event.getMessage.getGuild.getLongID)
-                if (coreSettingsOpt.isDefined)
-                    if (coreSettingsOpt.get.moderatorRoleId.isDefined) {
-                        event.getMessage.getGuild.getUsersByRole(event.getMessage.getGuild.getRoleByID(conf.moderatorRoleId)).asScala
-                            .filterNot(_.isBot)
-                            .foreach(user =>
-                                messageUtil.sendDM(user, "bot.sos.message", event.getUser.mention(), event.getMessage.getChannel.mention(), if (event.getArgs.length > 0) event.getArgs.mkString(" ") else messagesApi("global.notAvailable"))
-                            )
-                        messageUtil.replyDM("bot.sos.send.success")
-                    } else
-                        messageUtil.replyDM("bot.sos.send.noModRole")
-                else
-                    messageUtil.replyDM("bot.sos.send.serverNotFound")
+                event.getMessage.getGuild.getUsersByRole(event.getMessage.getGuild.getRoleByID(conf.moderatorRoleId)).asScala
+                    .filterNot(_.isBot)
+                    .foreach(user =>
+                        messageUtil.sendDM(user, "bot.sos.message", event.getUser.mention(), event.getMessage.getChannel.mention(), if (event.getArgs.length > 0) event.getArgs.mkString(" ") else messagesApi("global.notAvailable"))
+                    )
+                messageUtil.replyDM("bot.sos.send.success")
             } catch {
                 case _: Exception => messageUtil.replyDM("bot.sos.send.failure")
             }
