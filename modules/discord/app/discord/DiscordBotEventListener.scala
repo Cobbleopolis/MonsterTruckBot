@@ -55,6 +55,7 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
     def onCommandExecutionEvent(event: CommandExecutionEvent): Unit = {
         implicit val message: IMessage = event.getMessage
         val commandOpt: Option[DiscordCommand] = discordCommandRegistry.commands.get(event.getCommand)
+        DiscordLogger.logger.info(s"GOT COMMAND: ${commandOpt.isDefined}")
         if (commandOpt.isDefined)
             commandOpt.get.execute(event)
     }
