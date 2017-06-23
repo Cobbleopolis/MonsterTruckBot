@@ -8,9 +8,9 @@ case class FilterSettingsForm()
 
 object FilterSettingsForm {
 
-    def form(guildId: String): Form[FilterSettings] = Form(
+    def form: Form[FilterSettings] = Form(
         mapping(
-            "guildId" -> text,
+            "guildId" -> longNumber,
             "capsFilterEnabled" -> boolean,
             "capsFilterThreshold" -> number(min = 1, max = 100)
         )(FilterSettings.apply)(FilterSettings.unapply)

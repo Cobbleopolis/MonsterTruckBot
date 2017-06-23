@@ -16,13 +16,8 @@ POST        /authenticate/:provider        @securesocial.controllers.ProviderCon
 GET         /messages                      controllers.Application.jsMessages(page = "")
 GET         /messages/:page                controllers.Application.jsMessages(page)
 
-GET         /servers                       controllers.Application.servers()
-
-GET         /bot/createBot                 controllers.Application.createBot()
-
-GET         /dashboard/:id                 controllers.Dashboard.dashboard(id: String)
-POST        /dashboard/:id/core            controllers.Dashboard.submitCoreSettings(id: String)
-POST        /dashboard/:id/filters         controllers.Dashboard.submitFilterSettings(id: String)
+GET         /dashboard                     controllers.Dashboard.dashboard()
+POST        /dashboard/filters             controllers.Dashboard.submitFilterSettings()
 
 ->          /discord                       discord.Routes
 

@@ -9,11 +9,10 @@ import sx.blah.discord.handle.obj.IMessage
 class DiscordCapsFilter @Inject()(discordMessageUtil: DiscordMessageUtil) {
 
     def filterMessage(message: IMessage, filterSettings: FilterSettings): Unit = {
-        if (filterSettings.capsFilterEnabled)
-            if(s"[\\p{javaUpperCase}\\s]{${filterSettings.capsFilterThreshold}}".r.findFirstIn(message.getContent).isDefined) {
-                message.delete()
-                discordMessageUtil.replyToMessage(message, "bot.filter.noCaps")
-            }
+        if(s"[\\p{javaUpperCase}\\s]{${filterSettings.capsFilterThreshold}}".r.findFirstIn(message.getContent).isDefined) {
+            message.delete()
+            discordMessageUtil.replyToMessage(message, "bot.filter.noCaps")
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 @import sx.blah.discord.handle.obj.IGuild
 @import com.cobble.bot.common.models.FilterSettings
-@(guild: IGuild, coreSettingsForm: Form[CoreSettingsForm], filterSettingsForm: Form[FilterSettings])(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: Messages, flash: Flash)
+@import securesocial.core.BasicProfile
+@(guild: IGuild, filterSettingsForm: Form[FilterSettings])(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages, flash: Flash)
 
 @implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-10") }
 
@@ -40,24 +41,8 @@
 
     <p>@flash.get("error")</p>
 
-    @formBlock("dashboard.forms.core.title", coreSettingsForm.hasGlobalErrors, coreSettingsForm.globalErrors){
-        @b3.form(routes.Dashboard.submitCoreSettings(guild.getID)) {
-            @b3.text(coreSettingsForm("twitchAccount"),
-                '_label -> "dashboard.forms.core.twitchAccount.label",
-                'placeholder -> "dashboard.forms.core.twitchAccount.placeholder",
-                '_help -> "dashboard.forms.core.twitchAccount.help"
-            )
-            @b3.select(coreSettingsForm("moderatorRole"),
-                guild.getRoles.map(role => (role.getID, role.getName)).toSeq,
-                '_label -> "dashboard.forms.core.moderatorRole.label",
-                '_help -> "dashboard.forms.core.moderatorRole.help"
-            )
-            @b3.submit('class -> "btn btn-primary") {@messages("global.forms.save")}
-        }
-    }
-
-    @formBlock("dashboard.forms.filters.title", coreSettingsForm.hasGlobalErrors, coreSettingsForm.globalErrors){
-        @b3.form(routes.Dashboard.submitFilterSettings(guild.getID)) {
+    @formBlock("dashboard.forms.filters.title", filterSettingsForm.hasGlobalErrors, filterSettingsForm.globalErrors){
+        @b3.form(routes.Dashboard.submitFilterSettings()) {
             <fieldset>
                 <legend>@messages("dashboard.forms.filters.capsFilter.title")</legend>
                 @b3.hidden("guildId", filterSettingsForm("guildId").value.get)

@@ -2,9 +2,9 @@ val projectName: String = "MonsterTruckBot"
 
 val displayName: String = "Monster Truck Bot"
 
-val projectVersion: String = "1.0.0-SNAPSHOT"
+val projectVersion: String = "0.0.1"
 
-val discord4JVersion: String = "2.7.0"
+val discord4JVersion: String = "2.8.2"
 
 lazy val commonDependencies = Seq(
     "com.typesafe.play" %% "anorm" % "2.5.3"
@@ -30,7 +30,7 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
     .settings(
         resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
         unmanagedResourceDirectories in Test += baseDirectory(_ / "target/web/public/test").value,
-        libraryDependencies ++= Seq(jdbc, cache, ws, specs2 % Test),
+        libraryDependencies ++= Seq(jdbc, cache, ws, specs2 % Test, evolutions),
         libraryDependencies ++= Seq(
             "org.postgresql" % "postgresql" % "42.0.0.jre7",
             "org.webjars" %% "webjars-play" % "2.5.0",
