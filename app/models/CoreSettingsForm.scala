@@ -9,20 +9,11 @@ case class CoreSettingsForm(twitchAccount: Option[String], moderatorRole: Option
 
 object CoreSettingsForm {
 
-    def get(guildId: String)(implicit db: Database): Option[CoreSettingsForm] = {
-        val botInstanceOpt: Option[BotInstance] = BotInstance.get(guildId)
-        val coreSettings: Option[CoreSettings] = CoreSettings.get(guildId)
-        if (botInstanceOpt.isDefined && coreSettings.isDefined)
-            Some(CoreSettingsForm(botInstanceOpt.get.twitchAccount, coreSettings.get.moderatorRoleId))
-        else
-            None
-    }
-
-    val form = Form(
+    val form: Form[CoreSettings] = Form(
         mapping(
-            "twitchAccount" -> optional(text),
+            "guildId" -> longNumber,
             "moderatorRole" -> optional(text)
-        )(apply)(unapply)
+        )(CoreSettings.apply)(CoreSettings.unapply)
     )
 
 }

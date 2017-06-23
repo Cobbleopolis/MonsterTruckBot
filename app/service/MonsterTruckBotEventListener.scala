@@ -1,6 +1,5 @@
 package service
 
-import com.cobble.bot.common.models.User
 import play.api.Logger
 import play.api.mvc.{RequestHeader, Session}
 import securesocial.core._
@@ -18,7 +17,7 @@ class MonsterTruckBotEventListener {
         }
 
         event match {
-            case Event(u: User) => Logger.info("traced %s event for user %s".format(eventName, u.discordId))
+            case Event(u: BasicProfile) => Logger.info("traced %s event for user %s".format(eventName, u.userId))
         }
 
         // retrieving the current language

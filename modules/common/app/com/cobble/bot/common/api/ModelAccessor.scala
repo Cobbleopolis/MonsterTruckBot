@@ -17,7 +17,7 @@ trait ModelAccessor[T <: Model, A] {
     val insertParser: RowParser[A]
 
 
-    def get(id: String)(implicit db: Database): Option[T] = {
+    def get(id: Long)(implicit db: Database): Option[T] = {
         db.withConnection(implicit conn => {
             getQuery.on(idSymbol -> id).as(parser.singleOpt)
         })
@@ -75,7 +75,7 @@ trait ModelAccessor[T <: Model, A] {
         }
     }
 
-    def update(id: String, params: NamedParameter*)(implicit db: Database): Int = {
+    def update(id: Long, params: NamedParameter*)(implicit db: Database): Int = {
         if (params.nonEmpty) {
             val idParam: NamedParameter = idSymbol -> id
             db.withConnection(implicit conn => {
@@ -85,7 +85,7 @@ trait ModelAccessor[T <: Model, A] {
             0
     }
 
-    def delete(id: String)(implicit db: Database): Int = {
+    def delete(id: Long)(implicit db: Database): Int = {
         db.withConnection(implicit conn => {
             deleteQuery.on(idSymbol -> id).executeUpdate()
         })

@@ -3,13 +3,13 @@ package com.cobble.bot.common.models
 import anorm.{Macro, NamedParameter, RowParser, SqlParser, SqlQuery}
 import com.cobble.bot.common.api.{Model, ModelAccessor}
 
-case class CoreSettings(guildId: String, moderatorRoleId: Option[String] = None) extends Model {
+case class CoreSettings(guildId: Long, moderatorRoleId: Option[String] = None) extends Model {
 
     override val namedParameters: Seq[NamedParameter] = Seq('guild_id -> guildId, 'moderator_role_id -> moderatorRoleId)
 
 }
 
-object CoreSettings extends ModelAccessor[CoreSettings, String] {
+object CoreSettings extends ModelAccessor[CoreSettings, Long] {
 
     override val tableName: String = "core_settings"
 
@@ -21,6 +21,6 @@ object CoreSettings extends ModelAccessor[CoreSettings, String] {
 
     override val parser: RowParser[CoreSettings] = Macro.parser[CoreSettings]("guild_id", "moderator_role_id")
 
-    override val insertParser: RowParser[String] = SqlParser.scalar[String]
+    override val insertParser: RowParser[Long] = SqlParser.scalar[Long]
 
 }

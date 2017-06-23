@@ -4,8 +4,8 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import javax.inject.Singleton
 
+import com.cobble.bot.common.ref.MtrConfigRef
 import com.google.inject.Inject
-import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
 import sx.blah.discord.api.events.EventDispatcher
 import sx.blah.discord.api.{ClientBuilder, IDiscordClient}
@@ -15,14 +15,13 @@ import sx.blah.discord.util.BotInviteBuilder
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DiscordBot @Inject()(implicit configuration: Configuration, eventListener: DiscordBotEventListener, lifecycle: ApplicationLifecycle, context: ExecutionContext) {
+class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBotEventListener, lifecycle: ApplicationLifecycle, context: ExecutionContext) {
 
-    private val token: Option[String] = configuration.getString("mtrBot.discord.token")
     private val clientBuilder: ClientBuilder = new ClientBuilder().setDaemon(true)
     var client: IDiscordClient = _
 
-    if (token.isDefined) {
-        clientBuilder.withToken(token.get)
+    if (conf.discordToken.isDefined) {
+        clientBuilder.withToken(conf.discordToken.get)
         client = clientBuilder.login()
         val dispatcher: EventDispatcher = client.getDispatcher
         dispatcher.registerListener(eventListener)
@@ -31,9 +30,11 @@ class DiscordBot @Inject()(implicit configuration: Configuration, eventListener:
             client.logout()
             DiscordLogger.info("Monster Truck Bot finished logging out")
         })
+    } else {
+        DiscordLogger.logger.error("Discord token not found in config")
     }
 
-    def getInviteLink(guildId: String, redirectTo: String): String = {
+    def getInviteLink(redirectTo: String): String = {
         val inviteBuilder: BotInviteBuilder = new BotInviteBuilder(client)
         inviteBuilder.withPermissions(java.util.EnumSet.of[Permissions](
             Permissions.ADMINISTRATOR,
@@ -47,6 +48,6 @@ class DiscordBot @Inject()(implicit configuration: Configuration, eventListener:
             Permissions.VOICE_CONNECT,
             Permissions.VOICE_SPEAK
         ))
-        inviteBuilder.build() + "&guild_id=" + guildId + "&response_type=code&redirect_uri=" + URLEncoder.encode(redirectTo, StandardCharsets.UTF_8.name())
+        inviteBuilder.build() + "&guild_id=" + conf.discordClientId.get + "&response_type=code&redirect_uri=" + URLEncoder.encode(redirectTo, StandardCharsets.UTF_8.name())
     }
 }

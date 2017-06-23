@@ -1,4 +1,5 @@
-@(servers: Seq[models.UserServersResponse])(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: Messages)
+@import securesocial.core.BasicProfile
+@(servers: Seq[models.UserServersResponse])(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages)
 
 @main("Servers") {
     <div class="container">
@@ -6,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     <h4>@{server.name}</h4>
-                    <a href="@routes.Dashboard.dashboard(server.id)" class="btn btn-primary" role="button">@messages("global.pageNames.dashboard")</a>
+                    <a href="@routes.Dashboard.dashboard()" class="btn btn-primary" role="button">@messages("global.pageNames.dashboard")</a>
                 </div>
             </div>
         }

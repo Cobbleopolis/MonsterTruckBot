@@ -1,4 +1,5 @@
-@()(implicit webJarAssets: WebJarAssets, userOpt: Option[com.cobble.bot.common.models.User], messages: Messages)
+@import securesocial.core.BasicProfile
+@()(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages)
 
 @main(buildinfo.BuildInfo.displayName) {
     @messages("index.welcome")

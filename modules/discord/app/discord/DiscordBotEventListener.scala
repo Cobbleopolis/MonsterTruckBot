@@ -44,7 +44,7 @@ class DiscordBotEventListener @Inject()(implicit configuration: Configuration, d
                     message.getAuthor
                 ))
             } else {
-                val filterSettings: Option[FilterSettings] = FilterSettings.get(message.getGuild.getStringID)
+                val filterSettings: Option[FilterSettings] = FilterSettings.get(message.getGuild.getLongID)
                 if (message.getAuthor.getLongID != message.getGuild.getOwnerLongID
                     && !message.getAuthor.getRolesForGuild(message.getGuild).asScala.map(_.getStringID).contains(moderatorRoleId)) // See if the mods want to be able to filter themselves
                     filterMessage(message, filterSettings)
