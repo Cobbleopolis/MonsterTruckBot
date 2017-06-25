@@ -6,7 +6,7 @@ import com.cobble.bot.common.models.FilterSettings
 import com.cobble.bot.common.ref.MtrConfigRef
 import discord.api.DiscordCommand
 import discord.event.CommandExecutionEvent
-import discord.filters.{DiscordCapsFilter, DiscordLinksFilter}
+import discord.filters.{DiscordBlacklistFilter, DiscordCapsFilter, DiscordLinksFilter}
 import play.api.db.Database
 import play.api.i18n.MessagesApi
 import sx.blah.discord.api.events.EventSubscriber
@@ -16,7 +16,7 @@ import sx.blah.discord.handle.obj.IMessage
 
 import scala.collection.JavaConverters._
 
-class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBot: Provider[DiscordBot], messages: MessagesApi, discordCommandRegistry: DiscordCommandRegistry, capsFilter: DiscordCapsFilter, linksFilter: DiscordLinksFilter, database: Database) {
+class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBot: Provider[DiscordBot], messages: MessagesApi, discordCommandRegistry: DiscordCommandRegistry, capsFilter: DiscordCapsFilter, linksFilter: DiscordLinksFilter, blacklistFilter: DiscordBlacklistFilter, database: Database) {
 
     @EventSubscriber
     def onReadyEvent(event: ReadyEvent): Unit = {
@@ -51,7 +51,8 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
                 capsFilter.filterMessage(message, filterSettings.get)
             if (filterSettings.get.linksFilterEnabled)
                 linksFilter.filterMessage(message, filterSettings.get)
-
+            if (filterSettings.get.blacklistFilterEnabled)
+                blacklistFilter.filterMessage(message, filterSettings.get)
         }
     }
 
