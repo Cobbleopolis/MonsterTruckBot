@@ -15,7 +15,9 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
             "guildId" -> ignored(mtrConfigRef.guildId),
             "capsFilterEnabled" -> boolean,
             "capsFilterThreshold" -> number(min = 1, max = 100),
-            "linksFilterEnabled" -> boolean
+            "linksFilterEnabled" -> boolean,
+            "blacklistFilterEnabled" -> boolean,
+            "blacklistFilterWords" -> text
         )(FilterSettings.apply)(FilterSettings.unapply)
     )
 

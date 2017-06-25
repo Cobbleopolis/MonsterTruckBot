@@ -12,7 +12,9 @@ CREATE TABLE filter_settings
     ON UPDATE CASCADE ON DELETE CASCADE,
   caps_filter_enabled   BOOLEAN DEFAULT FALSE,
   caps_filter_threshold INTEGER DEFAULT 20,
-  links_filter_enabled  BOOLEAN DEFAULT FALSE
+  links_filter_enabled  BOOLEAN DEFAULT FALSE,
+  blacklist_filter_enabled BOOLEAN DEFAULT FALSE,
+  blacklist_filter_words TEXT DEFAULT ''
 );
 
 CREATE UNIQUE INDEX filter_settings_guild_id_uindex
