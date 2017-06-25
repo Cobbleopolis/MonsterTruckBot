@@ -12,7 +12,8 @@ object FilterSettingsForm {
         mapping(
             "guildId" -> longNumber,
             "capsFilterEnabled" -> boolean,
-            "capsFilterThreshold" -> number(min = 1, max = 100)
+            "capsFilterThreshold" -> number(min = 1, max = 100),
+            "linksFilterEnabled" -> boolean
         )(FilterSettings.apply)(FilterSettings.unapply)
     )
 

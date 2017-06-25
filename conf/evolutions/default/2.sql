@@ -11,7 +11,8 @@ CREATE TABLE filter_settings
     REFERENCES bot_instances
     ON UPDATE CASCADE ON DELETE CASCADE,
   caps_filter_enabled   BOOLEAN DEFAULT FALSE,
-  caps_filter_threshold INTEGER DEFAULT 20
+  caps_filter_threshold INTEGER DEFAULT 20,
+  links_filter_enabled  BOOLEAN DEFAULT FALSE
 );
 
 CREATE UNIQUE INDEX filter_settings_guild_id_uindex

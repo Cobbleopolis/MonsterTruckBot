@@ -54,6 +54,12 @@
                     '_help -> "dashboard.forms.filters.capsFilter.threshold.help"
                 )
             </fieldset>
+            <fieldset>
+                <legend>@messages("dashboard.forms.filters.linksFilter.title")</legend>
+                @b3.checkbox(filterSettingsForm("linksFilterEnabled"),
+                    '_label -> "dashboard.forms.filters.linksFilter.enabled.label"
+                )
+            </fieldset>
             @b3.submit('class -> "btn btn-primary") {@messages("global.forms.save")}
         }
     }
