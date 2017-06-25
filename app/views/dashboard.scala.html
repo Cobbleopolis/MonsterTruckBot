@@ -45,7 +45,6 @@
         @b3.form(routes.Dashboard.submitFilterSettings()) {
             <fieldset>
                 <legend>@messages("dashboard.forms.filters.capsFilter.title")</legend>
-                @b3.hidden("guildId", filterSettingsForm("guildId").value.get)
                 @b3.checkbox(filterSettingsForm("capsFilterEnabled"),
                     '_label -> "dashboard.forms.filters.capsFilter.enabled.label"
                 )
