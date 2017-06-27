@@ -48,6 +48,6 @@ class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBo
             Permissions.VOICE_CONNECT,
             Permissions.VOICE_SPEAK
         ))
-        inviteBuilder.build() + "&guild_id=" + conf.discordClientId.get + "&response_type=code&redirect_uri=" + URLEncoder.encode(redirectTo, StandardCharsets.UTF_8.name())
+        inviteBuilder.build() + "&guild_id=" + java.lang.Long.toUnsignedString(conf.guildId) + "&response_type=code&redirect_uri=" + URLEncoder.encode(redirectTo, StandardCharsets.UTF_8.name())
     }
 }

@@ -1,5 +1,6 @@
 package discord
 
+import java.awt.Color
 import javax.inject.{Inject, Provider}
 
 import com.cobble.bot.common.models.FilterSettings
