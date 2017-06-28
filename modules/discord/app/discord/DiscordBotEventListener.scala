@@ -9,6 +9,7 @@ import discord.event.CommandExecutionEvent
 import discord.filters.{DiscordBlacklistFilter, DiscordCapsFilter, DiscordLinksFilter}
 import play.api.db.Database
 import play.api.i18n.MessagesApi
+import play.api.cache.CacheApi
 import sx.blah.discord.api.events.EventSubscriber
 import sx.blah.discord.handle.impl.events.ReadyEvent
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
@@ -16,7 +17,7 @@ import sx.blah.discord.handle.obj.IMessage
 
 import scala.collection.JavaConverters._
 
-class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBot: Provider[DiscordBot], messages: MessagesApi, discordCommandRegistry: DiscordCommandRegistry, capsFilter: DiscordCapsFilter, linksFilter: DiscordLinksFilter, blacklistFilter: DiscordBlacklistFilter, database: Database) {
+class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBot: Provider[DiscordBot], messages: MessagesApi, discordCommandRegistry: DiscordCommandRegistry, capsFilter: DiscordCapsFilter, linksFilter: DiscordLinksFilter, blacklistFilter: DiscordBlacklistFilter, database: Database, cache: CacheApi) {
 
     @EventSubscriber
     def onReadyEvent(event: ReadyEvent): Unit = {
