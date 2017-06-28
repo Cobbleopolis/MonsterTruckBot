@@ -79,6 +79,6 @@ lazy val `monstertruckbot-twitch` = (project in file("modules/twitch")).enablePl
 lazy val `monstertruckbot-common` = (project in file("modules/common")).enablePlugins(PlayScala, BuildInfoPlugin).settings(commonSettings: _*)
     .settings(
         name += "-common",
-        libraryDependencies ++= Seq(jdbc),
+        libraryDependencies ++= Seq(jdbc, cache),
         buildInfoKeys := Seq[BuildInfoKey]("name" -> projectName, "displayName" -> displayName, version, scalaVersion, sbtVersion)
     )

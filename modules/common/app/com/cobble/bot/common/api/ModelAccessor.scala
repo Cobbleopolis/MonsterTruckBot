@@ -1,6 +1,8 @@
 package com.cobble.bot.common.api
 
 import anorm._
+import com.cobble.bot.common.ref.MtrConfigRef
+import play.api.cache._
 import play.api.db.Database
 
 trait ModelAccessor[T <: Model, A] {
@@ -17,10 +19,12 @@ trait ModelAccessor[T <: Model, A] {
     val insertParser: RowParser[A]
 
 
-    def get(id: Long)(implicit db: Database): Option[T] = {
-        db.withConnection(implicit conn => {
-            getQuery.on(idSymbol -> id).as(parser.singleOpt)
-        })
+    def get(id: Long)(implicit db: Database, cache: CacheApi, mtrConfigRef: MtrConfigRef): Option[T] = {
+        cache.getOrElse[Option[T]](s"$tableName.${java.lang.Long.toUnsignedString(id)}", mtrConfigRef.cacheTimeout) {
+            db.withConnection(implicit conn => {
+                getQuery.on(idSymbol -> id).as(parser.singleOpt)
+            })
+        }
     }
 
     def getAll(implicit db: Database): List[T] = {
@@ -41,13 +45,12 @@ trait ModelAccessor[T <: Model, A] {
     }
 
 
-    def insert(model: T)(implicit db: Database): Unit = {
-        db.withConnection(implicit conn => {
-            SQL(insertQuery).on(model.namedParameters: _*).executeInsert(insertParser.singleOpt)
-        })
+    def insert(id: Long, model: T)(implicit db: Database, cache: CacheApi, mtrConfigRef: MtrConfigRef): Unit = {
+        cache.set(s"$tableName.${java.lang.Long.toUnsignedString(id)}", model, mtrConfigRef.cacheTimeout)
+        insert(model.namedParameters: _*)
     }
 
-    def insert(params: NamedParameter*)(implicit db: Database): Unit = {
+    private def insert(params: NamedParameter*)(implicit db: Database): Unit = {
         db.withConnection(implicit conn => {
             SQL(insertQuery).on(params: _*).executeInsert(insertParser.singleOpt)
         })
@@ -75,7 +78,12 @@ trait ModelAccessor[T <: Model, A] {
         }
     }
 
-    def update(id: Long, params: NamedParameter*)(implicit db: Database): Int = {
+    def update(id: Long, model: T)(implicit db: Database, cache: CacheApi, mtrConfigRef: MtrConfigRef): Int = {
+        cache.set(s"$tableName.${java.lang.Long.toUnsignedString(id)}", model, mtrConfigRef.cacheTimeout)
+        update(id, model.namedParameters: _*)
+    }
+
+    private def update(id: Long, params: NamedParameter*)(implicit db: Database): Int = {
         if (params.nonEmpty) {
             val idParam: NamedParameter = idSymbol -> id
             db.withConnection(implicit conn => {
@@ -85,7 +93,8 @@ trait ModelAccessor[T <: Model, A] {
             0
     }
 
-    def delete(id: Long)(implicit db: Database): Int = {
+    def delete(id: Long)(implicit db: Database, cache: CacheApi): Int = {
+        cache.remove(s"$tableName.${java.lang.Long.toUnsignedString(id)}")
         db.withConnection(implicit conn => {
             deleteQuery.on(idSymbol -> id).executeUpdate()
         })
