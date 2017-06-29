@@ -11,9 +11,12 @@ CREATE TABLE filter_settings
     REFERENCES bot_instances
     ON UPDATE CASCADE ON DELETE CASCADE,
   caps_filter_enabled   BOOLEAN DEFAULT FALSE,
+  caps_filter_exemption_level INTEGER DEFAULT 2,
   caps_filter_threshold INTEGER DEFAULT 20,
   links_filter_enabled  BOOLEAN DEFAULT FALSE,
+  links_filter_exemption_level INTEGER DEFAULT 2,
   blacklist_filter_enabled BOOLEAN DEFAULT FALSE,
+  blacklist_filter_exemption_level INTEGER DEFAULT 2,
   blacklist_filter_words TEXT DEFAULT ''
 );
 
