@@ -1,11 +1,12 @@
 package com.cobble.bot.common.api.commands
 
-import com.cobble.bot.common.api.Command
+import com.cobble.bot.common.api.{Command, PermissionLevel}
+import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
 
 trait VersionCommand extends Command {
 
-    val name: String = "version"
+    override val name: String = "version"
 
-    val modOnly: Boolean = false
+    override val permissionLevel: PermissionLevel = PermissionLevel.SUBSCRIBERS
 
 }

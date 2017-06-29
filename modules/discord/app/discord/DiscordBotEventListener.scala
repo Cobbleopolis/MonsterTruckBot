@@ -2,6 +2,8 @@ package discord
 
 import javax.inject.{Inject, Provider}
 
+import com.cobble.bot.common.api.PermissionLevel
+import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
 import com.cobble.bot.common.models.FilterSettings
 import com.cobble.bot.common.ref.MtrConfigRef
 import discord.api.DiscordCommand
@@ -13,7 +15,7 @@ import play.api.cache.CacheApi
 import sx.blah.discord.api.events.EventSubscriber
 import sx.blah.discord.handle.impl.events.ReadyEvent
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
-import sx.blah.discord.handle.obj.IMessage
+import sx.blah.discord.handle.obj.{IGuild, IMessage, IUser}
 
 import scala.collection.JavaConverters._
 
@@ -61,8 +63,22 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
     def onCommandExecutionEvent(event: CommandExecutionEvent): Unit = {
         implicit val message: IMessage = event.getMessage
         val commandOpt: Option[DiscordCommand] = discordCommandRegistry.commands.get(event.getCommand)
-        if (commandOpt.isDefined)
+        if (commandOpt.isDefined && getUserLevel(event.getUser) >= commandOpt.get.permissionLevel) {
             commandOpt.get.execute(event)
+        }
+    }
+
+    def getUserLevel(user: IUser): PermissionLevel = {
+        val guild: IGuild = discordBot.get().client.getGuildByID(config.guildId)
+        val userRoleIds = user.getRolesForGuild(guild).asScala.map(_.getLongID)
+        if (user.getLongID == guild.getOwnerLongID)
+            PermissionLevel.OWNER
+        else if (userRoleIds.contains(config.moderatorRoleId))
+            PermissionLevel.MODERATORS
+        else if (userRoleIds.contains(config.subscriberRoleId))
+            PermissionLevel.SUBSCRIBERS
+        else
+            PermissionLevel.EVERYONE
     }
 
 }

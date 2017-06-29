@@ -12,6 +12,8 @@ class MtrConfigRef @Inject()(implicit conf: Configuration) {
 
     val moderatorRoleId: Long = java.lang.Long.parseUnsignedLong(conf.getString("mtrBot.moderatorRoleId").get)
 
+    val subscriberRoleId: Long = java.lang.Long.parseUnsignedLong(conf.getString("mtrBot.subscriberRoleId").get)
+
     val commandPrefix: String = conf.getString("mtrBot.commandPrefix").getOrElse("!")
 
     val cacheTimeout: Duration = conf.getMilliseconds("mtrBot.cacheTimeout").getOrElse(7200000L).milliseconds

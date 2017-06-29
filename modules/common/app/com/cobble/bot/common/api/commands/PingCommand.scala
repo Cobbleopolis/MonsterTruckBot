@@ -1,11 +1,12 @@
 package com.cobble.bot.common.api.commands
 
-import com.cobble.bot.common.api.Command
+import com.cobble.bot.common.api.{Command, PermissionLevel}
+import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
 
 trait PingCommand extends Command {
 
-    val name: String = "ping"
+    override val name: String = "ping"
 
-    val modOnly: Boolean = false
+    override val permissionLevel: PermissionLevel = PermissionLevel.SUBSCRIBERS
 
 }
