@@ -1,11 +1,12 @@
 package com.cobble.bot.common.api.commands
 
-import com.cobble.bot.common.api.Command
+import com.cobble.bot.common.api.{Command, PermissionLevel}
+import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
 
 trait HelpCommand extends Command {
 
     override val name: String = "mthelp"
 
-    override val modOnly: Boolean = false
+    override val permissionLevel: PermissionLevel = PermissionLevel.EVERYONE
 
 }
