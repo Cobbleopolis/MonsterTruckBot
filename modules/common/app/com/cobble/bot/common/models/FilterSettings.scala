@@ -7,12 +7,12 @@ import com.cobble.bot.common.api.{Model, ModelAccessor, PermissionLevel}
 case class FilterSettings(
                              guildId: Long,
                              capsFilterEnabled: Boolean = false,
-                             capsFilterExemptionLevel: Int = 2,
+                             capsFilterExemptionLevel: Int = PermissionLevel.MODERATORS.id,
                              capsFilterThreshold: Int = 20,
                              linksFilterEnabled: Boolean = false,
-                             linksFilterExemptionLevel: Int = 2,
+                             linksFilterExemptionLevel: Int = PermissionLevel.MODERATORS.id,
                              blacklistFilterEnabled: Boolean = false,
-                             blacklistFilterExemptionLevel: Int = 2,
+                             blacklistFilterExemptionLevel: Int = PermissionLevel.MODERATORS.id,
                              blacklistFilterWords: String = ""
                          ) extends Model {
 
