@@ -1,5 +1,6 @@
 @import sx.blah.discord.handle.obj.IGuild
 @import com.cobble.bot.common.models.FilterSettings
+@import com.cobble.bot.common.api.PermissionLevel
 @import securesocial.core.BasicProfile
 @(guild: IGuild, filterSettingsForm: Form[FilterSettings])(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages, flash: Flash)
 
@@ -29,6 +30,8 @@
     </div>
 }
 
+@permissionLevels = @{ PermissionLevel.values.map(p => p.id.toString -> s"global.permissionLevels.${p.toString.toLowerCase}").toSeq}
+
 @main("Dashboard") {
     <h2>@{guild.getName}</h2>
 
@@ -48,6 +51,11 @@
                 @b3.checkbox(filterSettingsForm("capsFilterEnabled"),
                     '_label -> "dashboard.forms.filters.capsFilter.enabled.label"
                 )
+                @b3.select(filterSettingsForm("capsFilterExemptionLevel"),
+                    options = permissionLevels,
+                    '_label -> "dashboard.forms.filters.capsFilter.exemptionLevel.label",
+                    '_help -> "dashboard.forms.filters.capsFilter.exemptionLevel.help"
+                )
                 @b3.number(filterSettingsForm("capsFilterThreshold"),
                     '_label -> "dashboard.forms.filters.capsFilter.threshold.label",
                     '_help -> "dashboard.forms.filters.capsFilter.threshold.help"
@@ -58,11 +66,21 @@
                 @b3.checkbox(filterSettingsForm("linksFilterEnabled"),
                     '_label -> "dashboard.forms.filters.linksFilter.enabled.label"
                 )
+                @b3.select(filterSettingsForm("linksFilterExemptionLevel"),
+                    options = permissionLevels,
+                    '_label -> "dashboard.forms.filters.linksFilter.exemptionLevel.label",
+                    '_help -> "dashboard.forms.filters.linksFilter.exemptionLevel.help"
+                )
             </fieldset>
             <fieldset>
                 <legend>@messages("dashboard.forms.filters.blacklistFilter.title")</legend>
                 @b3.checkbox(filterSettingsForm("blacklistFilterEnabled"),
                     '_label -> "dashboard.forms.filters.blacklistFilter.enabled.label"
+                )
+                @b3.select(filterSettingsForm("blacklistFilterExemptionLevel"),
+                    options = permissionLevels,
+                    '_label -> "dashboard.forms.filters.blacklistFilter.exemptionLevel.label",
+                    '_help -> "dashboard.forms.filters.blacklistFilter.exemptionLevel.help"
                 )
                 @b3.textarea(filterSettingsForm("blacklistFilterWords"),
                     '_label -> "dashboard.forms.filters.blacklistFilter.words.label",

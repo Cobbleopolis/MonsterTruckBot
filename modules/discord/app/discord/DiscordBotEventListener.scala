@@ -50,11 +50,12 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
 
     def filterMessage(message: IMessage, filterSettings: Option[FilterSettings]): Unit = {
         if (filterSettings.isDefined) {
-            if (filterSettings.get.capsFilterEnabled)
+            val userPermissionLevel: PermissionLevel = getUserPermissionLevel(message.getAuthor)
+            if (filterSettings.get.capsFilterEnabled && userPermissionLevel < filterSettings.get.getCapsFilterExemptionLevel)
                 capsFilter.filterMessage(message, filterSettings.get)
-            if (filterSettings.get.linksFilterEnabled)
+            if (filterSettings.get.linksFilterEnabled && userPermissionLevel < filterSettings.get.getLinksFilterExemptionLevel)
                 linksFilter.filterMessage(message, filterSettings.get)
-            if (filterSettings.get.blacklistFilterEnabled)
+            if (filterSettings.get.blacklistFilterEnabled && userPermissionLevel < filterSettings.get.getBlackListFilterExemptionLevel)
                 blacklistFilter.filterMessage(message, filterSettings.get)
         }
     }
@@ -63,12 +64,12 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
     def onCommandExecutionEvent(event: CommandExecutionEvent): Unit = {
         implicit val message: IMessage = event.getMessage
         val commandOpt: Option[DiscordCommand] = discordCommandRegistry.commands.get(event.getCommand)
-        if (commandOpt.isDefined && getUserLevel(event.getUser) >= commandOpt.get.permissionLevel) {
+        if (commandOpt.isDefined && getUserPermissionLevel(event.getUser) >= commandOpt.get.permissionLevel) {
             commandOpt.get.execute(event)
         }
     }
 
-    def getUserLevel(user: IUser): PermissionLevel = {
+    def getUserPermissionLevel(user: IUser): PermissionLevel = {
         val guild: IGuild = discordBot.get().client.getGuildByID(config.guildId)
         val userRoleIds = user.getRolesForGuild(guild).asScala.map(_.getLongID)
         if (user.getLongID == guild.getOwnerLongID)
