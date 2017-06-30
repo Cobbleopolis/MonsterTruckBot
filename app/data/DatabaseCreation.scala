@@ -2,7 +2,7 @@ package data
 
 import javax.inject.{Inject, Singleton}
 
-import com.cobble.bot.common.models.{BotInstance, FilterSettings}
+import com.cobble.bot.common.models.{BotInstance, CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
 import play.api.Configuration
 import play.api.db.Database

@@ -50,7 +50,7 @@ trait ModelAccessor[T <: Model, A] {
         insert(model.namedParameters: _*)
     }
 
-    private def insert(params: NamedParameter*)(implicit db: Database): Unit = {
+    def insert(params: NamedParameter*)(implicit db: Database): Unit = {
         db.withConnection(implicit conn => {
             SQL(insertQuery).on(params: _*).executeInsert(insertParser.singleOpt)
         })
@@ -83,7 +83,7 @@ trait ModelAccessor[T <: Model, A] {
         update(id, model.namedParameters: _*)
     }
 
-    private def update(id: Long, params: NamedParameter*)(implicit db: Database): Int = {
+    def update(id: Long, params: NamedParameter*)(implicit db: Database): Int = {
         if (params.nonEmpty) {
             val idParam: NamedParameter = idSymbol -> id
             db.withConnection(implicit conn => {
