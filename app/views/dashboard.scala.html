@@ -1,8 +1,9 @@
 @import sx.blah.discord.handle.obj.IGuild
-@import com.cobble.bot.common.models.FilterSettings
+@import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
 @import com.cobble.bot.common.api.PermissionLevel
 @import securesocial.core.BasicProfile
-@(guild: IGuild, filterSettingsForm: Form[FilterSettings])(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages, flash: Flash)
+@import com.cobble.bot.common.ref.MtrConfigRef
+@(guild: IGuild, filterSettingsForm: Form[FilterSettings], newCommandForm: Form[CustomCommand])(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages, flash: Flash, mtrConfigRef: MtrConfigRef)
 
 @implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-10") }
 
@@ -35,10 +36,10 @@
 @main("Dashboard") {
     <h2>@{guild.getName}</h2>
 
-    @if(!flash.isEmpty) {
-        <div class="alert alert-dismissible alert-success">
+    @for(flashType <- flash.data) {
+        <div class="alert alert-dismissible alert-@flashType._1">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            @flash.get("success")
+            @flash.get(flashType._1)
         </div>
     }
 
@@ -91,4 +92,49 @@
             @b3.submit('class -> "btn btn-primary") {@messages("global.forms.save")}
         }
     }
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">@messages("dashboard.forms.customCommands.title")</h3>
+        </div>
+        <div class="panel-body">
+
+            @if(newCommandForm.hasGlobalErrors) {
+                <div class="alert alert-dismissible alert-danger">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Oh snap!</strong>
+                    <ul>
+                     @for(error <- newCommandForm.globalErrors) {
+                        <li>@messages(error.messages, error.args)</li>
+                    }
+                    </ul>
+                </div>
+            }
+
+            @b3.form(routes.Dashboard.submitNewCommand()) {
+                <fieldset>
+                    <legend>@messages("dashboard.forms.customCommands.newCommand.title")</legend>
+                    @b3.inputWrapped( "text", newCommandForm("commandName"),
+                        '_label -> "dashboard.forms.customCommands.newCommand.commandName.label",
+                        'placeholder -> "dashboard.forms.customCommands.newCommand.commandName.placeholder"
+                    ) { input =>
+                        <div class="input-group">
+                            <span class="input-group-addon">@mtrConfigRef.commandPrefix</span>
+                            @input
+                        </div>
+                    }
+                    @b3.textarea(newCommandForm("commandContent"),
+                        '_label -> "dashboard.forms.customCommands.newCommand.commandContent.label",
+                        'placeholder -> "dashboard.forms.customCommands.newCommand.commandContent.placeholder"
+                    )
+                    @b3.select(newCommandForm("permissionLevel"),
+                        options = permissionLevels,
+                        '_label -> "dashboard.forms.customCommands.newCommand.permissionLevel.label",
+                        '_help -> "dashboard.forms.customCommands.newCommand.permissionLevel.help"
+                    )
+                    @b3.submit('class -> "btn btn-success") {@messages("global.forms.save")}
+                </fieldset>
+            }
+        </div>
+    </div>
 }
