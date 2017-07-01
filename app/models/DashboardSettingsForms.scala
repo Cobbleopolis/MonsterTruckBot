@@ -27,9 +27,9 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
     val newCommandForm: Form[CustomCommand] = Form(
         mapping(
             "guildId" -> ignored(mtrConfigRef.guildId),
-            "commandName" -> text,
+            "commandName" -> nonEmptyText,
             "permissionLevel" -> number,
-            "commandContent" -> text
+            "commandContent" -> nonEmptyText
         )(CustomCommand.apply)(CustomCommand.unapply)
     )
 
