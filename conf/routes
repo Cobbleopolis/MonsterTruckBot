@@ -17,8 +17,11 @@ GET         /messages                          controllers.Application.jsMessage
 GET         /messages/:page                    controllers.Application.jsMessages(page)
 
 GET         /dashboard                         controllers.Dashboard.dashboard()
-POST        /dashboard/filters                 controllers.Dashboard.submitFilterSettings()
+GET         /dashboard/filterSettings          controllers.Dashboard.filterSettings()
+POST        /dashboard/filterSettings          controllers.Dashboard.submitFilterSettings()
+GET         /dashboard/customCommands          controllers.Dashboard.customCommands()
 POST        /dashboard/newCustomCommand        controllers.Dashboard.submitNewCommand()
+GET         /dashboard/newCustomCommand        controllers.Dashboard.newCustomCommandRedirect()
 
 ->          /discord                           discord.Routes
 

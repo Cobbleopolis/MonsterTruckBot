@@ -33,4 +33,6 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
         )(CustomCommand.apply)(CustomCommand.unapply)
     )
 
+    val existingCommandFormError: FormError = FormError("commandName", "dashboard.forms.customCommands.newCommand.errors.commandExists")
+
 }

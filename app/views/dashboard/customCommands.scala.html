@@ -1,0 +1,41 @@
+@import com.cobble.bot.common.models.CustomCommand
+@import sx.blah.discord.handle.obj.IGuild
+@import securesocial.core.BasicProfile
+@import com.cobble.bot.common.ref.MtrConfigRef
+@import com.cobble.bot.common.api.PermissionLevel
+@import views.html.component.formErrors
+@(guild: IGuild, newCommandForm: Form[CustomCommand])(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages, flash: Flash, mtrConfigRef: MtrConfigRef)
+
+@implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-10") }
+
+@dashboardPage(guild, "customCommands") {
+
+    @formErrors(newCommandForm.asInstanceOf[Form[Any]])
+
+    @b3.form(routes.Dashboard.submitNewCommand()) {
+        <fieldset>
+            <legend>@messages("dashboard.forms.customCommands.newCommand.title")</legend>
+            @b3.inputWrapped("text", newCommandForm("commandName"),
+                '_label -> "dashboard.forms.customCommands.newCommand.commandName.label",
+                'placeholder -> "dashboard.forms.customCommands.newCommand.commandName.placeholder"
+            ) { input =>
+                <div class="input-group">
+                    <span class="input-group-addon">@mtrConfigRef.commandPrefix</span>
+                    @input
+                </div>
+            }
+            @b3.textarea(newCommandForm("commandContent"),
+                '_label -> "dashboard.forms.customCommands.newCommand.commandContent.label",
+                'placeholder -> "dashboard.forms.customCommands.newCommand.commandContent.placeholder"
+            )
+            @b3.select(newCommandForm("permissionLevel"),
+                options = PermissionLevel.map.toSeq,
+                '_label -> "dashboard.forms.customCommands.newCommand.permissionLevel.label",
+                '_help -> "dashboard.forms.customCommands.newCommand.permissionLevel.help"
+            )
+            @b3.submit('class -> "btn btn-success") {
+                @messages("global.forms.save")
+            }
+        </fieldset>
+    }
+}

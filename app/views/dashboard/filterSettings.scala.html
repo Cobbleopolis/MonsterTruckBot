@@ -1,0 +1,56 @@
+@import com.cobble.bot.common.models.FilterSettings
+@import sx.blah.discord.handle.obj.IGuild
+@import securesocial.core.BasicProfile
+@import com.cobble.bot.common.ref.MtrConfigRef
+@import com.cobble.bot.common.api.PermissionLevel
+@(guild: IGuild, filterSettingsForm: Form[FilterSettings])(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages, flash: Flash, mtrConfigRef: MtrConfigRef)
+
+@implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-10") }
+
+@dashboardPage(guild, "filterSettings") {
+    @b3.form(routes.Dashboard.submitFilterSettings()) {
+        <fieldset>
+            <legend>@messages("dashboard.forms.filters.capsFilter.title")</legend>
+            @b3.checkbox(filterSettingsForm("capsFilterEnabled"),
+                '_label -> "dashboard.forms.filters.capsFilter.enabled.label"
+            )
+            @b3.select(filterSettingsForm("capsFilterExemptionLevel"),
+                options = PermissionLevel.map.toSeq,
+                '_label -> "dashboard.forms.filters.capsFilter.exemptionLevel.label",
+                '_help -> "dashboard.forms.filters.capsFilter.exemptionLevel.help"
+            )
+            @b3.number(filterSettingsForm("capsFilterThreshold"),
+                '_label -> "dashboard.forms.filters.capsFilter.threshold.label",
+                '_help -> "dashboard.forms.filters.capsFilter.threshold.help"
+            )
+        </fieldset>
+        <fieldset>
+            <legend>@messages("dashboard.forms.filters.linksFilter.title")</legend>
+            @b3.checkbox(filterSettingsForm("linksFilterEnabled"),
+                '_label -> "dashboard.forms.filters.linksFilter.enabled.label"
+            )
+            @b3.select(filterSettingsForm("linksFilterExemptionLevel"),
+                options = PermissionLevel.map.toSeq,
+                '_label -> "dashboard.forms.filters.linksFilter.exemptionLevel.label",
+                '_help -> "dashboard.forms.filters.linksFilter.exemptionLevel.help"
+            )
+        </fieldset>
+        <fieldset>
+            <legend>@messages("dashboard.forms.filters.blacklistFilter.title")</legend>
+            @b3.checkbox(filterSettingsForm("blacklistFilterEnabled"),
+                '_label -> "dashboard.forms.filters.blacklistFilter.enabled.label"
+            )
+            @b3.select(filterSettingsForm("blacklistFilterExemptionLevel"),
+                options = PermissionLevel.map.toSeq,
+                '_label -> "dashboard.forms.filters.blacklistFilter.exemptionLevel.label",
+                '_help -> "dashboard.forms.filters.blacklistFilter.exemptionLevel.help"
+            )
+            @b3.textarea(filterSettingsForm("blacklistFilterWords"),
+                '_label -> "dashboard.forms.filters.blacklistFilter.words.label",
+                '_help -> "dashboard.forms.filters.blacklistFilter.words.help",
+                'rows -> 4
+            )
+        </fieldset>
+        @b3.submit('class -> "btn btn-primary") {@messages("global.forms.save")}
+    }
+}

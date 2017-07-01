@@ -1,0 +1,29 @@
+@import com.cobble.bot.common.ref.MtrConfigRef
+@import securesocial.core.BasicProfile
+@import sx.blah.discord.handle.obj.IGuild
+@(guild: IGuild, currentPage: String)(content: Html)(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages, flash: Flash, mtrConfigRef: MtrConfigRef)
+
+    @main("Dashboard") {
+        <h2>@{
+            guild.getName
+        }</h2>
+
+        @for(flashType <- flash.data) {
+            <div class="alert alert-dismissible alert-@flashType._1">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                @flash.get(flashType._1)
+            </div>
+        }
+
+        <ul class="nav nav-tabs">
+            <li role="presentation" @if(currentPage == "") {class="active"}><a href="/dashboard">@messages("dashboard.coreSettings")</a></li>
+            @for(page <- Dashboard.dashboardPages) {
+                <li role="presentation" @if(currentPage == page._1) {class="active"}><a href="/dashboard/@page._1">@messages(page._2)</a></li>
+            }
+        </ul>
+
+        <br>
+
+        @content
+
+    }
