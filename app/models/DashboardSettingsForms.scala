@@ -2,9 +2,9 @@ package models
 
 import javax.inject.{Inject, Singleton}
 
-import com.cobble.bot.common.models.FilterSettings
+import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
-import play.api.data.Form
+import play.api.data.{Form, FormError}
 import play.api.data.Forms._
 
 @Singleton
@@ -23,5 +23,22 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
             "blacklistFilterWords" -> text
         )(FilterSettings.apply)(FilterSettings.unapply)
     )
+
+    val commandForm: Form[CustomCommand] = Form(
+        mapping(
+            "guildId" -> ignored(mtrConfigRef.guildId),
+            "commandName" -> nonEmptyText,
+            "permissionLevel" -> number,
+            "commandContent" -> nonEmptyText
+        )(CustomCommand.apply)(CustomCommand.unapply)
+    )
+
+    val deleteCommandForm = Form(
+        single(
+            "commandName" -> nonEmptyText
+        )
+    )
+
+    val existingCommandFormError: FormError = FormError("commandName", "dashboard.forms.customCommands.newCommand.errors.commandExists")
 
 }

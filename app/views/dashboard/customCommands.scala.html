@@ -1,0 +1,75 @@
+@import com.cobble.bot.common.api.PermissionLevel
+@import com.cobble.bot.common.models.CustomCommand
+@import com.cobble.bot.common.ref.MtrConfigRef
+@import securesocial.core.BasicProfile
+@import sx.blah.discord.handle.obj.IGuild
+@import views.html.component.formErrors
+@(guild: IGuild, newCommandForm: Form[CustomCommand], commandForms: List[Form[CustomCommand]])(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages, flash: Flash, mtrConfigRef: MtrConfigRef)
+
+@implicitFieldConstructor = @{
+    b3.horizontal.fieldConstructor("col-md-2", "col-md-10")
+}
+
+@dashboardPage(guild, "customCommands"){
+
+} {
+
+    @formErrors(newCommandForm.asInstanceOf[Form[Any]])
+
+    @b3.form(routes.Dashboard.submitNewCommand()) {
+        <fieldset>
+            <legend>@messages("dashboard.forms.customCommands.newCommand.title")</legend>
+            @b3.inputWrapped("text", newCommandForm("commandName"),
+                '_label -> "dashboard.forms.customCommands.newCommand.commandName.label",
+                'placeholder -> "dashboard.forms.customCommands.newCommand.commandName.placeholder"
+            ) { input =>
+                <div class="input-group">
+                    <span class="input-group-addon">@mtrConfigRef.commandPrefix</span>
+                    @input
+                </div>
+            }
+            @b3.textarea(newCommandForm("commandContent"),
+                '_label -> "dashboard.forms.customCommands.newCommand.commandContent.label",
+                'placeholder -> "dashboard.forms.customCommands.newCommand.commandContent.placeholder"
+            )
+            @b3.select(newCommandForm("permissionLevel"),
+                options = PermissionLevel.map.toSeq,
+                '_label -> "dashboard.forms.customCommands.newCommand.permissionLevel.label",
+                '_help -> "dashboard.forms.customCommands.newCommand.permissionLevel.help"
+            )
+            @b3.submit('class -> "btn btn-success") {
+                @messages("global.forms.save")
+            }
+        </fieldset>
+    }
+
+    <fieldset>
+        <legend>@messages("dashboard.forms.customCommands.editCommand.title")</legend>
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>@messages("dashboard.forms.customCommands.editCommand.commandName.label")</th>
+                    <th>@messages("dashboard.forms.customCommands.editCommand.commandContent.label")</th>
+                    <th>@messages("dashboard.forms.customCommands.editCommand.permissionLevel.label")</th>
+                    <th>@messages("dashboard.forms.customCommands.editCommand.actions.label")</th>
+                </tr>
+            </thead>
+            <tbody>
+            @for(commandForm <- commandForms) {
+                <tr>
+                    @b3.inline.form(routes.Dashboard.submitEditCommand()) { implicit ifc =>
+                        @b3.hidden(commandForm("commandName").name, commandForm("commandName").value.get)
+                        <td>@mtrConfigRef.commandPrefix@commandForm("commandName").value.get</td>
+                        <td>@b3.textarea(commandForm("commandContent"))</td>
+                        <td>@b3.select(commandForm("permissionLevel"), options = PermissionLevel.map.toSeq)</td>
+                        <td>
+                            <button type="submit" class="btn btn-info" >@messages("global.forms.edit")</button>
+                            <a href="@routes.Dashboard.submitDeleteCommand(commandForm("commandName").value.get)" class="btn btn-danger">@messages("global.forms.delete")</a>
+                        </td>
+                    }
+                </tr>
+            }
+            </tbody>
+        </table>
+    </fieldset>
+}

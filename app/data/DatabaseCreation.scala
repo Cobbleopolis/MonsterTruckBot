@@ -5,8 +5,8 @@ import javax.inject.{Inject, Singleton}
 import com.cobble.bot.common.models.{BotInstance, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
 import play.api.Configuration
-import play.api.db.Database
 import play.api.cache.CacheApi
+import play.api.db.Database
 
 @Singleton
 class DatabaseCreation @Inject()(implicit db: Database, conf: Configuration, cache: CacheApi, mtrConfigRef: MtrConfigRef) {

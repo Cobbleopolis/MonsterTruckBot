@@ -1,0 +1,20 @@
+@(form: Form[Any])(implicit messages: Messages)
+
+@if(form.hasGlobalErrors) {
+    <div class="alert alert-dismissible alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>@messages("error.ohSnap")</strong>
+        <ul>
+        @for(error <- form.globalErrors) {
+            <li>@messages(error.messages, error.args)</li>
+        }
+        </ul>
+    </div>
+}
+
+@if(form.hasErrors) {
+    <div class="alert alert-dismissible alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>@messages("error.ohSnap")</strong> @messages("error.formSubmission")
+    </div>
+}

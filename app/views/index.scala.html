@@ -1,6 +1,8 @@
 @import securesocial.core.BasicProfile
 @()(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages)
 
-@main(buildinfo.BuildInfo.displayName) {
+@main(buildinfo.BuildInfo.displayName){
+
+}{
     @messages("index.welcome")
 }

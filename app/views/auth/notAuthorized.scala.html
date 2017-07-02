@@ -1,7 +1,9 @@
 @import securesocial.core.BasicProfile
 @()(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages)
 
-@main(messages("error.auth.notAuthorized.page")) {
+@main(messages("error.auth.notAuthorized.page")){
+
+} {
     <div class="panel panel-danger">
         <div class="panel-heading">
             <h3 class="panel-title">@messages("error.auth.notAuthorized.page")</h3>
