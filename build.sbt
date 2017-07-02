@@ -46,6 +46,7 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
         packageSummary in Linux := s"$displayName server",
         packageDescription := s"A server that runs the $displayName website, Discord bot and, Twitch bot",
         debianPackageDependencies in Debian ++= Seq("default-jre | java6-runtime"),
+        bashScriptExtraDefines += """addJava "-Dconfig.file=${app_home}/../conf/production.conf"""",
         doc in Compile := (doc in ScalaUnidoc).value,
         target in unidoc in ScalaUnidoc := baseDirectory.value / "docs",
         scalacOptions in Compile in doc ++= Seq(
