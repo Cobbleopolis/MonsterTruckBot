@@ -27,7 +27,7 @@ object CustomCommand extends ModelAccessor[CustomCommand, Long] {
 
     override lazy val deleteQuery: SqlQuery = SQL(s"DELETE FROM $tableName WHERE ${idSymbol.name} = {${idSymbol.name}} AND command_name = {command_name}")
 
-    val getByGuildIdQuery: SqlQuery = SQL(s"SELECT * FROM $tableName WHERE ${idSymbol.name} = {${idSymbol.name}} ORDER BY command_name")
+    val getByGuildIdQuery: SqlQuery = SQL(s"SELECT * FROM $tableName WHERE ${idSymbol.name} = {${idSymbol.name}} ORDER BY command_name ASC")
 
     def get(id: Long, name: String)(implicit db: Database, cache: CacheApi, mtrConfigRef: MtrConfigRef): Option[CustomCommand] = {
         cache.getOrElse(s"$tableName.${java.lang.Long.toUnsignedString(id)}.$name", mtrConfigRef.cacheTimeout) {
