@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import auth.HasPermission
-import com.cobble.bot.common.models.{BotInstance, CustomCommand, FilterSettings}
+import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
 import discord.DiscordBot
 import models.DashboardSettingsForms
@@ -97,13 +97,19 @@ class Dashboard @Inject()(implicit db: Database, cache: CacheApi, webJarAssets: 
         val commandForms = CustomCommand.getByGuildId(config.guildId).map(dashboardSettingsForms.commandForm.fill)
         dashboardSettingsForms.commandForm.bindFromRequest().fold(
             formWithErrors => {
-                BadRequest(views.html.dashboard.customCommands(guild, formWithErrors, commandForms.map(form => if(form("commandName").value == formWithErrors("commandName").value) formWithErrors else form)))
+                BadRequest(views.html.dashboard.customCommands(guild, dashboardSettingsForms.commandForm, commandForms.map(form => if (form("commandName").value == formWithErrors("commandName").value) formWithErrors else form)))
             },
             editCustomCommand => {
                 CustomCommand.update(editCustomCommand)
                 Redirect(routes.Dashboard.customCommands()).flashing("success" -> messages("dashboard.forms.customCommands.editCommand.saved", config.commandPrefix, editCustomCommand.commandName))
             }
         )
+    }
+
+    def submitDeleteCommand(commandName: String): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
+        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+        CustomCommand.delete(config.guildId, commandName)
+        Redirect(routes.Dashboard.customCommands()).flashing("success" -> messages("dashboard.forms.customCommands.deleteCommand.commandDeleted", config.commandPrefix, commandName))
     }
 
     override def messagesApi: MessagesApi = messages

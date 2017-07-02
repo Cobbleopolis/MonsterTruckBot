@@ -7,7 +7,9 @@
 
 @implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-10") }
 
-@dashboardPage(guild, "filterSettings") {
+@dashboardPage(guild, "filterSettings"){
+
+} {
     @b3.form(routes.Dashboard.submitFilterSettings()) {
         <fieldset>
             <legend>@messages("dashboard.forms.filters.capsFilter.title")</legend>

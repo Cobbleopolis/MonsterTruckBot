@@ -3,35 +3,38 @@
 # ~~~~
 
 # Home page
-GET         /                                     controllers.Application.index
+GET         /                                             controllers.Application.index
 
-GET         /login                                @securesocial.controllers.ProviderController.authenticate(provider: String = "discord", redirectTo: Option[String])
-POST        /login                                @securesocial.controllers.ProviderController.authenticateByPost(provider: String = "discord", redirectTo: Option[String])
+GET         /robots.txt                                   controllers.Assets.at(path = "/public", file = "robots.txt")
 
-GET         /logout                               @securesocial.controllers.LoginPage.logout
+GET         /login                                        @securesocial.controllers.ProviderController.authenticate(provider: String = "discord", redirectTo: Option[String])
+POST        /login                                        @securesocial.controllers.ProviderController.authenticateByPost(provider: String = "discord", redirectTo: Option[String])
 
-GET         /authenticate/:provider               @securesocial.controllers.ProviderController.authenticate(provider, redirectTo: Option[String])
-POST        /authenticate/:provider               @securesocial.controllers.ProviderController.authenticateByPost(provider, redirectTo: Option[String])
+GET         /logout                                       @securesocial.controllers.LoginPage.logout
 
-GET         /messages                             controllers.Application.jsMessages(page = "")
-GET         /messages/:page                       controllers.Application.jsMessages(page)
+GET         /authenticate/:provider                       @securesocial.controllers.ProviderController.authenticate(provider, redirectTo: Option[String])
+POST        /authenticate/:provider                       @securesocial.controllers.ProviderController.authenticateByPost(provider, redirectTo: Option[String])
 
-GET         /dashboard                            controllers.Dashboard.dashboard()
-GET         /dashboard/filterSettings             controllers.Dashboard.filterSettings()
-POST        /dashboard/filterSettings             controllers.Dashboard.submitFilterSettings()
-GET         /dashboard/customCommands             controllers.Dashboard.customCommands()
-POST        /dashboard/customCommands/new         controllers.Dashboard.submitNewCommand()
-GET         /dashboard/customCommands/new         controllers.Dashboard.customCommandRedirect()
-POST        /dashboard/customCommands/edit        controllers.Dashboard.submitEditCommand()
-GET         /dashboard/customCommands/edit        controllers.Dashboard.customCommandRedirect()
+GET         /messages                                     controllers.Application.jsMessages(page = "")
+GET         /messages/:page                               controllers.Application.jsMessages(page)
 
-->          /discord                              discord.Routes
+GET         /dashboard                                    controllers.Dashboard.dashboard()
+GET         /dashboard/filterSettings                     controllers.Dashboard.filterSettings()
+POST        /dashboard/filterSettings                     controllers.Dashboard.submitFilterSettings()
+GET         /dashboard/customCommands                     controllers.Dashboard.customCommands()
+POST        /dashboard/customCommands/new                 controllers.Dashboard.submitNewCommand()
+GET         /dashboard/customCommands/new                 controllers.Dashboard.customCommandRedirect()
+POST        /dashboard/customCommands/edit                controllers.Dashboard.submitEditCommand()
+GET         /dashboard/customCommands/edit                controllers.Dashboard.customCommandRedirect()
+GET         /dashboard/customCommands/delete/:name        controllers.Dashboard.submitDeleteCommand(name: String)
+
+->          /discord                                      discord.Routes
 
 
 
-GET         /webjars/*file                        controllers.WebJarAssets.at(file)
+GET         /webjars/*file                                controllers.WebJarAssets.at(file)
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                         controllers.Assets.at(path="/public", file)
+GET         /assets/*file                                 controllers.Assets.at(path="/public", file)
 
     

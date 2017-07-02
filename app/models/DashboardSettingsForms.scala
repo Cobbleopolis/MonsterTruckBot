@@ -33,6 +33,12 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
         )(CustomCommand.apply)(CustomCommand.unapply)
     )
 
+    val deleteCommandForm = Form(
+        single(
+            "commandName" -> nonEmptyText
+        )
+    )
+
     val existingCommandFormError: FormError = FormError("commandName", "dashboard.forms.customCommands.newCommand.errors.commandExists")
 
 }

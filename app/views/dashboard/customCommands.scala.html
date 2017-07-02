@@ -10,7 +10,9 @@
     b3.horizontal.fieldConstructor("col-md-2", "col-md-10")
 }
 
-@dashboardPage(guild, "customCommands") {
+@dashboardPage(guild, "customCommands"){
+
+} {
 
     @formErrors(newCommandForm.asInstanceOf[Form[Any]])
 
@@ -60,7 +62,10 @@
                         <td>@mtrConfigRef.commandPrefix@commandForm("commandName").value.get</td>
                         <td>@b3.textarea(commandForm("commandContent"))</td>
                         <td>@b3.select(commandForm("permissionLevel"), options = PermissionLevel.map.toSeq)</td>
-                        <td>@b3.submit('class -> "btn btn-warning") {@messages("global.forms.edit")}</td>
+                        <td>
+                            <button type="submit" class="btn btn-info" >@messages("global.forms.edit")</button>
+                            <a href="@routes.Dashboard.submitDeleteCommand(commandForm("commandName").value.get)" class="btn btn-danger">@messages("global.forms.delete")</a>
+                        </td>
                     }
                 </tr>
             }
