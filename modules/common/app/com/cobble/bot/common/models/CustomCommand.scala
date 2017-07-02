@@ -27,6 +27,8 @@ object CustomCommand extends ModelAccessor[CustomCommand, Long] {
 
     override lazy val deleteQuery: SqlQuery = SQL(s"DELETE FROM $tableName WHERE ${idSymbol.name} = {${idSymbol.name}} AND command_name = {command_name}")
 
+    val getByGuildIdQuery: SqlQuery = SQL(s"SELECT * FROM $tableName WHERE ${idSymbol.name} = {${idSymbol.name}}")
+
     def get(id: Long, name: String)(implicit db: Database, cache: CacheApi, mtrConfigRef: MtrConfigRef): Option[CustomCommand] = {
         cache.getOrElse(s"$tableName.${java.lang.Long.toUnsignedString(id)}.$name", mtrConfigRef.cacheTimeout) {
             db.withConnection(implicit conn => {
@@ -35,12 +37,22 @@ object CustomCommand extends ModelAccessor[CustomCommand, Long] {
         }
     }
 
+    def getByGuildId(id: Long)(implicit db: Database, cache: CacheApi, mtrConfigRef: MtrConfigRef): List[CustomCommand] = {
+        cache.getOrElse(s"$tableName.${java.lang.Long.toUnsignedString(id)}", mtrConfigRef.cacheTimeout) {
+            db.withConnection(implicit conn => {
+                getByGuildIdQuery.on(idSymbol -> id).as(parser.*)
+            })
+        }
+    }
+
     def insert(customCommand: CustomCommand)(implicit db: Database, cache: CacheApi, mtrConfigRef: MtrConfigRef): Unit = {
+        cache.remove(s"$tableName.${java.lang.Long.toUnsignedString(mtrConfigRef.guildId)}")
         cache.set(s"$tableName.${java.lang.Long.toUnsignedString(customCommand.guildId)}.${customCommand.commandName}", customCommand, mtrConfigRef.cacheTimeout)
         insert(customCommand.namedParameters: _*)
     }
 
     def update(customCommand: CustomCommand)(implicit db: Database, cache: CacheApi, mtrConfigRef: MtrConfigRef): Int = {
+        cache.remove(s"$tableName.${java.lang.Long.toUnsignedString(mtrConfigRef.guildId)}")
         cache.set(s"$tableName.${java.lang.Long.toUnsignedString(customCommand.guildId)}.${customCommand.commandName}", customCommand, mtrConfigRef.cacheTimeout)
         update(customCommand.guildId, customCommand.commandName, customCommand.namedParameters: _*)
     }
@@ -56,7 +68,8 @@ object CustomCommand extends ModelAccessor[CustomCommand, Long] {
             0
     }
 
-    def delete(guildId: Long, name: String)(implicit db: Database, cache: CacheApi): Int = {
+    def delete(guildId: Long, name: String)(implicit db: Database, cache: CacheApi, mtrConfigRef: MtrConfigRef): Int = {
+        cache.remove(s"$tableName.${java.lang.Long.toUnsignedString(guildId)}")
         cache.remove(s"$tableName.${java.lang.Long.toUnsignedString(guildId)}.$name")
         db.withConnection(implicit conn => {
             deleteQuery.on(idSymbol -> guildId, 'command_name -> name).executeUpdate()

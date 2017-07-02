@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import auth.HasPermission
-import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
+import com.cobble.bot.common.models.{BotInstance, CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
 import discord.DiscordBot
 import models.DashboardSettingsForms
@@ -61,30 +61,47 @@ class Dashboard @Inject()(implicit db: Database, cache: CacheApi, webJarAssets: 
     def customCommands(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
         implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
-        if (guild != null)
-            Ok(views.html.dashboard.customCommands(guild, dashboardSettingsForms.newCommandForm))
-        else
+        if (guild != null) {
+            val commandForms = CustomCommand.getByGuildId(config.guildId).map(dashboardSettingsForms.commandForm.fill)
+            Ok(views.html.dashboard.customCommands(guild, dashboardSettingsForms.commandForm, commandForms))
+        } else
             Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
     }
 
-    def newCustomCommandRedirect(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
+    def customCommandRedirect(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
         Redirect(routes.Dashboard.customCommands())
     }
 
     def submitNewCommand(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
         implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
-        dashboardSettingsForms.newCommandForm.bindFromRequest().fold(
+        val commandForms = CustomCommand.getByGuildId(config.guildId).map(dashboardSettingsForms.commandForm.fill)
+        dashboardSettingsForms.commandForm.bindFromRequest().fold(
             formWithErrors => {
-                BadRequest(views.html.dashboard.customCommands(guild, formWithErrors))
+                BadRequest(views.html.dashboard.customCommands(guild, formWithErrors, commandForms))
             },
             newCustomCommand => {
                 if (CustomCommand.get(config.guildId, newCustomCommand.commandName).isDefined)
-                    BadRequest(views.html.dashboard.customCommands(guild, dashboardSettingsForms.newCommandForm.fill(newCustomCommand).withError(dashboardSettingsForms.existingCommandFormError)))
+                    BadRequest(views.html.dashboard.customCommands(guild, dashboardSettingsForms.commandForm.fill(newCustomCommand).withError(dashboardSettingsForms.existingCommandFormError), commandForms))
                 else {
                     CustomCommand.insert(newCustomCommand)
                     Redirect(routes.Dashboard.customCommands()).flashing("success" -> messages("dashboard.forms.customCommands.newCommand.saved"))
                 }
+            }
+        )
+    }
+
+    def submitEditCommand(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
+        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+        val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
+        val commandForms = CustomCommand.getByGuildId(config.guildId).map(dashboardSettingsForms.commandForm.fill)
+        dashboardSettingsForms.commandForm.bindFromRequest().fold(
+            formWithErrors => {
+                BadRequest(views.html.dashboard.customCommands(guild, formWithErrors, commandForms.map(form => if(form("commandName").value == formWithErrors("commandName").value) formWithErrors else form)))
+            },
+            editCustomCommand => {
+                CustomCommand.update(editCustomCommand)
+                Redirect(routes.Dashboard.customCommands()).flashing("success" -> messages("dashboard.forms.customCommands.editCommand.saved", config.commandPrefix, editCustomCommand.commandName))
             }
         )
     }
