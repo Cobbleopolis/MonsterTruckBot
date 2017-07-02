@@ -57,7 +57,7 @@
                 <tr>
                     @b3.inline.form(routes.Dashboard.submitEditCommand()) { implicit ifc =>
                         @b3.hidden(commandForm("commandName").name, commandForm("commandName").value.get)
-                        <td>@commandForm("commandName").value.get</td>
+                        <td>@mtrConfigRef.commandPrefix@commandForm("commandName").value.get</td>
                         <td>@b3.textarea(commandForm("commandContent"))</td>
                         <td>@b3.select(commandForm("permissionLevel"), options = PermissionLevel.map.toSeq)</td>
                         <td>@b3.submit('class -> "btn btn-warning") {@messages("global.forms.edit")}</td>
