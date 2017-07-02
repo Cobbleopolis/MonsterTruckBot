@@ -1,6 +1,7 @@
 package com.cobble.bot.common.models
 
 import anorm._
+import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
 import com.cobble.bot.common.api.{Model, ModelAccessor, PermissionLevel}
 import com.cobble.bot.common.ref.MtrConfigRef
 import play.api.cache.CacheApi
@@ -9,6 +10,8 @@ import play.api.db.Database
 case class CustomCommand(guildId: Long, commandName: String, permissionLevel: Int = PermissionLevel.EVERYONE.id, commandContent: String = "") extends Model {
 
     override val namedParameters: Seq[NamedParameter] = Seq('guild_id -> guildId, 'command_name -> commandName, 'permission_level -> permissionLevel, 'command_content -> commandContent)
+
+    val getPermissionLevel: PermissionLevel = PermissionLevel(permissionLevel)
 }
 
 object CustomCommand extends ModelAccessor[CustomCommand, Long] {

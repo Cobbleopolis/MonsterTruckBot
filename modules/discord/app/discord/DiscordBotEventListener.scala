@@ -4,7 +4,7 @@ import javax.inject.{Inject, Provider}
 
 import com.cobble.bot.common.api.PermissionLevel
 import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
-import com.cobble.bot.common.models.FilterSettings
+import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
 import discord.api.DiscordCommand
 import discord.event.CommandExecutionEvent
@@ -64,8 +64,13 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
     def onCommandExecutionEvent(event: CommandExecutionEvent): Unit = {
         implicit val message: IMessage = event.getMessage
         val commandOpt: Option[DiscordCommand] = discordCommandRegistry.commands.get(event.getCommand)
-        if (commandOpt.isDefined && getUserPermissionLevel(event.getUser) >= commandOpt.get.permissionLevel) {
+        val userPermissionLevel: PermissionLevel = getUserPermissionLevel(event.getUser)
+        if (commandOpt.isDefined && userPermissionLevel >= commandOpt.get.permissionLevel) {
             commandOpt.get.execute(event)
+        } else {
+            val customCommandOpt: Option[CustomCommand] = CustomCommand.get(config.guildId, event.getCommand)
+            if (customCommandOpt.isDefined && userPermissionLevel >= customCommandOpt.get.getPermissionLevel)
+                message.getChannel.sendMessage(customCommandOpt.get.commandContent)
         }
     }
 
