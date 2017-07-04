@@ -26,7 +26,7 @@ lazy val commonSettings = Seq(
     )
 )
 
-lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, JavaServerAppPackaging, DebianPlugin, ScalaUnidocPlugin).settings(commonSettings: _*)
+lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, JavaServerAppPackaging, DebianPlugin).settings(commonSettings: _*)
     .settings(
         resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
         unmanagedResourceDirectories in Test += baseDirectory(_ / "target/web/public/test").value,
@@ -47,8 +47,6 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
         packageDescription := s"A server that runs the $displayName website, Discord bot and, Twitch bot",
         debianPackageDependencies in Debian ++= Seq("default-jre | java6-runtime"),
         bashScriptExtraDefines += """addJava "-Dconfig.file=${app_home}/../conf/production.conf"""",
-        doc in Compile := (doc in ScalaUnidoc).value,
-        target in unidoc in ScalaUnidoc := baseDirectory.value / "docs",
         scalacOptions in Compile in doc ++= Seq(
             "-doc-version", version.value,
             "-doc-title", name.value,
