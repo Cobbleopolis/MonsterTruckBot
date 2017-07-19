@@ -2,12 +2,14 @@ val projectName: String = "MonsterTruckBot"
 
 val displayName: String = "Monster Truck Bot"
 
-val projectVersion: String = "1.0.0"
+val projectVersion: String = "1.1.0-SNAPSHOT"
 
 val discord4JVersion: String = "2.8.2"
 
 lazy val commonDependencies = Seq(
-    "com.typesafe.play" %% "anorm" % "2.5.3"
+    "com.typesafe.play" %% "anorm" % "2.5.3",
+    guice,
+    "com.typesafe.play" %% "play-json" % "2.6.2"
 )
 
 lazy val commonSettings = Seq(
@@ -30,7 +32,7 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
     .settings(
         resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
         unmanagedResourceDirectories in Test += baseDirectory(_ / "target/web/public/test").value,
-        libraryDependencies ++= Seq(jdbc, cache, ws, specs2 % Test, evolutions),
+        libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, evolutions),
         libraryDependencies ++= Seq(
             "org.postgresql" % "postgresql" % "42.0.0.jre7",
             "org.webjars" %% "webjars-play" % "2.5.0",
@@ -79,6 +81,6 @@ lazy val `monstertruckbot-twitch` = (project in file("modules/twitch")).enablePl
 lazy val `monstertruckbot-common` = (project in file("modules/common")).enablePlugins(PlayScala, BuildInfoPlugin).settings(commonSettings: _*)
     .settings(
         name += "-common",
-        libraryDependencies ++= Seq(jdbc, cache),
+        libraryDependencies ++= Seq(jdbc, ehcache),
         buildInfoKeys := Seq[BuildInfoKey]("name" -> projectName, "displayName" -> displayName, version, scalaVersion, sbtVersion)
     )

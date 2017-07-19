@@ -13,7 +13,7 @@ import play.api.mvc._
 import securesocial.core.{BasicProfile, RuntimeEnvironment, SecureSocial}
 import util.AuthUtil
 
-class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, environment: RuntimeEnvironment, ws: WSClient, messages: MessagesApi, discordBot: DiscordBot, config: MtrConfigRef, authUtil: AuthUtil) extends Controller with SecureSocial with I18nSupport {
+class Application @Inject()(implicit controllerComponents: ControllerComponents, db: Database, webJarAssets: WebJarAssets, environment: RuntimeEnvironment, ws: WSClient, messages: MessagesApi, discordBot: DiscordBot, config: MtrConfigRef, authUtil: AuthUtil) extends AbstractController(controllerComponents) with SecureSocial with I18nSupport {
 
     val env: RuntimeEnvironment = environment
 

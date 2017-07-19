@@ -19,8 +19,8 @@ trait ModelAccessor[T <: Model, A] {
     val insertParser: RowParser[A]
 
 
-    def get(id: Long)(implicit db: Database, cache: CacheApi, mtrConfigRef: MtrConfigRef): Option[T] = {
-        cache.getOrElse[Option[T]](s"$tableName.${java.lang.Long.toUnsignedString(id)}", mtrConfigRef.cacheTimeout) {
+    def get(id: Long)(implicit db: Database, cache: SyncCacheApi, mtrConfigRef: MtrConfigRef): Option[T] = {
+        cache.getOrElseUpdate[Option[T]](s"$tableName.${java.lang.Long.toUnsignedString(id)}", mtrConfigRef.cacheTimeout) {
             db.withConnection(implicit conn => {
                 getQuery.on(idSymbol -> id).as(parser.singleOpt)
             })
@@ -45,7 +45,7 @@ trait ModelAccessor[T <: Model, A] {
     }
 
 
-    def insert(id: Long, model: T)(implicit db: Database, cache: CacheApi, mtrConfigRef: MtrConfigRef): Unit = {
+    def insert(id: Long, model: T)(implicit db: Database, cache: SyncCacheApi, mtrConfigRef: MtrConfigRef): Unit = {
         cache.set(s"$tableName.${java.lang.Long.toUnsignedString(id)}", model, mtrConfigRef.cacheTimeout)
         insert(model.namedParameters: _*)
     }
@@ -78,7 +78,7 @@ trait ModelAccessor[T <: Model, A] {
         }
     }
 
-    def update(id: Long, model: T)(implicit db: Database, cache: CacheApi, mtrConfigRef: MtrConfigRef): Int = {
+    def update(id: Long, model: T)(implicit db: Database, cache: SyncCacheApi, mtrConfigRef: MtrConfigRef): Int = {
         cache.set(s"$tableName.${java.lang.Long.toUnsignedString(id)}", model, mtrConfigRef.cacheTimeout)
         update(id, model.namedParameters: _*)
     }
@@ -93,7 +93,7 @@ trait ModelAccessor[T <: Model, A] {
             0
     }
 
-    def delete(id: Long)(implicit db: Database, cache: CacheApi): Int = {
+    def delete(id: Long)(implicit db: Database, cache: SyncCacheApi): Int = {
         cache.remove(s"$tableName.${java.lang.Long.toUnsignedString(id)}")
         db.withConnection(implicit conn => {
             deleteQuery.on(idSymbol -> id).executeUpdate()
