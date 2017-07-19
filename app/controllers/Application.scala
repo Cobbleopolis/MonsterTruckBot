@@ -3,24 +3,23 @@ package controllers
 
 import javax.inject.Inject
 
+import com.cobble.bot.common.DefaultLang
 import com.cobble.bot.common.ref.MtrConfigRef
 import discord.DiscordBot
+import io.jsonwebtoken.lang.RuntimeEnvironment
 import jsmessages.JsMessagesFactory
 import play.api.db.Database
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.ws.WSClient
 import play.api.mvc._
-import securesocial.core.{BasicProfile, RuntimeEnvironment, SecureSocial}
-import util.AuthUtil
 
-class Application @Inject()(implicit controllerComponents: ControllerComponents, db: Database, webJarAssets: WebJarAssets, environment: RuntimeEnvironment, ws: WSClient, messages: MessagesApi, discordBot: DiscordBot, config: MtrConfigRef, authUtil: AuthUtil) extends AbstractController(controllerComponents) with SecureSocial with I18nSupport {
+class Application @Inject()(implicit controllerComponents: ControllerComponents, db: Database, webJarAssets: WebJarAssets, environment: RuntimeEnvironment, ws: WSClient, messages: MessagesApi, discordBot: DiscordBot, config: MtrConfigRef) extends AbstractController(controllerComponents) with I18nSupport with DefaultLang {
 
     val env: RuntimeEnvironment = environment
 
     val jsMessagesFactory = new JsMessagesFactory(messages)
 
-    def index = UserAwareAction(implicit request => {
-        implicit val userOpt: Option[BasicProfile] = request.user.asInstanceOf[Option[BasicProfile]]
+    def index = Action(implicit request => {
         if (discordBot.client.getGuildByID(config.guildId) != null)
             if (request.queryString.isEmpty)
                 Ok(views.html.index())

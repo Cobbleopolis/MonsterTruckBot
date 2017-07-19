@@ -1,7 +1,6 @@
 @import com.cobble.bot.common.ref.MtrConfigRef
-@import securesocial.core.BasicProfile
 @import sx.blah.discord.handle.obj.IGuild
-@(guild: IGuild, currentPage: String)(head: Html)(content: Html)(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages, flash: Flash, mtrConfigRef: MtrConfigRef)
+@(guild: IGuild, currentPage: String)(head: Html)(content: Html)(implicit webJarAssets: WebJarAssets, messages: Messages, flash: Flash, mtrConfigRef: MtrConfigRef)
 
     @main("Dashboard")(head) {
         <h2>@guild.getName</h2>

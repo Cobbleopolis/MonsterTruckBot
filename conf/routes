@@ -7,14 +7,6 @@ GET         /                                             controllers.Applicatio
 
 GET         /robots.txt                                   controllers.Assets.at(path = "/public", file = "robots.txt")
 
-GET         /login                                        @securesocial.controllers.ProviderController.authenticate(provider: String = "discord", redirectTo: Option[String])
-POST        /login                                        @securesocial.controllers.ProviderController.authenticateByPost(provider: String = "discord", redirectTo: Option[String])
-
-GET         /logout                                       @securesocial.controllers.LoginPage.logout
-
-GET         /authenticate/:provider                       @securesocial.controllers.ProviderController.authenticate(provider, redirectTo: Option[String])
-POST        /authenticate/:provider                       @securesocial.controllers.ProviderController.authenticateByPost(provider, redirectTo: Option[String])
-
 GET         /messages                                     controllers.Application.jsMessages(page = "")
 GET         /messages/:page                               controllers.Application.jsMessages(page)
 

@@ -1,5 +1,5 @@
-@import securesocial.core.BasicProfile
-@(pageName: String)(head: Html)(content: Html)(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages)
+@import component.header
+@(pageName: String)(head: Html)(content: Html)(implicit webJarAssets: WebJarAssets, messages: Messages)
 
 <!DOCTYPE html>
 
@@ -17,7 +17,7 @@
         @head
     </head>
     <body>
-        @component.header()
+        @header()
         <div class="container">
             @content
         </div>

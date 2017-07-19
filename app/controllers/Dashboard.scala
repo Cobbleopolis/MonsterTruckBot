@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.Inject
 
-import auth.HasPermission
+import com.cobble.bot.common.DefaultLang
 import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
 import discord.DiscordBot
@@ -12,25 +12,20 @@ import play.api.db.Database
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.ws.WSClient
 import play.api.mvc._
-import securesocial.core.{BasicProfile, SecureSocial}
-import service.MonsterTruckBotEnvironment
 import sx.blah.discord.handle.obj.IGuild
-import util.AuthUtil
 
 
-class Dashboard @Inject()(implicit controllerComponents: ControllerComponents, db: Database, cache: SyncCacheApi, webJarAssets: WebJarAssets, override val env: MonsterTruckBotEnvironment, ws: WSClient, dashboardSettingsForms: DashboardSettingsForms, messages: MessagesApi, discordBot: DiscordBot, config: MtrConfigRef, authUtil: AuthUtil) extends AbstractController(controllerComponents) with SecureSocial with I18nSupport {
+class Dashboard @Inject()(implicit controllerComponents: ControllerComponents, db: Database, cache: SyncCacheApi, webJarAssets: WebJarAssets, ws: WSClient, dashboardSettingsForms: DashboardSettingsForms, messages: MessagesApi, discordBot: DiscordBot, config: MtrConfigRef) extends AbstractController(controllerComponents) with I18nSupport with DefaultLang {
 
-    def dashboard(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+    def dashboard(): Action[AnyContent] = Action(implicit request => {
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
         if (guild != null)
             Ok(views.html.dashboard.coreSettings(guild))
         else
             Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
-    }
+    })
 
-    def filterSettings(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+    def filterSettings(): Action[AnyContent] = Action(implicit request => {
         val filterSettings: Option[FilterSettings] = FilterSettings.get(config.guildId)
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
         if (filterSettings.isDefined
@@ -41,10 +36,9 @@ class Dashboard @Inject()(implicit controllerComponents: ControllerComponents, d
             ))
         } else
             Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
-    }
+    })
 
-    def submitFilterSettings(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+    def submitFilterSettings(): Action[AnyContent] = Action(implicit request => {
         dashboardSettingsForms.filterForm.bindFromRequest().fold(
             formWithErrors => {
                 val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
@@ -55,25 +49,22 @@ class Dashboard @Inject()(implicit controllerComponents: ControllerComponents, d
                 Redirect(routes.Dashboard.filterSettings()).flashing("success" -> messages("dashboard.settingsSaved", messages("dashboard.filter")))
             }
         )
+    })
 
-    }
-
-    def customCommands(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+    def customCommands(): Action[AnyContent] = Action(implicit request => {
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
         if (guild != null) {
             val commandForms = CustomCommand.getByGuildId(config.guildId).map(dashboardSettingsForms.commandForm.fill)
             Ok(views.html.dashboard.customCommands(guild, dashboardSettingsForms.commandForm, commandForms))
         } else
             Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
-    }
+    })
 
-    def customCommandRedirect(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
+    def customCommandRedirect(): Action[AnyContent] = Action(implicit request => {
         Redirect(routes.Dashboard.customCommands())
-    }
+    })
 
-    def submitNewCommand(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+    def submitNewCommand(): Action[AnyContent] = Action(implicit request => {
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
         val commandForms = CustomCommand.getByGuildId(config.guildId).map(dashboardSettingsForms.commandForm.fill)
         dashboardSettingsForms.commandForm.bindFromRequest().fold(
@@ -89,10 +80,9 @@ class Dashboard @Inject()(implicit controllerComponents: ControllerComponents, d
                 }
             }
         )
-    }
+    })
 
-    def submitEditCommand(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+    def submitEditCommand(): Action[AnyContent] = Action( implicit request => {
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
         val commandForms = CustomCommand.getByGuildId(config.guildId).map(dashboardSettingsForms.commandForm.fill)
         dashboardSettingsForms.commandForm.bindFromRequest().fold(
@@ -104,13 +94,12 @@ class Dashboard @Inject()(implicit controllerComponents: ControllerComponents, d
                 Redirect(routes.Dashboard.customCommands()).flashing("success" -> messages("dashboard.forms.customCommands.editCommand.saved", config.commandPrefix, editCustomCommand.commandName))
             }
         )
-    }
+    })
 
-    def submitDeleteCommand(commandName: String): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+    def submitDeleteCommand(commandName: String): Action[AnyContent] = Action(implicit request => {
         CustomCommand.delete(config.guildId, commandName)
         Redirect(routes.Dashboard.customCommands()).flashing("success" -> messages("dashboard.forms.customCommands.deleteCommand.commandDeleted", config.commandPrefix, commandName))
-    }
+    })
 
     override def messagesApi: MessagesApi = messages
 }

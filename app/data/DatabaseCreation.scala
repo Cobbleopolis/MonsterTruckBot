@@ -5,20 +5,18 @@ import javax.inject.{Inject, Singleton}
 import com.cobble.bot.common.models.{BotInstance, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
 import play.api.Configuration
-import play.api.cache.CacheApi
+import play.api.cache.SyncCacheApi
 import play.api.db.Database
 
 @Singleton
-class DatabaseCreation @Inject()(implicit db: Database, conf: Configuration, cache: CacheApi, mtrConfigRef: MtrConfigRef) {
+class DatabaseCreation @Inject()(implicit db: Database, conf: Configuration, cache: SyncCacheApi, mtrConfigRef: MtrConfigRef) {
 
-    val guildId: Long = java.lang.Long.parseUnsignedLong(conf.getString("mtrBot.guildId").get)
-
-    val botInstanceOpt: Option[BotInstance] = BotInstance.get(guildId)
+    val botInstanceOpt: Option[BotInstance] = BotInstance.get(mtrConfigRef.guildId)
     if (botInstanceOpt.isEmpty)
-        BotInstance.insert(guildId, BotInstance(guildId))
+        BotInstance.insert(mtrConfigRef.guildId, BotInstance(mtrConfigRef.guildId))
 
-    val filterSettingsOpt: Option[FilterSettings] = FilterSettings.get(guildId)
+    val filterSettingsOpt: Option[FilterSettings] = FilterSettings.get(mtrConfigRef.guildId)
     if (filterSettingsOpt.isEmpty)
-        FilterSettings.insert(guildId, FilterSettings(guildId))
+        FilterSettings.insert(mtrConfigRef.guildId, FilterSettings(mtrConfigRef.guildId))
 
 }

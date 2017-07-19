@@ -40,7 +40,6 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
             "org.webjars.npm" % "bootstrap-sass" % "3.3.7",
             "org.webjars.bower" % "font-awesome-sass" % "4.6.2",
             "org.webjars" % "jquery" % "3.2.1",
-            "ws.securesocial" %% "securesocial" % "3.0-M7",
             "com.github.marcospereira" %% "play-hocon-i18n" % "0.0.2",
             "org.julienrf" %% "play-jsmessages" % "2.0.0"
         ),
