@@ -20,19 +20,15 @@ class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBo
     private val clientBuilder: ClientBuilder = new ClientBuilder().setDaemon(true)
     var client: IDiscordClient = _
 
-    if (conf.discordToken.isDefined) {
-        clientBuilder.withToken(conf.discordToken.get)
-        client = clientBuilder.login()
-        val dispatcher: EventDispatcher = client.getDispatcher
-        dispatcher.registerListener(eventListener)
-        lifecycle.addStopHook(() => Future {
-            DiscordLogger.info("Monster Truck Bot logging out...")
-            client.logout()
-            DiscordLogger.info("Monster Truck Bot finished logging out")
-        })
-    } else {
-        DiscordLogger.logger.error("Discord token not found in config")
-    }
+    clientBuilder.withToken(conf.discordToken)
+    client = clientBuilder.login()
+    val dispatcher: EventDispatcher = client.getDispatcher
+    dispatcher.registerListener(eventListener)
+    lifecycle.addStopHook(() => Future {
+        DiscordLogger.info("Monster Truck Bot logging out...")
+        client.logout()
+        DiscordLogger.info("Monster Truck Bot finished logging out")
+    })
 
     def getInviteLink(redirectTo: String): String = {
         val inviteBuilder: BotInviteBuilder = new BotInviteBuilder(client)
