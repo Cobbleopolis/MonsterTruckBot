@@ -1,19 +1,20 @@
 @import component.header
-@(pageName: String)(head: Html)(content: Html)(implicit webJarAssets: WebJarAssets, messages: Messages)
+@import org.webjars.play.WebJarsUtil
+@(pageName: String)(head: Html)(content: Html)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider)
 
 <!DOCTYPE html>
 
 <html>
     <head>
-        @if(messages.isDefinedAt(s"global.pageName.$pageName")) {
-            <title>@messages(s"global.pageName.$pageName"))</title>
+        @if(messagesProv.messages.isDefinedAt(s"global.pageName.$pageName")) {
+            <title>@messagesProv.messages(s"global.pageName.$pageName"))</title>
         } else {
             <title>@pageName</title>
         }
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/monster-truck-bot.png")">
-        <script src="@routes.WebJarAssets.at(webJarAssets.locate("jquery.min.js"))" type="text/javascript"></script>
-        <script src="@routes.WebJarAssets.at(webJarAssets.locate("bootstrap-sass", "bootstrap.js"))" type="text/javascript"></script>
+        <script src="@webJarsUtil.url("jquery.min.js").get" type="text/javascript"></script>
+        <script src="@webJarsUtil.url("bootstrap-sass", "bootstrap.js").get" type="text/javascript"></script>
         @head
     </head>
     <body>

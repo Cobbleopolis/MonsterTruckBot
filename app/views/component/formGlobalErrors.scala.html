@@ -1,4 +1,4 @@
-@(form: Form[Any])(implicit messages: Messages)
+@(form: Form[Any])(implicit messagesProv: MessagesProvider)
 
 @if(form.hasGlobalErrors) {
     <div class="alert alert-dismissible alert-danger">
@@ -6,7 +6,7 @@
         <strong>Oh snap!</strong>
         <ul>
         @for(error <- form.globalErrors) {
-            <li>@messages(error.messages, error.args)</li>
+            <li>@messagesProv.messages(error.messages, error.args)</li>
         }
         </ul>
     </div>

@@ -35,12 +35,12 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
         libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, evolutions),
         libraryDependencies ++= Seq(
             "org.postgresql" % "postgresql" % "42.0.0.jre7",
-            "org.webjars" %% "webjars-play" % "2.5.0",
-            "com.adrianhurt" %% "play-bootstrap" % "1.1-P25-B3" exclude("org.webjars", "bootstrap") exclude("org.webjars", "jquery"),
+            "org.webjars" %% "webjars-play" % "2.6.1",
+            "com.adrianhurt" %% "play-bootstrap" % "1.2-P26-B3-RC2",
             "org.webjars.npm" % "bootstrap-sass" % "3.3.7",
             "org.webjars.bower" % "font-awesome-sass" % "4.6.2",
             "org.webjars" % "jquery" % "3.2.1",
-            "com.github.marcospereira" %% "play-hocon-i18n" % "0.0.2",
+            "com.github.marcospereira" %% "play-hocon-i18n" % "1.0.1",
             "org.julienrf" %% "play-jsmessages" % "2.0.0"
         ),
         maintainer in Linux := "Cobbleopolis <cobbleopolis@gmail.com>",
@@ -52,7 +52,8 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
             "-doc-version", version.value,
             "-doc-title", name.value,
             "-doc-root-content", baseDirectory.value + "/root-doc.txt"
-        )
+        ),
+        routesGenerator := InjectedRoutesGenerator
     )
     .dependsOn(`monstertruckbot-discord`, `monstertruckbot-twitch`, `monstertruckbot-common`)
     .aggregate(`monstertruckbot-discord`, `monstertruckbot-twitch`, `monstertruckbot-common`)

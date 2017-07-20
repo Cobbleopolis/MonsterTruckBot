@@ -1,7 +1,8 @@
-@()(implicit webJarAssets: WebJarAssets, messages: Messages)
+@import org.webjars.play.WebJarsUtil
+@()(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider)
 
 @main(buildinfo.BuildInfo.displayName){
 
 }{
-    @messages("index.welcome")
+    @messagesProv.messages("index.welcome")
 }
