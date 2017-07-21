@@ -30,4 +30,11 @@ class MtrConfigRef @Inject()(implicit conf: Configuration) {
 
     val twitchOauth: String = conf.get[String]("mtrBot.twitch.oauth")
 
+    val twitchChannels: Seq[String] = conf.get[Seq[String]]("mtrBot.twitch.channels").map(channel =>
+        if(channel.startsWith("#"))
+            channel
+        else
+            s"#$channel"
+    )
+
 }
