@@ -2,26 +2,30 @@ package controllers
 
 import javax.inject.Inject
 
-import auth.HasPermission
 import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
 import discord.DiscordBot
 import models.DashboardSettingsForms
-import play.api.cache.CacheApi
+import org.webjars.play.WebJarsUtil
+import play.api.cache.SyncCacheApi
 import play.api.db.Database
-import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.ws.WSClient
-import play.api.mvc.{Action, AnyContent, Controller}
-import securesocial.core.{BasicProfile, SecureSocial}
-import service.MonsterTruckBotEnvironment
+import play.api.mvc._
 import sx.blah.discord.handle.obj.IGuild
-import util.AuthUtil
 
 
-class Dashboard @Inject()(implicit db: Database, cache: CacheApi, webJarAssets: WebJarAssets, override val env: MonsterTruckBotEnvironment, ws: WSClient, dashboardSettingsForms: DashboardSettingsForms, messages: MessagesApi, discordBot: DiscordBot, config: MtrConfigRef, authUtil: AuthUtil) extends Controller with SecureSocial with I18nSupport {
+class Dashboard @Inject()(
+                             implicit mcc: MessagesControllerComponents,
+                             messagesAction: MessagesActionBuilder,
+                             db: Database, cache: SyncCacheApi,
+                             webJarsUtil: WebJarsUtil,
+                             ws: WSClient,
+                             dashboardSettingsForms: DashboardSettingsForms,
+                             discordBot: DiscordBot,
+                             config: MtrConfigRef
+                         ) extends MessagesAbstractController(mcc) {
 
-    def dashboard(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+    def dashboard(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
         if (guild != null)
             Ok(views.html.dashboard.coreSettings(guild))
@@ -29,8 +33,7 @@ class Dashboard @Inject()(implicit db: Database, cache: CacheApi, webJarAssets: 
             Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
     }
 
-    def filterSettings(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+    def filterSettings(): Action[AnyContent] = Action { implicit request =>
         val filterSettings: Option[FilterSettings] = FilterSettings.get(config.guildId)
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
         if (filterSettings.isDefined
@@ -43,8 +46,7 @@ class Dashboard @Inject()(implicit db: Database, cache: CacheApi, webJarAssets: 
             Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
     }
 
-    def submitFilterSettings(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+    def submitFilterSettings(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         dashboardSettingsForms.filterForm.bindFromRequest().fold(
             formWithErrors => {
                 val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
@@ -52,14 +54,12 @@ class Dashboard @Inject()(implicit db: Database, cache: CacheApi, webJarAssets: 
             },
             filterSettings => {
                 FilterSettings.update(filterSettings.guildId, filterSettings)
-                Redirect(routes.Dashboard.filterSettings()).flashing("success" -> messages("dashboard.settingsSaved", messages("dashboard.filter")))
+                Redirect(routes.Dashboard.filterSettings()).flashing("success" -> request.messages("dashboard.settingsSaved", request.messages("dashboard.filter")))
             }
         )
-
     }
 
-    def customCommands(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+    def customCommands(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
         if (guild != null) {
             val commandForms = CustomCommand.getByGuildId(config.guildId).map(dashboardSettingsForms.commandForm.fill)
@@ -68,12 +68,11 @@ class Dashboard @Inject()(implicit db: Database, cache: CacheApi, webJarAssets: 
             Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
     }
 
-    def customCommandRedirect(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
+    def customCommandRedirect(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         Redirect(routes.Dashboard.customCommands())
     }
 
-    def submitNewCommand(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+    def submitNewCommand(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
         val commandForms = CustomCommand.getByGuildId(config.guildId).map(dashboardSettingsForms.commandForm.fill)
         dashboardSettingsForms.commandForm.bindFromRequest().fold(
@@ -85,14 +84,13 @@ class Dashboard @Inject()(implicit db: Database, cache: CacheApi, webJarAssets: 
                     BadRequest(views.html.dashboard.customCommands(guild, dashboardSettingsForms.commandForm.fill(newCustomCommand).withError(dashboardSettingsForms.existingCommandFormError), commandForms))
                 else {
                     CustomCommand.insert(newCustomCommand)
-                    Redirect(routes.Dashboard.customCommands()).flashing("success" -> messages("dashboard.forms.customCommands.newCommand.saved"))
+                    Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.forms.customCommands.newCommand.saved"))
                 }
             }
         )
     }
 
-    def submitEditCommand(): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+    def submitEditCommand(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
         val commandForms = CustomCommand.getByGuildId(config.guildId).map(dashboardSettingsForms.commandForm.fill)
         dashboardSettingsForms.commandForm.bindFromRequest().fold(
@@ -101,18 +99,15 @@ class Dashboard @Inject()(implicit db: Database, cache: CacheApi, webJarAssets: 
             },
             editCustomCommand => {
                 CustomCommand.update(editCustomCommand)
-                Redirect(routes.Dashboard.customCommands()).flashing("success" -> messages("dashboard.forms.customCommands.editCommand.saved", config.commandPrefix, editCustomCommand.commandName))
+                Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.forms.customCommands.editCommand.saved", config.commandPrefix, editCustomCommand.commandName))
             }
         )
     }
 
-    def submitDeleteCommand(commandName: String): Action[AnyContent] = SecuredAction(HasPermission()) { implicit request =>
-        implicit val userOpt: Option[BasicProfile] = Some(request.user.asInstanceOf[BasicProfile])
+    def submitDeleteCommand(commandName: String): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         CustomCommand.delete(config.guildId, commandName)
-        Redirect(routes.Dashboard.customCommands()).flashing("success" -> messages("dashboard.forms.customCommands.deleteCommand.commandDeleted", config.commandPrefix, commandName))
+        Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.forms.customCommands.deleteCommand.commandDeleted", config.commandPrefix, commandName))
     }
-
-    override def messagesApi: MessagesApi = messages
 }
 
 object Dashboard {

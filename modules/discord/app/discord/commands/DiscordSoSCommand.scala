@@ -2,6 +2,7 @@ package discord.commands
 
 import javax.inject.Inject
 
+import com.cobble.bot.common.DefaultLang
 import com.cobble.bot.common.api.commands.SoSCommand
 import com.cobble.bot.common.ref.MtrConfigRef
 import discord.api.DiscordCommand
@@ -12,7 +13,7 @@ import play.api.i18n.MessagesApi
 
 import scala.collection.JavaConverters._
 
-class DiscordSoSCommand @Inject()(implicit val messageUtil: DiscordMessageUtil, db: Database, conf: MtrConfigRef, messagesApi: MessagesApi) extends DiscordCommand with SoSCommand {
+class DiscordSoSCommand @Inject()(implicit val messageUtil: DiscordMessageUtil, db: Database, conf: MtrConfigRef, messagesApi: MessagesApi) extends DiscordCommand with SoSCommand with DefaultLang {
 
     override def execute(implicit event: CommandExecutionEvent): Unit = {
         if (event.getMessage.getChannel.isPrivate)

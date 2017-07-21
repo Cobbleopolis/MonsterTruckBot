@@ -1,9 +1,9 @@
 @import com.cobble.bot.common.models.FilterSettings
 @import sx.blah.discord.handle.obj.IGuild
-@import securesocial.core.BasicProfile
 @import com.cobble.bot.common.ref.MtrConfigRef
 @import com.cobble.bot.common.api.PermissionLevel
-@(guild: IGuild, filterSettingsForm: Form[FilterSettings])(implicit webJarAssets: WebJarAssets, userOpt: Option[BasicProfile], messages: Messages, flash: Flash, mtrConfigRef: MtrConfigRef)
+@import org.webjars.play.WebJarsUtil
+@(guild: IGuild, filterSettingsForm: Form[FilterSettings])(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef)
 
 @implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-10") }
 
@@ -12,7 +12,7 @@
 } {
     @b3.form(routes.Dashboard.submitFilterSettings()) {
         <fieldset>
-            <legend>@messages("dashboard.forms.filters.capsFilter.title")</legend>
+            <legend>@messagesProv.messages("dashboard.forms.filters.capsFilter.title")</legend>
             @b3.checkbox(filterSettingsForm("capsFilterEnabled"),
                 '_label -> "dashboard.forms.filters.capsFilter.enabled.label"
             )
@@ -27,7 +27,7 @@
             )
         </fieldset>
         <fieldset>
-            <legend>@messages("dashboard.forms.filters.linksFilter.title")</legend>
+            <legend>@messagesProv.messages("dashboard.forms.filters.linksFilter.title")</legend>
             @b3.checkbox(filterSettingsForm("linksFilterEnabled"),
                 '_label -> "dashboard.forms.filters.linksFilter.enabled.label"
             )
@@ -38,7 +38,7 @@
             )
         </fieldset>
         <fieldset>
-            <legend>@messages("dashboard.forms.filters.blacklistFilter.title")</legend>
+            <legend>@messagesProv.messages("dashboard.forms.filters.blacklistFilter.title")</legend>
             @b3.checkbox(filterSettingsForm("blacklistFilterEnabled"),
                 '_label -> "dashboard.forms.filters.blacklistFilter.enabled.label"
             )
@@ -53,6 +53,6 @@
                 'rows -> 4
             )
         </fieldset>
-        @b3.submit('class -> "btn btn-primary") {@messages("global.forms.save")}
+        @b3.submit('class -> "btn btn-primary") {@messagesProv.messages("global.forms.save")}
     }
 }

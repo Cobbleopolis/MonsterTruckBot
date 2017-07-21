@@ -6,21 +6,16 @@ import javax.inject.Inject
 import com.cobble.bot.common.ref.MtrConfigRef
 import discord.DiscordBot
 import jsmessages.JsMessagesFactory
+import org.webjars.play.WebJarsUtil
 import play.api.db.Database
-import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.ws.WSClient
 import play.api.mvc._
-import securesocial.core.{BasicProfile, RuntimeEnvironment, SecureSocial}
-import util.AuthUtil
 
-class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, environment: RuntimeEnvironment, ws: WSClient, messages: MessagesApi, discordBot: DiscordBot, config: MtrConfigRef, authUtil: AuthUtil) extends Controller with SecureSocial with I18nSupport {
+class Application @Inject()(implicit mcc: MessagesControllerComponents, messagesAction: MessagesActionBuilder, db: Database, webJarsUtil: WebJarsUtil, ws: WSClient, discordBot: DiscordBot, config: MtrConfigRef) extends MessagesAbstractController(mcc) {
 
-    val env: RuntimeEnvironment = environment
+    val jsMessagesFactory = new JsMessagesFactory(messagesApi)
 
-    val jsMessagesFactory = new JsMessagesFactory(messages)
-
-    def index = UserAwareAction(implicit request => {
-        implicit val userOpt: Option[BasicProfile] = request.user.asInstanceOf[Option[BasicProfile]]
+    def index: Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         if (discordBot.client.getGuildByID(config.guildId) != null)
             if (request.queryString.isEmpty)
                 Ok(views.html.index())
@@ -28,15 +23,13 @@ class Application @Inject()(implicit db: Database, webJarAssets: WebJarAssets, e
                 Redirect(routes.Application.index())
         else
             Redirect(discordBot.getInviteLink(routes.Application.index().absoluteURL()))
-    })
+    }
 
-    def jsMessages(page: String) = Action {
+    def jsMessages(page: String): Action[AnyContent] = Action { implicit request =>
         val jsMessages = if (page.nonEmpty && jsMessagesFactory.filtering(_.startsWith(page)).allMessages.nonEmpty)
             jsMessagesFactory.filtering(key => key.startsWith(page) || key.startsWith("error") || key.startsWith("format") || key.startsWith("constraint") || key.startsWith("global"))
         else
             jsMessagesFactory.all
         Ok(jsMessages.all(Some("window.Messages")))
     }
-
-    override def messagesApi: MessagesApi = messages
 }

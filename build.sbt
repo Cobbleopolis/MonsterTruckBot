@@ -2,12 +2,14 @@ val projectName: String = "MonsterTruckBot"
 
 val displayName: String = "Monster Truck Bot"
 
-val projectVersion: String = "1.0.0"
+val projectVersion: String = "2.0.0-SNAPSHOT"
 
 val discord4JVersion: String = "2.8.2"
 
 lazy val commonDependencies = Seq(
-    "com.typesafe.play" %% "anorm" % "2.5.3"
+    "com.typesafe.play" %% "anorm" % "2.5.3",
+    guice,
+    "com.typesafe.play" %% "play-json" % "2.6.2"
 )
 
 lazy val commonSettings = Seq(
@@ -30,16 +32,15 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
     .settings(
         resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
         unmanagedResourceDirectories in Test += baseDirectory(_ / "target/web/public/test").value,
-        libraryDependencies ++= Seq(jdbc, cache, ws, specs2 % Test, evolutions),
+        libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, evolutions),
         libraryDependencies ++= Seq(
             "org.postgresql" % "postgresql" % "42.0.0.jre7",
-            "org.webjars" %% "webjars-play" % "2.5.0",
-            "com.adrianhurt" %% "play-bootstrap" % "1.1-P25-B3" exclude("org.webjars", "bootstrap") exclude("org.webjars", "jquery"),
+            "org.webjars" %% "webjars-play" % "2.6.1",
+            "com.adrianhurt" %% "play-bootstrap" % "1.2-P26-B3-RC2",
             "org.webjars.npm" % "bootstrap-sass" % "3.3.7",
             "org.webjars.bower" % "font-awesome-sass" % "4.6.2",
             "org.webjars" % "jquery" % "3.2.1",
-            "ws.securesocial" %% "securesocial" % "3.0-M7",
-            "com.github.marcospereira" %% "play-hocon-i18n" % "0.0.2",
+            "com.github.marcospereira" %% "play-hocon-i18n" % "1.0.1",
             "org.julienrf" %% "play-jsmessages" % "2.0.0"
         ),
         maintainer in Linux := "Cobbleopolis <cobbleopolis@gmail.com>",
@@ -51,7 +52,8 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
             "-doc-version", version.value,
             "-doc-title", name.value,
             "-doc-root-content", baseDirectory.value + "/root-doc.txt"
-        )
+        ),
+        routesGenerator := InjectedRoutesGenerator
     )
     .dependsOn(`monstertruckbot-discord`, `monstertruckbot-twitch`, `monstertruckbot-common`)
     .aggregate(`monstertruckbot-discord`, `monstertruckbot-twitch`, `monstertruckbot-common`)
@@ -79,6 +81,6 @@ lazy val `monstertruckbot-twitch` = (project in file("modules/twitch")).enablePl
 lazy val `monstertruckbot-common` = (project in file("modules/common")).enablePlugins(PlayScala, BuildInfoPlugin).settings(commonSettings: _*)
     .settings(
         name += "-common",
-        libraryDependencies ++= Seq(jdbc, cache),
+        libraryDependencies ++= Seq(jdbc, ehcache),
         buildInfoKeys := Seq[BuildInfoKey]("name" -> projectName, "displayName" -> displayName, version, scalaVersion, sbtVersion)
     )

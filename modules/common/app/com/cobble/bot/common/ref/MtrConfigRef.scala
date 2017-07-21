@@ -8,26 +8,26 @@ import scala.concurrent.duration._
 @Singleton
 class MtrConfigRef @Inject()(implicit conf: Configuration) {
 
-    val guildId: Long = java.lang.Long.parseUnsignedLong(conf.getString("mtrBot.guildId").get)
+    val guildId: Long = java.lang.Long.parseUnsignedLong(conf.get[String]("mtrBot.guildId"))
 
-    val moderatorRoleId: Long = java.lang.Long.parseUnsignedLong(conf.getString("mtrBot.moderatorRoleId").get)
+    val moderatorRoleId: Long = java.lang.Long.parseUnsignedLong(conf.get[String]("mtrBot.moderatorRoleId"))
 
-    val subscriberRoleId: Long = java.lang.Long.parseUnsignedLong(conf.getString("mtrBot.subscriberRoleId").get)
+    val subscriberRoleId: Long = java.lang.Long.parseUnsignedLong(conf.get[String]("mtrBot.subscriberRoleId"))
 
-    val commandPrefix: String = conf.getString("mtrBot.commandPrefix").getOrElse("!")
+    val commandPrefix: String = conf.get[String]("mtrBot.commandPrefix")
 
-    val cacheTimeout: Duration = conf.getMilliseconds("mtrBot.cacheTimeout").getOrElse(7200000L).milliseconds
+    val cacheTimeout: Duration = conf.getMillis("mtrBot.cacheTimeout").milliseconds
 
-    val discordUsername: String = conf.getString("mtrBot.discord.username").getOrElse("Monster Truck Bot")
+    val discordUsername: String = conf.get[String]("mtrBot.discord.username")
 
-    val discordGame: String = conf.getString("mtrBot.discord.game").getOrElse("Hap! Hap! Hap!")
+    val discordGame: String = conf.get[String]("mtrBot.discord.game")
 
-    val discordClientId: Option[String] = conf.getString("mtrBot.discord.clientId")
+    val discordClientId: String = conf.get[String]("mtrBot.discord.clientId")
 
-    val discordToken: Option[String] = conf.getString("mtrBot.discord.token")
+    val discordToken: String = conf.get[String]("mtrBot.discord.token")
 
-    val twitchUsername: Option[String] = conf.getString("mtrBot.twitch.username")
+    val twitchUsername: String = conf.get[String]("mtrBot.twitch.username")
 
-    val twitchOauth: Option[String] = conf.getString("mtrBot.twitch.oauth")
+    val twitchOauth: String = conf.get[String]("mtrBot.twitch.oauth")
 
 }

@@ -1,8 +1,9 @@
 package com.cobble.bot.common.util
 
+import com.cobble.bot.common.DefaultLang
 import play.api.i18n.MessagesApi
 
-object MessageUtil {
+object MessageUtil extends DefaultLang {
 
     /**
       * The arrow character used when responding to a command.

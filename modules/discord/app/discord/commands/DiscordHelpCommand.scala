@@ -2,6 +2,7 @@ package discord.commands
 
 import javax.inject.Inject
 
+import com.cobble.bot.common.DefaultLang
 import com.cobble.bot.common.api.commands.HelpCommand
 import com.cobble.bot.common.models.CustomCommand
 import com.cobble.bot.common.ref.MtrConfigRef
@@ -10,7 +11,7 @@ import discord.DiscordCommandRegistry
 import discord.api.DiscordCommand
 import discord.event.CommandExecutionEvent
 import discord.util.DiscordMessageUtil
-import play.api.cache.CacheApi
+import play.api.cache.SyncCacheApi
 import play.api.db.Database
 import play.api.i18n.MessagesApi
 
@@ -19,8 +20,8 @@ class DiscordHelpCommand @Inject()(implicit val messageUtil: DiscordMessageUtil,
                                    config: MtrConfigRef,
                                    commandRegistry: Provider[DiscordCommandRegistry],
                                    db: Database,
-                                   cacheApi: CacheApi
-                                  ) extends DiscordCommand with HelpCommand {
+                                   cacheApi: SyncCacheApi
+                                  ) extends DiscordCommand with HelpCommand with DefaultLang {
 
     override def execute(implicit event: CommandExecutionEvent): Unit = {
         var messageStr: String = messagesApi("bot.help.general.prefix")

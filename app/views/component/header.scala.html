@@ -1,5 +1,4 @@
-@import securesocial.core.BasicProfile
-@()(implicit userOpt: Option[BasicProfile], messages: Messages)
+@()(implicit messagesProv: MessagesProvider)
 
 <header>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -14,18 +13,12 @@
                 <a class="navbar-brand" href="@routes.Application.index()">@buildinfo.BuildInfo.displayName</a>
             </div>
             <ul class="nav navbar-nav navbar-right">
-                @if(userOpt.isDefined) {
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">@{userOpt.get.fullName} <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="@routes.Dashboard.dashboard()">@messages("global.pageNames.dashboard")</a></li>
-                            <li class="divider"></li>
-                            <li><a href="@securesocial.controllers.routes.LoginPage.logout()">@messages("global.auth.logout")</a></li>
-                        </ul>
-                    </li>
-                } else {
-                    <li><a href="/login">@messages("global.auth.login")</a></li>
-                }
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">@messagesProv.messages("global.pages") <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="@routes.Dashboard.dashboard()">@messagesProv.messages("global.pageNames.dashboard")</a></li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </nav>
