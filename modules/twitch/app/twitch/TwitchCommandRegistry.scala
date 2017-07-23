@@ -1,17 +1,19 @@
 package twitch
 
-import javax.inject.{Singleton, Inject}
+import javax.inject.{Inject, Singleton}
 
 import twitch.api.TwitchCommand
-import twitch.commands.TwitchPingCommand
+import twitch.commands.{TwitchPingCommand, TwitchVersionCommand}
 
 @Singleton
 class TwitchCommandRegistry @Inject()(
-                                        val pingCommand: TwitchPingCommand
+                                        val pingCommand: TwitchPingCommand,
+                                        val versionCommand: TwitchVersionCommand
                                      ) {
 
     val commands: Map[String, TwitchCommand] = Map(
-        pingCommand.name -> pingCommand
+        pingCommand.name -> pingCommand,
+        versionCommand.name -> versionCommand
     )
 
 }
