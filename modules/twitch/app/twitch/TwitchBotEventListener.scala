@@ -4,14 +4,17 @@ import javax.inject.{Inject, Provider}
 
 import com.cobble.bot.common.api.PermissionLevel
 import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
+import com.cobble.bot.common.models.CustomCommand
 import com.cobble.bot.common.ref.MtrConfigRef
 import net.engio.mbassy.listener.Handler
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
 import org.kitteh.irc.client.library.event.client.ClientConnectedEvent
+import play.api.cache.SyncCacheApi
+import play.api.db.Database
 import twitch.api.TwitchEvent
 import twitch.events.{TwitchCommandExecutionEvent, TwitchMessageEvent}
 
-class TwitchBotEventListener @Inject()(twitchBot: Provider[TwitchBot], mtrConfigRef: MtrConfigRef, twitchCommandRegistry: TwitchCommandRegistry) {
+class TwitchBotEventListener @Inject()(implicit twitchBot: Provider[TwitchBot], mtrConfigRef: MtrConfigRef, twitchCommandRegistry: TwitchCommandRegistry, db: Database, cache: SyncCacheApi) {
 
     @Handler
     def connected(event: ClientConnectedEvent): Unit = {
@@ -40,6 +43,11 @@ class TwitchBotEventListener @Inject()(twitchBot: Provider[TwitchBot], mtrConfig
         val commandOpt = twitchCommandRegistry.commands.get(commandEvent.getCommand)
         if (commandOpt.isDefined && getUserPermissionLevel(commandEvent) >= commandOpt.get.permissionLevel)
             commandOpt.get.execute(commandEvent)
+        else {
+            val customCommandOpt: Option[CustomCommand] = CustomCommand.get(mtrConfigRef.guildId, commandEvent.getCommand)
+            if (customCommandOpt.isDefined && getUserPermissionLevel(commandEvent) >= customCommandOpt.get.getPermissionLevel)
+                commandEvent.getChannel.sendMessage(s"/me ${customCommandOpt.get.commandContent}")
+        }
     }
 
     def getUserPermissionLevel(twitchEvent: TwitchEvent): PermissionLevel = {
