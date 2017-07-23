@@ -7,7 +7,7 @@ import org.kitteh.irc.client.library.element.{Channel, ServerMessage, User}
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
 import twitch.api.TwitchEvent
 
-class TwitchMessageEvent(messageEvent: ChannelMessageEvent) extends TwitchEvent {
+class TwitchCommandExecutionEvent(messageEvent: ChannelMessageEvent, command: String, args: Array[String]) extends TwitchEvent {
 
     override def getMessageEvent: ChannelMessageEvent = messageEvent
 
@@ -20,5 +20,11 @@ class TwitchMessageEvent(messageEvent: ChannelMessageEvent) extends TwitchEvent 
     override def getChannel: Channel = messageEvent.getChannel
 
     override def getMessage: String = messageEvent.getMessage
+
+    def getCommand: String = command
+
+    def getArgs: Array[String] = args
+
+    def isCommand(commandName: String): Boolean = command.equalsIgnoreCase(commandName)
 
 }

@@ -3,7 +3,7 @@ package discord.event
 import sx.blah.discord.api.events.Event
 import sx.blah.discord.handle.obj.{IMessage, IUser}
 
-class CommandExecutionEvent(message: IMessage, command: String, args: Array[String], user: IUser) extends Event {
+class DiscordCommandExecutionEvent(message: IMessage, command: String, args: Array[String], user: IUser) extends Event {
 
     def getMessage: IMessage = message
 

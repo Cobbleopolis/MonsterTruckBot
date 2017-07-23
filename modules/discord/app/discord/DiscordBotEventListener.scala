@@ -7,7 +7,7 @@ import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
 import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
 import discord.api.DiscordCommand
-import discord.event.CommandExecutionEvent
+import discord.event.DiscordCommandExecutionEvent
 import discord.filters.{DiscordBlacklistFilter, DiscordCapsFilter, DiscordLinksFilter}
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
@@ -34,7 +34,7 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
         if (!message.getAuthor.isBot)
             if (message.getContent.startsWith(config.commandPrefix)) {
                 val contentSplit: Array[String] = message.getContent.split("\\s")
-                discordBot.get().client.getDispatcher.dispatch(new CommandExecutionEvent(
+                discordBot.get().client.getDispatcher.dispatch(new DiscordCommandExecutionEvent(
                     message,
                     contentSplit.head.substring(config.commandPrefix.length),
                     contentSplit.tail,
@@ -61,7 +61,7 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
     }
 
     @EventSubscriber
-    def onCommandExecutionEvent(event: CommandExecutionEvent): Unit = {
+    def onCommandExecutionEvent(event: DiscordCommandExecutionEvent): Unit = {
         implicit val message: IMessage = event.getMessage
         val commandOpt: Option[DiscordCommand] = discordCommandRegistry.commands.get(event.getCommand)
         val userPermissionLevel: PermissionLevel = getUserPermissionLevel(event.getUser)
