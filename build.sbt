@@ -6,6 +6,8 @@ val projectVersion: String = "2.0.0-SNAPSHOT"
 
 val discord4JVersion: String = "2.8.2"
 
+val kittehIRCVersion: String = "3.2.0"
+
 lazy val commonDependencies = Seq(
     "com.typesafe.play" %% "anorm" % "2.5.3",
     guice,
@@ -16,7 +18,7 @@ lazy val commonSettings = Seq(
     name := projectName,
     organization := "com.cobble.bot",
     version := projectVersion,
-    scalaVersion := "2.11.7",
+    scalaVersion := "2.12.2",
     isSnapshot := version.value.toLowerCase.contains("snapshot"),
     crossPaths := false,
     autoAPIMappings := true,
@@ -41,7 +43,7 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
             "org.webjars.bower" % "font-awesome-sass" % "4.6.2",
             "org.webjars" % "jquery" % "3.2.1",
             "com.github.marcospereira" %% "play-hocon-i18n" % "1.0.1",
-            "org.julienrf" %% "play-jsmessages" % "2.0.0"
+            "org.julienrf" %% "play-jsmessages" % "3.0.0"
         ),
         maintainer in Linux := "Cobbleopolis <cobbleopolis@gmail.com>",
         packageSummary in Linux := s"$displayName server",
@@ -72,7 +74,7 @@ lazy val `monstertruckbot-twitch` = (project in file("modules/twitch")).enablePl
     .settings(
         name += "-twitch",
         libraryDependencies ++= Seq(
-
+            "org.kitteh.irc" % "client-lib" % kittehIRCVersion
         )
     )
     .dependsOn(`monstertruckbot-common`)

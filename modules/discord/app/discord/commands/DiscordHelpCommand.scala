@@ -9,7 +9,7 @@ import com.cobble.bot.common.ref.MtrConfigRef
 import com.google.inject.Provider
 import discord.DiscordCommandRegistry
 import discord.api.DiscordCommand
-import discord.event.CommandExecutionEvent
+import discord.event.DiscordCommandExecutionEvent
 import discord.util.DiscordMessageUtil
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
@@ -23,7 +23,7 @@ class DiscordHelpCommand @Inject()(implicit val messageUtil: DiscordMessageUtil,
                                    cacheApi: SyncCacheApi
                                   ) extends DiscordCommand with HelpCommand with DefaultLang {
 
-    override def execute(implicit event: CommandExecutionEvent): Unit = {
+    override def execute(implicit event: DiscordCommandExecutionEvent): Unit = {
         var messageStr: String = messagesApi("bot.help.general.prefix")
         commandRegistry.get().commands.keys.foreach(msg =>
             messageStr += messagesApi("bot.help.general.commandFormat", config.commandPrefix + msg, messagesApi(s"bot.help.descriptions.$msg"))
