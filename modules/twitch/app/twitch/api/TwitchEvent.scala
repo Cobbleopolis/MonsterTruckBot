@@ -23,4 +23,6 @@ trait TwitchEvent extends TwitchSingleMessageEvent {
 
     val isSub: Boolean = getTag("subscriber").get().getValue.get().equals("1")
 
+    def timeoutUser(reason: String, duration: Int = 5): Unit = getChannel.sendMessage(s"/timeout ${getActor.getNick} $duration $reason")
+
 }

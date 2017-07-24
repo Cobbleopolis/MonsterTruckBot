@@ -40,15 +40,12 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
                     contentSplit.tail,
                     message.getAuthor
                 ))
-            } else if (!message.getChannel.isPrivate && message.getGuild.getLongID == config.guildId) {
-                val filterSettings: Option[FilterSettings] = FilterSettings.get(message.getGuild.getLongID)
-                if (message.getAuthor.getLongID != message.getGuild.getOwnerLongID
-                    && !message.getAuthor.getRolesForGuild(message.getGuild).asScala.map(_.getLongID).contains(config.moderatorRoleId)) // See if the mods want to be able to filter themselves
-                    filterMessage(message, filterSettings)
-            }
+            } else if (!message.getChannel.isPrivate && message.getGuild.getLongID == config.guildId)
+                filterMessage(message)
     }
 
-    def filterMessage(message: IMessage, filterSettings: Option[FilterSettings]): Unit = {
+    def filterMessage(message: IMessage): Unit = {
+        val filterSettings: Option[FilterSettings] = FilterSettings.get(message.getGuild.getLongID)
         if (filterSettings.isDefined) {
             val userPermissionLevel: PermissionLevel = getUserPermissionLevel(message.getAuthor)
             if (filterSettings.get.capsFilterEnabled && userPermissionLevel < filterSettings.get.getCapsFilterExemptionLevel)

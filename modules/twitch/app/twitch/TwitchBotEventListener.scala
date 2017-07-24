@@ -4,7 +4,7 @@ import javax.inject.{Inject, Provider}
 
 import com.cobble.bot.common.api.PermissionLevel
 import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
-import com.cobble.bot.common.models.CustomCommand
+import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
 import net.engio.mbassy.listener.Handler
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
@@ -13,8 +13,16 @@ import play.api.cache.SyncCacheApi
 import play.api.db.Database
 import twitch.api.TwitchEvent
 import twitch.events.{TwitchCommandExecutionEvent, TwitchMessageEvent}
+import twitch.filters.TwitchCapsFilter
 
-class TwitchBotEventListener @Inject()(implicit twitchBot: Provider[TwitchBot], mtrConfigRef: MtrConfigRef, twitchCommandRegistry: TwitchCommandRegistry, db: Database, cache: SyncCacheApi) {
+class TwitchBotEventListener @Inject()(
+                                          implicit twitchBot: Provider[TwitchBot],
+                                          mtrConfigRef: MtrConfigRef,
+                                          twitchCommandRegistry: TwitchCommandRegistry,
+                                          db: Database,
+                                          cache: SyncCacheApi,
+                                          capsFilter: TwitchCapsFilter
+                                      ) {
 
     @Handler
     def connected(event: ClientConnectedEvent): Unit = {
@@ -35,6 +43,16 @@ class TwitchBotEventListener @Inject()(implicit twitchBot: Provider[TwitchBot], 
                 messageSplit.head.substring(mtrConfigRef.commandPrefix.length),
                 messageSplit.tail
             ))
+        } else
+            filterMessage(msgEvent)
+    }
+
+    def filterMessage(message: TwitchMessageEvent): Unit = {
+        val filterSettings: Option[FilterSettings] = FilterSettings.get(mtrConfigRef.guildId)
+        if (filterSettings.isDefined) {
+            val userPermissionLevel: PermissionLevel = getUserPermissionLevel(message)
+            if (filterSettings.get.capsFilterEnabled && userPermissionLevel < filterSettings.get.getCapsFilterExemptionLevel)
+                capsFilter.filterMessage(message, filterSettings.get)
         }
     }
 
