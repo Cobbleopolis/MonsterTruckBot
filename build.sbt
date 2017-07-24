@@ -2,7 +2,7 @@ val projectName: String = "MonsterTruckBot"
 
 val displayName: String = "Monster Truck Bot"
 
-val projectVersion: String = "2.0.0-SNAPSHOT"
+val projectVersion: String = "2.0.0"
 
 val discord4JVersion: String = "2.8.2"
 
