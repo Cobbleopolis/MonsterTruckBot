@@ -2,16 +2,18 @@ package discord.filters
 
 import javax.inject.Inject
 
+import com.cobble.bot.common.api.filters.LinksFilter
 import com.cobble.bot.common.models.FilterSettings
+import discord.api.DiscordFilter
 import discord.util.DiscordMessageUtil
 import sx.blah.discord.handle.obj.IMessage
 
-class DiscordLinksFilter @Inject()(discordMessageUtil: DiscordMessageUtil) {
+class DiscordLinksFilter @Inject()(discordMessageUtil: DiscordMessageUtil) extends DiscordFilter with LinksFilter {
 
     def filterMessage(message: IMessage, filterSettings: FilterSettings): Unit = {
-        if ("(http(s)?:\\/\\/.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)".r.findFirstIn(message.getContent).isDefined) {
+        if (doesMessageMatchFilter(message.getContent, filterSettings)) {
             message.delete()
-            discordMessageUtil.replyToMessage(message, "bot.filter.noLinks")
+            discordMessageUtil.replyToMessage(message, "bot.filter.noLinks.message")
         }
     }
 
