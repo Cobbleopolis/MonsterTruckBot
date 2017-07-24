@@ -25,13 +25,13 @@ class TwitchBot @Inject()(implicit mtrConfigRef: MtrConfigRef, lifecycle: Applic
             client.getEventManager.registerEventListener(twitchBotEventListener)
         })
 
-    clientBuilder.listenInput((line: String) => println("[I] " + line))
-    clientBuilder.listenOutput((line: String) => println("[O] " + line))
+//    clientBuilder.listenInput((line: String) => println("[I] " + line))
+//    clientBuilder.listenOutput((line: String) => println("[O] " + line))
 
     val client: Client = clientBuilder.build()
     client.getCapabilityManager.getSupportedCapabilities.forEach(capability => println("Capability: " + capability))
     client.addChannel(mtrConfigRef.twitchChannels: _*)
-    mtrConfigRef.twitchChannels.foreach(client.sendMessage(_, "/me Hello, World!"))
+//    mtrConfigRef.twitchChannels.foreach(client.sendMessage(_, "/me Hello, World!"))
 
     lifecycle.addStopHook(() => Future {
         TwitchLogger.info("Monster Truck Bot shutting down...")
