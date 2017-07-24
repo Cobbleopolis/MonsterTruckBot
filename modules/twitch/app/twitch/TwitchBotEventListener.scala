@@ -13,7 +13,7 @@ import play.api.cache.SyncCacheApi
 import play.api.db.Database
 import twitch.api.TwitchEvent
 import twitch.events.{TwitchCommandExecutionEvent, TwitchMessageEvent}
-import twitch.filters.TwitchCapsFilter
+import twitch.filters.{TwitchBlacklistFilter, TwitchCapsFilter}
 
 class TwitchBotEventListener @Inject()(
                                           implicit twitchBot: Provider[TwitchBot],
@@ -21,7 +21,8 @@ class TwitchBotEventListener @Inject()(
                                           twitchCommandRegistry: TwitchCommandRegistry,
                                           db: Database,
                                           cache: SyncCacheApi,
-                                          capsFilter: TwitchCapsFilter
+                                          capsFilter: TwitchCapsFilter,
+                                          blacklistFilter: TwitchBlacklistFilter
                                       ) {
 
     @Handler
@@ -53,6 +54,8 @@ class TwitchBotEventListener @Inject()(
             val userPermissionLevel: PermissionLevel = getUserPermissionLevel(message)
             if (filterSettings.get.capsFilterEnabled && userPermissionLevel < filterSettings.get.getCapsFilterExemptionLevel)
                 capsFilter.filterMessage(message, filterSettings.get)
+            if (filterSettings.get.blacklistFilterEnabled && userPermissionLevel < filterSettings.get.getBlackListFilterExemptionLevel)
+                blacklistFilter.filterMessage(message, filterSettings.get)
         }
     }
 
