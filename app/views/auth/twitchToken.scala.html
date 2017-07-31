@@ -1,0 +1,28 @@
+@import org.webjars.play.WebJarsUtil
+@(twitchOAuthRedirectUrl: String, errorType: Option[String], errorDescription: Option[String])(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider)
+
+@main("twitchAuthentication") {
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/twitchToken.css")">
+    <script src="@routes.Assets.at("js/twitchToken.js")"></script>
+} {
+    <h2>@messagesProv.messages("global.pageNames.twitchAuthentication")</h2>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @if(errorType.isDefined) {
+                <div class="alert alert-dismissible alert-danger">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>@messagesProv.messages("error.ohSnap")</strong> @messagesProv.messages("error.auth.twitch.unableToGetOAuth") <br/>
+                    @messagesProv.messages("error.type"): @errorType.getOrElse(messagesProv.messages("global.notAvailable")) <br/>
+                    @messagesProv.messages("error.description"): @errorDescription.getOrElse(messagesProv.messages("global.notAvailable"))
+                </div>
+            }
+            <div id="tokenDisplayContainer">
+                <h4>@messagesProv.messages("auth.twitch.oAuthToken.header")</h4>
+                <code id="tokenDisplay">@messagesProv.messages("global.notAvailable")</code>
+                <p class="help-block">@messagesProv.messages("auth.twitch.oAuthToken.instructions")</p>
+            </div>
+            <a id="twitchLink" href="@twitchOAuthRedirectUrl"></a>
+        </div>
+    </div>
+
+}
