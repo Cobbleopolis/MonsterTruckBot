@@ -6,8 +6,8 @@
 
 <html>
     <head>
-        @if(messagesProv.messages.isDefinedAt(s"global.pageName.$pageName")) {
-            <title>@messagesProv.messages(s"global.pageName.$pageName"))</title>
+        @if(messagesProv.messages.isDefinedAt(s"global.pageNames.$pageName")) {
+            <title>@messagesProv.messages(s"global.pageNames.$pageName")</title>
         } else {
             <title>@pageName</title>
         }
