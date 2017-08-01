@@ -3,7 +3,7 @@
 @import org.webjars.play.WebJarsUtil
 @(guild: IGuild, currentPage: String)(head: Html)(content: Html)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef)
 
-    @main("Dashboard")(head) {
+    @main("dashboard")(head) {
         <h2>@guild.getName</h2>
 
         @for(flashType <- flash.data) {
