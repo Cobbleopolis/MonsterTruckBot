@@ -15,7 +15,7 @@ import sx.blah.discord.handle.obj.IGuild
 
 
 class Dashboard @Inject()(
-                             implicit mcc: MessagesControllerComponents,
+                             implicit cc: ControllerComponents,
                              messagesAction: MessagesActionBuilder,
                              db: Database, cache: SyncCacheApi,
                              webJarsUtil: WebJarsUtil,
@@ -23,7 +23,7 @@ class Dashboard @Inject()(
                              dashboardSettingsForms: DashboardSettingsForms,
                              discordBot: DiscordBot,
                              config: MtrConfigRef
-                         ) extends MessagesAbstractController(mcc) {
+                         ) extends AbstractController(cc) {
 
     def dashboard(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
@@ -33,7 +33,7 @@ class Dashboard @Inject()(
             Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
     }
 
-    def filterSettings(): Action[AnyContent] = Action { implicit request =>
+    def filterSettings(): Action[AnyContent] = messagesAction { implicit request =>
         val filterSettings: Option[FilterSettings] = FilterSettings.get(config.guildId)
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
         if (filterSettings.isDefined
