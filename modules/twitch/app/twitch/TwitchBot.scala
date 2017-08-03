@@ -29,7 +29,7 @@ class TwitchBot @Inject()(implicit mtrConfigRef: MtrConfigRef, lifecycle: Applic
 //    clientBuilder.listenOutput((line: String) => println("[O] " + line))
 
     val client: Client = clientBuilder.build()
-    client.getCapabilityManager.getSupportedCapabilities.forEach(capability => println("Capability: " + capability))
+//    client.getCapabilityManager.getSupportedCapabilities.forEach(capability => println("Capability: " + capability))
     client.addChannel(mtrConfigRef.twitchChannels: _*)
 //    mtrConfigRef.twitchChannels.foreach(client.sendMessage(_, "/me Hello, World!"))
 
