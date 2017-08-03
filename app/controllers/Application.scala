@@ -11,7 +11,7 @@ import play.api.db.Database
 import play.api.libs.ws.WSClient
 import play.api.mvc._
 
-class Application @Inject()(implicit mcc: MessagesControllerComponents, messagesAction: MessagesActionBuilder, db: Database, webJarsUtil: WebJarsUtil, ws: WSClient, discordBot: DiscordBot, config: MtrConfigRef) extends MessagesAbstractController(mcc) {
+class Application @Inject()(implicit cc: ControllerComponents, messagesAction: MessagesActionBuilder, db: Database, webJarsUtil: WebJarsUtil, ws: WSClient, discordBot: DiscordBot, config: MtrConfigRef) extends AbstractController(cc) {
 
     val jsMessagesFactory = new JsMessagesFactory(messagesApi)
 
