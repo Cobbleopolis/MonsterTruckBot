@@ -10,7 +10,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="@routes.Application.index()">@buildinfo.BuildInfo.displayName</a>
+                <a class="navbar-brand" href="@routes.Application.index()">@buildinfo.BuildInfo.displayName <span id="versionNumber">v@{buildinfo.BuildInfo.version}</span></a>
             </div>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
