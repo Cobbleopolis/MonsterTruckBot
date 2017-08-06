@@ -47,14 +47,19 @@ class Dashboard @Inject()(
     }
 
     def submitFilterSettings(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
+        val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
         dashboardSettingsForms.filterForm.bindFromRequest().fold(
             formWithErrors => {
-                val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
                 BadRequest(views.html.dashboard.filterSettings(guild, formWithErrors))
             },
             filterSettings => {
-                FilterSettings.update(filterSettings.guildId, filterSettings)
-                Redirect(routes.Dashboard.filterSettings()).flashing("success" -> request.messages("dashboard.settingsSaved", request.messages("dashboard.filter")))
+                val numUpdated: Int = FilterSettings.update(filterSettings.guildId, filterSettings)
+                if(numUpdated != 0)
+                    Redirect(routes.Dashboard.filterSettings()).flashing("success" -> request.messages("dashboard.settingsSaved", request.messages("dashboard.filter")))
+                else {
+                    val filterSettings: Option[FilterSettings] = FilterSettings.get(config.guildId)
+                    InternalServerError(views.html.dashboard.filterSettings(guild, dashboardSettingsForms.filterForm.fill(filterSettings.get)))
+                }
             }
         )
     }
