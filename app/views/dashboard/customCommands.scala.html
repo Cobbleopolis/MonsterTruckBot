@@ -4,7 +4,7 @@
 @import sx.blah.discord.handle.obj.IGuild
 @import views.html.component.formErrors
 @import org.webjars.play.WebJarsUtil
-@(guild: IGuild, newCommandForm: Form[CustomCommand], commandForms: List[Form[CustomCommand]])(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef)
+@(guild: IGuild, newCommandForm: Form[CustomCommand], commandForms: List[Form[CustomCommand]])(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef, request: MessagesRequest[AnyContent])
 
 @implicitFieldConstructor = @{
     b3.horizontal.fieldConstructor("col-md-2", "col-md-10")
@@ -17,6 +17,7 @@
     @formErrors(newCommandForm.asInstanceOf[Form[Any]])
 
     @b3.form(routes.Dashboard.submitNewCommand()) {
+        @helper.CSRF.formField
         <fieldset>
             <legend>@messagesProv.messages("dashboard.forms.customCommands.newCommand.title")</legend>
             @b3.inputWrapped("text", newCommandForm("commandName"),
@@ -58,6 +59,7 @@
             @for(commandForm <- commandForms) {
                 <tr>
                     @b3.inline.form(routes.Dashboard.submitEditCommand()) { implicit ifc =>
+                        @helper.CSRF.formField
                         @b3.hidden(commandForm("commandName").name, commandForm("commandName").value.get)
                         <td>@mtrConfigRef.commandPrefix@commandForm("commandName").value.get</td>
                         <td>@b3.textarea(commandForm("commandContent"))</td>

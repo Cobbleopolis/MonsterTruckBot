@@ -3,7 +3,7 @@
 @import com.cobble.bot.common.ref.MtrConfigRef
 @import com.cobble.bot.common.api.PermissionLevel
 @import org.webjars.play.WebJarsUtil
-@(guild: IGuild, filterSettingsForm: Form[FilterSettings])(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef)
+@(guild: IGuild, filterSettingsForm: Form[FilterSettings])(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef, request: MessagesRequest[AnyContent])
 
 @implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-10") }
 
@@ -11,6 +11,7 @@
 
 } {
     @b3.form(routes.Dashboard.submitFilterSettings()) {
+        @helper.CSRF.formField
         <fieldset>
             <legend>@messagesProv.messages("dashboard.forms.filters.capsFilter.title")</legend>
             @b3.checkbox(filterSettingsForm("capsFilterEnabled"),
