@@ -5,7 +5,7 @@ import javax.inject.{Inject, Provider}
 import com.cobble.bot.common.api.PermissionLevel
 import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
 import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
-import com.cobble.bot.common.ref.MtrConfigRef
+import com.cobble.bot.common.ref.{MessageRef, MtrConfigRef}
 import net.engio.mbassy.listener.Handler
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
 import org.kitteh.irc.client.library.event.client.ClientConnectedEvent
@@ -14,6 +14,7 @@ import play.api.db.Database
 import twitch.api.TwitchEvent
 import twitch.events.{TwitchCommandExecutionEvent, TwitchMessageEvent}
 import twitch.filters.{TwitchBlacklistFilter, TwitchCapsFilter, TwitchLinksFilter}
+import twitch.util.TwitchMessageUtil
 
 class TwitchBotEventListener @Inject()(
                                           implicit twitchBot: Provider[TwitchBot],
@@ -23,7 +24,8 @@ class TwitchBotEventListener @Inject()(
                                           cache: SyncCacheApi,
                                           capsFilter: TwitchCapsFilter,
                                           linksFilter: TwitchLinksFilter,
-                                          blacklistFilter: TwitchBlacklistFilter
+                                          blacklistFilter: TwitchBlacklistFilter,
+                                          twitchMessageUtil: TwitchMessageUtil
                                       ) {
 
     @Handler
@@ -69,8 +71,13 @@ class TwitchBotEventListener @Inject()(
             commandOpt.get.execute(commandEvent)
         else {
             val customCommandOpt: Option[CustomCommand] = CustomCommand.get(mtrConfigRef.guildId, commandEvent.getCommand)
-            if (customCommandOpt.isDefined && getUserPermissionLevel(commandEvent) >= customCommandOpt.get.getPermissionLevel)
-                commandEvent.getChannel.sendMessage(s"/me ${customCommandOpt.get.commandContent}")
+            if (customCommandOpt.isDefined && getUserPermissionLevel(commandEvent) >= customCommandOpt.get.getPermissionLevel) {
+                val formattedCommandContent: String = s"/me ${customCommandOpt.get.commandContent}"
+                if (formattedCommandContent.length > MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE)
+                    twitchMessageUtil.reply("bot.commandMessageTooLong")(commandEvent)
+                else
+                    commandEvent.getChannel.sendMessage(formattedCommandContent)
+            }
         }
     }
 
