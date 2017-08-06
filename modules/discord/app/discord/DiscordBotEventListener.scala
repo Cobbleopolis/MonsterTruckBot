@@ -5,10 +5,11 @@ import javax.inject.{Inject, Provider}
 import com.cobble.bot.common.api.PermissionLevel
 import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
 import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
-import com.cobble.bot.common.ref.MtrConfigRef
+import com.cobble.bot.common.ref.{MessageRef, MtrConfigRef}
 import discord.api.DiscordCommand
 import discord.event.DiscordCommandExecutionEvent
 import discord.filters.{DiscordBlacklistFilter, DiscordCapsFilter, DiscordLinksFilter}
+import discord.util.DiscordMessageUtil
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
 import play.api.i18n.MessagesApi
@@ -19,7 +20,7 @@ import sx.blah.discord.handle.obj.{IGuild, IMessage, IUser}
 
 import scala.collection.JavaConverters._
 
-class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBot: Provider[DiscordBot], messages: MessagesApi, discordCommandRegistry: DiscordCommandRegistry, capsFilter: DiscordCapsFilter, linksFilter: DiscordLinksFilter, blacklistFilter: DiscordBlacklistFilter, database: Database, cache: SyncCacheApi) {
+class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBot: Provider[DiscordBot], messages: MessagesApi, discordCommandRegistry: DiscordCommandRegistry, capsFilter: DiscordCapsFilter, linksFilter: DiscordLinksFilter, blacklistFilter: DiscordBlacklistFilter, database: Database, cache: SyncCacheApi, discordMessageUtil: DiscordMessageUtil) {
 
     @EventSubscriber
     def onReadyEvent(event: ReadyEvent): Unit = {
@@ -67,7 +68,10 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
         } else {
             val customCommandOpt: Option[CustomCommand] = CustomCommand.get(config.guildId, event.getCommand)
             if (customCommandOpt.isDefined && userPermissionLevel >= customCommandOpt.get.getPermissionLevel)
-                message.getChannel.sendMessage(customCommandOpt.get.commandContent)
+                if(customCommandOpt.get.commandContent.length > MessageRef.DISCORD_MAX_MESSAGE_LENGTH)
+                    discordMessageUtil.reply("bot.commandMessageTooLong")(event)
+                else
+                    message.getChannel.sendMessage(customCommandOpt.get.commandContent)
         }
     }
 

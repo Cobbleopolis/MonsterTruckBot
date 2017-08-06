@@ -3,7 +3,7 @@ package models
 import javax.inject.{Inject, Singleton}
 
 import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
-import com.cobble.bot.common.ref.MtrConfigRef
+import com.cobble.bot.common.ref.{MtrConfigRef, MessageRef}
 import play.api.data.{Form, FormError}
 import play.api.data.Forms._
 
@@ -29,7 +29,7 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
             "guildId" -> ignored(mtrConfigRef.guildId),
             "commandName" -> nonEmptyText,
             "permissionLevel" -> number,
-            "commandContent" -> nonEmptyText
+            "commandContent" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE)
         )(CustomCommand.apply)(CustomCommand.unapply)
     )
 
