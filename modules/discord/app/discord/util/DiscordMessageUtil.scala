@@ -21,4 +21,6 @@ class DiscordMessageUtil @Inject()(implicit messagesApi: MessagesApi) extends De
 
     def replyToMessage(message: IMessage, content: String, args: Any*): Unit = message.getChannel.sendMessage(MessageUtil.formatMessage(message.getAuthor.mention(), content, args))
 
+    def isDefined(key: String): Boolean = messagesApi.isDefinedAt(key)
+
 }

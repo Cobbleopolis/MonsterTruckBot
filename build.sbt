@@ -10,7 +10,9 @@ val kittehIRCVersion: String = "3.2.0"
 
 lazy val commonDependencies = Seq(
     "com.typesafe.play" %% "anorm" % "2.5.3",
+    jdbc,
     guice,
+    ws,
     "com.typesafe.play" %% "play-json" % "2.6.2"
 )
 
@@ -34,7 +36,7 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
     .settings(
         resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
         unmanagedResourceDirectories in Test += baseDirectory(_ / "target/web/public/test").value,
-        libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, evolutions),
+        libraryDependencies ++= Seq(jdbc, ehcache, specs2 % Test, evolutions),
         libraryDependencies ++= Seq(
             "org.postgresql" % "postgresql" % "42.0.0.jre7",
             "org.webjars" %% "webjars-play" % "2.6.1",
@@ -83,6 +85,6 @@ lazy val `monstertruckbot-twitch` = (project in file("modules/twitch")).enablePl
 lazy val `monstertruckbot-common` = (project in file("modules/common")).enablePlugins(PlayScala, BuildInfoPlugin).settings(commonSettings: _*)
     .settings(
         name += "-common",
-        libraryDependencies ++= Seq(jdbc, ehcache),
+        libraryDependencies ++= Seq(cacheApi),
         buildInfoKeys := Seq[BuildInfoKey]("name" -> projectName, "displayName" -> displayName, version, scalaVersion, sbtVersion)
     )

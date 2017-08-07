@@ -1,5 +1,6 @@
 package com.cobble.bot.common.ref
 
+import com.cobble.bot.common.api.TwitchChannelInfo
 import com.google.inject.{Inject, Singleton}
 import play.api.Configuration
 
@@ -36,11 +37,12 @@ class MtrConfigRef @Inject()(implicit conf: Configuration) {
 
     val twitchNeededOauthScopes: Seq[String] = conf.get[Seq[String]]("mtrBot.twitch.neededOauthScopes")
 
-    val twitchChannels: Seq[String] = conf.get[Seq[String]]("mtrBot.twitch.channels").map(channel =>
-        if(channel.startsWith("#"))
-            channel
-        else
-            s"#$channel"
-    )
+    val twitchChannels: Map[String, TwitchChannelInfo] = conf.get[Seq[Configuration]]("mtrBot.twitch.channels").map(channel =>
+        channel.get[String]("name") -> TwitchChannelInfo(
+            channel.get[String]("name"),
+            channel.get[String]("oauth"),
+            channel.get[String]("displayName")
+        )
+    ).toMap
 
 }
