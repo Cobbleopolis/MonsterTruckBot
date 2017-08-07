@@ -62,7 +62,7 @@
                         @helper.CSRF.formField
                         @b3.hidden(commandForm("commandName").name, commandForm("commandName").value.get)
                         <td>@mtrConfigRef.commandPrefix@commandForm("commandName").value.get</td>
-                        <td>@b3.textarea(commandForm("commandContent"))</td>
+                        <td>@b3.textarea(commandForm("commandContent"), 'rows -> "5")</td>
                         <td>@b3.select(commandForm("permissionLevel"), options = PermissionLevel.map.toSeq)</td>
                         <td>
                             <button type="submit" class="btn btn-info" >@messagesProv.messages("global.forms.edit")</button>
