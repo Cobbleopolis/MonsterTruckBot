@@ -113,11 +113,20 @@ class Dashboard @Inject()(
         CustomCommand.delete(config.guildId, commandName)
         Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.forms.customCommands.deleteCommand.commandDeleted", config.commandPrefix, commandName))
     }
+
+    def bitTracking(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
+        val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
+        if (guild != null)
+            Ok(views.html.dashboard.bitTracking(guild))
+        else
+            Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
+    }
 }
 
 object Dashboard {
     val dashboardPages: Map[String, String] = Map(
         "filterSettings" -> "dashboard.forms.filters.title",
-        "customCommands" -> "dashboard.forms.customCommands.title"
+        "customCommands" -> "dashboard.forms.customCommands.title",
+        "bitTracking" -> "dashboard.forms.bitTracking.title"
     )
 }
