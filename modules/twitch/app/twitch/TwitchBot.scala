@@ -18,7 +18,7 @@ class TwitchBot @Inject()(implicit mtrConfigRef: MtrConfigRef, lifecycle: Applic
         .serverHost("irc.chat.twitch.tv")
         .nick(mtrConfigRef.twitchUsername)
         .serverPassword(s"oauth:${mtrConfigRef.twitchOauth}")
-        .messageSendingQueueSupplier((client) => new TwitchDelaySender(client, "TwitchRateLimiter",TwitchDelaySender.MOD_OP_PER_THIRTY_SECONDS))
+        .messageSendingQueueSupplier((client) => new TwitchDelaySender(client, "TwitchRateLimiter", TwitchDelaySender.MOD_OP_PER_THIRTY_SECONDS))
         .queryChannelInformation(false)
         .afterBuildConsumer((client) => {
             client.getEventManager.registerEventListener(new TwitchListener(client))
@@ -30,7 +30,7 @@ class TwitchBot @Inject()(implicit mtrConfigRef: MtrConfigRef, lifecycle: Applic
 
     val client: Client = clientBuilder.build()
 //    client.getCapabilityManager.getSupportedCapabilities.forEach(capability => println("Capability: " + capability))
-    client.addChannel(mtrConfigRef.twitchChannels: _*)
+    client.addChannel(mtrConfigRef.twitchChannels.values.toSeq.map(_.ircChannelName): _*)
 //    mtrConfigRef.twitchChannels.foreach(client.sendMessage(_, "/me Hello, World!"))
 
     lifecycle.addStopHook(() => Future {

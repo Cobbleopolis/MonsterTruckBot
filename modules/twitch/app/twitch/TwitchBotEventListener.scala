@@ -82,7 +82,7 @@ class TwitchBotEventListener @Inject()(
     }
 
     def getUserPermissionLevel(twitchEvent: TwitchEvent): PermissionLevel = {
-        if (mtrConfigRef.twitchChannels.contains("#" + twitchEvent.getActor.getNick))
+        if (twitchEvent.getChannel.getName == "#" + twitchEvent.getActor.getNick)
             PermissionLevel.OWNER
         else if (twitchEvent.isMod)
             PermissionLevel.MODERATORS
