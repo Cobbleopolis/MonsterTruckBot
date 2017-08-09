@@ -12,7 +12,7 @@ import org.kitteh.irc.client.library.event.client.ClientConnectedEvent
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
 import twitch.api.TwitchEvent
-import twitch.events.{TwitchCommandExecutionEvent, TwitchMessageEvent}
+import twitch.events.{TwitchCheerEvent, TwitchCommandExecutionEvent, TwitchMessageEvent}
 import twitch.filters.{TwitchBlacklistFilter, TwitchCapsFilter, TwitchLinksFilter}
 import twitch.util.TwitchMessageUtil
 
@@ -40,15 +40,18 @@ class TwitchBotEventListener @Inject()(
 
     @Handler
     def twitchMessageReceived(msgEvent: TwitchMessageEvent): Unit = {
-        if (msgEvent.getMessage.startsWith(mtrConfigRef.commandPrefix)) {
-            val messageSplit: Array[String] = msgEvent.getMessage.split("\\s")
-            twitchBot.get.client.getEventManager.callEvent(new TwitchCommandExecutionEvent(
-                msgEvent.getMessageEvent,
-                messageSplit.head.substring(mtrConfigRef.commandPrefix.length),
-                messageSplit.tail
-            ))
-        } else
-            filterMessage(msgEvent)
+//        if (msgEvent.getMessage.startsWith(mtrConfigRef.commandPrefix)) {
+//            val messageSplit: Array[String] = msgEvent.getMessage.split("\\s")
+//            twitchBot.get.client.getEventManager.callEvent(new TwitchCommandExecutionEvent(
+//                msgEvent.getMessageEvent,
+//                messageSplit.head.substring(mtrConfigRef.commandPrefix.length),
+//                messageSplit.tail
+//            ))
+//        } else
+//            filterMessage(msgEvent)
+
+        if(msgEvent.getTag("bits").isPresent)
+            twitchBot.get.client.getEventManager.callEvent(new TwitchCheerEvent(msgEvent.getMessageEvent, msgEvent.getTag("bits").get().getValue.get().toLong))
     }
 
     def filterMessage(message: TwitchMessageEvent): Unit = {
@@ -79,6 +82,12 @@ class TwitchBotEventListener @Inject()(
                     commandEvent.getChannel.sendMessage(formattedCommandContent)
             }
         }
+    }
+
+    @Handler
+    def twitchCheerEvent(twitchCheerEvent: TwitchCheerEvent): Unit = {
+        TwitchLogger.info(s"Cheer! ${twitchCheerEvent.displayName} just cheered ${twitchCheerEvent.getCheerAmount} bits!")
+        cache.set("bitTracking.totalBits", cache.get[Long]("bitTracking.totalBits").getOrElse(0L) + twitchCheerEvent.getCheerAmount)
     }
 
     def getUserPermissionLevel(twitchEvent: TwitchEvent): PermissionLevel = {

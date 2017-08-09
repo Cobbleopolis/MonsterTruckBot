@@ -1,10 +1,10 @@
 @import com.cobble.bot.common.ref.MtrConfigRef
 @import org.webjars.play.WebJarsUtil
 @import sx.blah.discord.handle.obj.IGuild
-@(guild: IGuild)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef)
+@(guild: IGuild, totalBits: Long)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef)
 
 @dashboardPage(guild, "bitTracking"){
 
 } {
-
+    Total Bits: @totalBits
 }

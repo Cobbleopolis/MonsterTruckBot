@@ -117,7 +117,7 @@ class Dashboard @Inject()(
     def bitTracking(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
         if (guild != null)
-            Ok(views.html.dashboard.bitTracking(guild))
+            Ok(views.html.dashboard.bitTracking(guild, cache.get("bitTracking.totalBits").getOrElse(0)))
         else
             Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
     }
