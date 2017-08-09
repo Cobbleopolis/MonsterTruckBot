@@ -7,7 +7,7 @@ import org.kitteh.irc.client.library.element.{Channel, ServerMessage, User}
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
 import twitch.api.TwitchEvent
 
-class TwitchCheerEvent(messageEvent: ChannelMessageEvent, cheerAmount: Long) extends TwitchEvent {
+class TwitchCheerEvent(messageEvent: ChannelMessageEvent, cheerAmount: Int) extends TwitchEvent {
 
     override def getMessageEvent: ChannelMessageEvent = messageEvent
 
@@ -21,6 +21,6 @@ class TwitchCheerEvent(messageEvent: ChannelMessageEvent, cheerAmount: Long) ext
 
     override def getMessage: String = messageEvent.getMessage
 
-    def getCheerAmount: Long = cheerAmount
+    def getCheerAmount: Int = cheerAmount
 
 }

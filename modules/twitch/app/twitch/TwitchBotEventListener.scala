@@ -25,7 +25,8 @@ class TwitchBotEventListener @Inject()(
                                           capsFilter: TwitchCapsFilter,
                                           linksFilter: TwitchLinksFilter,
                                           blacklistFilter: TwitchBlacklistFilter,
-                                          twitchMessageUtil: TwitchMessageUtil
+                                          twitchMessageUtil: TwitchMessageUtil,
+                                          twitchBotCheerEventHandler: TwitchBotCheerEventHandler
                                       ) {
 
     @Handler
@@ -40,6 +41,7 @@ class TwitchBotEventListener @Inject()(
 
     @Handler
     def twitchMessageReceived(msgEvent: TwitchMessageEvent): Unit = {
+        //TODO Uncomment before merging
 //        if (msgEvent.getMessage.startsWith(mtrConfigRef.commandPrefix)) {
 //            val messageSplit: Array[String] = msgEvent.getMessage.split("\\s")
 //            twitchBot.get.client.getEventManager.callEvent(new TwitchCommandExecutionEvent(
@@ -51,7 +53,7 @@ class TwitchBotEventListener @Inject()(
 //            filterMessage(msgEvent)
 
         if(msgEvent.getTag("bits").isPresent)
-            twitchBot.get.client.getEventManager.callEvent(new TwitchCheerEvent(msgEvent.getMessageEvent, msgEvent.getTag("bits").get().getValue.get().toLong))
+            twitchBot.get.client.getEventManager.callEvent(new TwitchCheerEvent(msgEvent.getMessageEvent, msgEvent.getTag("bits").get().getValue.get().toInt))
     }
 
     def filterMessage(message: TwitchMessageEvent): Unit = {
@@ -86,12 +88,12 @@ class TwitchBotEventListener @Inject()(
 
     @Handler
     def twitchCheerEvent(twitchCheerEvent: TwitchCheerEvent): Unit = {
-        TwitchLogger.info(s"Cheer! ${twitchCheerEvent.displayName} just cheered ${twitchCheerEvent.getCheerAmount} bits!")
-        cache.set("bitTracking.totalBits", cache.get[Long]("bitTracking.totalBits").getOrElse(0L) + twitchCheerEvent.getCheerAmount)
+        TwitchLogger.info(s"Cheer! ${twitchCheerEvent.displayName} just cheered ${twitchCheerEvent.getCheerAmount} bits!") //TODO Remove at some point
+        twitchBotCheerEventHandler.handleEvent(twitchCheerEvent)
     }
 
     def getUserPermissionLevel(twitchEvent: TwitchEvent): PermissionLevel = {
-        if (twitchEvent.getChannel.getName == "#" + twitchEvent.getActor.getNick)
+        if (twitchEvent.channelName == twitchEvent.getActor.getNick)
             PermissionLevel.OWNER
         else if (twitchEvent.isMod)
             PermissionLevel.MODERATORS

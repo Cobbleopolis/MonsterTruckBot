@@ -4,6 +4,7 @@ import javax.inject.Inject
 
 import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
+import com.cobble.bot.common.util.BitTrackingUtil
 import discord.DiscordBot
 import models.DashboardSettingsForms
 import org.webjars.play.WebJarsUtil
@@ -22,7 +23,8 @@ class Dashboard @Inject()(
                              ws: WSClient,
                              dashboardSettingsForms: DashboardSettingsForms,
                              discordBot: DiscordBot,
-                             config: MtrConfigRef
+                             config: MtrConfigRef,
+                             bitTrackingUtil: BitTrackingUtil
                          ) extends AbstractController(cc) {
 
     def dashboard(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
@@ -117,9 +119,22 @@ class Dashboard @Inject()(
     def bitTracking(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
         if (guild != null)
-            Ok(views.html.dashboard.bitTracking(guild, cache.get("bitTracking.totalBits").getOrElse(0)))
+            Ok(views.html.dashboard.bitTracking(guild, dashboardSettingsForms.bitTrackingForm.fill(bitTrackingUtil.getBitTrackingFormData)))
         else
             Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
+    }
+
+    def submitBitTracking = messagesAction { implicit request: MessagesRequest[AnyContent] =>
+        val guild: IGuild = discordBot.client.getGuildByID(config.guildId)
+        dashboardSettingsForms.bitTrackingForm.bindFromRequest().fold(
+            formWithErrors => {
+                BadRequest(views.html.dashboard.bitTracking(guild, formWithErrors))
+            },
+            bitTrackingFormData => {
+                bitTrackingUtil.setBitTrackingFormData(bitTrackingFormData)
+                Redirect(routes.Dashboard.bitTracking()).flashing("success" -> request.messages("dashboard.forms.bitTracking.saved"))
+            }
+        )
     }
 }
 

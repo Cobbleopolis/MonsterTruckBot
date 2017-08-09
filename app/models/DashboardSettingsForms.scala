@@ -2,8 +2,8 @@ package models
 
 import javax.inject.{Inject, Singleton}
 
-import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
-import com.cobble.bot.common.ref.{MtrConfigRef, MessageRef}
+import com.cobble.bot.common.models.{BitTrackingFormData, CustomCommand, FilterSettings}
+import com.cobble.bot.common.ref.{BitTrackingRef, MessageRef, MtrConfigRef}
 import play.api.data.{Form, FormError}
 import play.api.data.Forms._
 
@@ -37,6 +37,15 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
         single(
             "commandName" -> nonEmptyText
         )
+    )
+
+    val bitTrackingForm: Form[BitTrackingFormData] = Form(
+        mapping(
+            "totalBits" -> number(min = 0),
+            "goalAmount" -> number(min = 0),
+            "toNextGoal" -> number(min = 0),
+            "goalCount" -> number(min = 0)
+        )(BitTrackingFormData.apply)(BitTrackingFormData.unapply)
     )
 
     val existingCommandFormError: FormError = FormError("commandName", "dashboard.forms.customCommands.newCommand.errors.commandExists")

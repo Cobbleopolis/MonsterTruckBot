@@ -20,6 +20,7 @@ POST        /dashboard/customCommands/edit                controllers.Dashboard.
 GET         /dashboard/customCommands/edit                controllers.Dashboard.customCommandRedirect()
 GET         /dashboard/customCommands/delete/:name        controllers.Dashboard.submitDeleteCommand(name: String)
 GET         /dashboard/bitTracking                        controllers.Dashboard.bitTracking()
+POST        /dashboard/bitTracking                        controllers.Dashboard.submitBitTracking()
 
 GET         /twitch/token                                 controllers.Auth.twitchToken()
 
