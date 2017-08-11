@@ -9,7 +9,7 @@ trait BitsCommand extends Command {
 
     override val name: String = "bits"
 
-    override val permissionLevel: PermissionLevel = PermissionLevel.SUBSCRIBERS
+    override val permissionLevel: PermissionLevel = PermissionLevel.EVERYONE
 
     def getFormattedResponse(bitTrackingSettings: BitTrackingSettings, bitTrackingUtil: BitTrackingUtil): String = {
         var responseString: String = bitTrackingSettings.getCurrentMode match {
