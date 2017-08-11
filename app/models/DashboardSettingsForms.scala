@@ -43,10 +43,17 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
         mapping(
             "guildId" -> ignored(mtrConfigRef.guildId),
             "currentMode" -> number,
+            //Nip Dip
             "nipDipTemplate" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
             "nipDipGoalAmount" -> number(min = 0),
             "nipDipToNextGoal" -> number(min = 0),
-            "nipDipGoalCount" -> number(min = 0)
+            "nipDipGoalCount" -> number(min = 0),
+            //RBG
+            //Jackshots
+            "jackshotsTemplate" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
+            "jackshotsGoalAmount" -> number(min = 0),
+            "jackshotsToNextGoal" -> number(min = 0),
+            "jackshotsGoalCount" -> number(min = 0)
         )(BitTrackingFormData.apply)(BitTrackingFormData.unapply)
     )
 

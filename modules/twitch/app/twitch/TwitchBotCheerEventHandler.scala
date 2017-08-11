@@ -17,14 +17,15 @@ class TwitchBotCheerEventHandler @Inject()(
                                               twitchMessageUtil: TwitchMessageUtil,
                                               mtrConfigRef: MtrConfigRef,
                                               database: Database,
-                                              cache: SyncCacheApi, nipDipMode: NipDipMode
+                                              cache: SyncCacheApi
                                           ) {
 
     def handleEvent(twitchCheerEvent: TwitchCheerEvent): Unit = {
         val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(mtrConfigRef.guildId)
         if (bitTrackingSettingsOpt.isDefined)
             bitTrackingSettingsOpt.get.getCurrentMode match {
-                case BitTrackingMode.NIP_DIP => handleBasicGameMode(twitchCheerEvent, nipDipMode)
+                case BitTrackingMode.NIP_DIP => handleBasicGameMode(twitchCheerEvent, bitTrackingUtil.nipDipMode)
+                case BitTrackingMode.JACKSHOTS => handleBasicGameMode(twitchCheerEvent, bitTrackingUtil.jackshotsMode)
             }
     }
 

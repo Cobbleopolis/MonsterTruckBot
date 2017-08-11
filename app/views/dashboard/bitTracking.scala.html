@@ -40,7 +40,20 @@
         </fieldset>
         <fieldset>
             <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.jackshots")</legend>
-            <p>@messagesProv.messages("global.notYetImplemented")</p>
+            @b3.textarea(bitTrackingForm("jackshotsTemplate"),
+                '_label -> "dashboard.forms.bitTracking.jackshots.template.label",
+                '_help -> messagesProv.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.jackshotsMode.getFormattingVariables.keys.mkString(", ")),
+                'rows -> 5
+            )
+            @b3.number(bitTrackingForm("jackshotsGoalAmount"),
+                '_label -> "dashboard.forms.bitTracking.goalAmount.label"
+            )
+            @b3.number(bitTrackingForm("jackshotsToNextGoal"),
+                '_label -> "dashboard.forms.bitTracking.toNextGoal.label"
+            )
+            @b3.number(bitTrackingForm("jackshotsGoalCount"),
+                '_label -> "dashboard.forms.bitTracking.goalCount.label"
+            )
         </fieldset>
         <fieldset>
             <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.push_up")</legend>

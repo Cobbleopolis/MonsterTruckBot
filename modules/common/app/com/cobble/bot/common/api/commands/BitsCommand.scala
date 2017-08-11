@@ -23,6 +23,7 @@ trait BitsCommand extends Command {
         }
         val variables: Map[String, String] = bitTrackingSettings.getCurrentMode match {
             case BitTrackingMode.NIP_DIP => bitTrackingUtil.nipDipMode.getFormattingVariables
+            case BitTrackingMode.JACKSHOTS => bitTrackingUtil.jackshotsMode.getFormattingVariables
             case _ => Map()
         }
         variables.foreach(kv => responseString = responseString.replaceAll(s"\\{${kv._1}\\}", kv._2))
