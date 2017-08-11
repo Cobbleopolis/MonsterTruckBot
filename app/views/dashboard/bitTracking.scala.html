@@ -2,7 +2,9 @@
 @import org.webjars.play.WebJarsUtil
 @import sx.blah.discord.handle.obj.IGuild
 @import com.cobble.bot.common.models.BitTrackingFormData
-@(guild: IGuild, bitTrackingForm: Form[BitTrackingFormData])(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef, request: MessagesRequest[AnyContent])
+@import com.cobble.bot.common.api.BitTrackingMode
+@import com.cobble.bot.common.util.BitTrackingUtil
+@(guild: IGuild, bitTrackingForm: Form[BitTrackingFormData], bitTrackingUtil: BitTrackingUtil)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef, request: MessagesRequest[AnyContent])
 
 @implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-10") }
 
@@ -11,18 +13,27 @@
 } {
     @b3.form(routes.Dashboard.submitBitTracking()) {
         @helper.CSRF.formField
-        @b3.number(bitTrackingForm("totalBits"),
-            '_label -> "dashboard.forms.bitTracking.totalBits.label"
+        @b3.select(bitTrackingForm("currentMode"),
+            options = BitTrackingMode.map.toSeq.sortBy(_._1),
+            '_label -> "dashboard.forms.bitTracking.currentMode.label"
         )
-        @b3.number(bitTrackingForm("goalAmount"),
-            '_label -> "dashboard.forms.bitTracking.goalAmount.label"
-        )
-        @b3.number(bitTrackingForm("toNextGoal"),
-            '_label -> "dashboard.forms.bitTracking.toNextGoal.label"
-        )
-        @b3.number(bitTrackingForm("goalCount"),
-            '_label -> "dashboard.forms.bitTracking.goalCount.label"
-        )
+        <fieldset>
+            <legend>@messagesProv.messages("dashboard.forms.bitTracking.nipDip.title")</legend>
+            @b3.textarea(bitTrackingForm("nipDipTemplate"),
+                '_label -> "dashboard.forms.bitTracking.nipDip.template.label",
+                '_help -> messagesProv.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.nipDipMode.getFormattingVariables.keys.mkString(", ")),
+                'rows -> 5
+            )
+            @b3.number(bitTrackingForm("nipDipGoalAmount"),
+                '_label -> "dashboard.forms.bitTracking.goalAmount.label"
+            )
+            @b3.number(bitTrackingForm("nipDipToNextGoal"),
+                '_label -> "dashboard.forms.bitTracking.toNextGoal.label"
+            )
+            @b3.number(bitTrackingForm("nipDipGoalCount"),
+                '_label -> "dashboard.forms.bitTracking.goalCount.label"
+            )
+        </fieldset>
         @b3.submit('class -> "btn btn-primary") {@messagesProv.messages("global.forms.save")}
     }
 }

@@ -41,16 +41,15 @@ class TwitchBotEventListener @Inject()(
 
     @Handler
     def twitchMessageReceived(msgEvent: TwitchMessageEvent): Unit = {
-        //TODO Uncomment before merging
-//        if (msgEvent.getMessage.startsWith(mtrConfigRef.commandPrefix)) {
-//            val messageSplit: Array[String] = msgEvent.getMessage.split("\\s")
-//            twitchBot.get.client.getEventManager.callEvent(new TwitchCommandExecutionEvent(
-//                msgEvent.getMessageEvent,
-//                messageSplit.head.substring(mtrConfigRef.commandPrefix.length),
-//                messageSplit.tail
-//            ))
-//        } else
-//            filterMessage(msgEvent)
+        if (msgEvent.getMessage.startsWith(mtrConfigRef.commandPrefix)) {
+            val messageSplit: Array[String] = msgEvent.getMessage.split("\\s")
+            twitchBot.get.client.getEventManager.callEvent(new TwitchCommandExecutionEvent(
+                msgEvent.getMessageEvent,
+                messageSplit.head.substring(mtrConfigRef.commandPrefix.length),
+                messageSplit.tail
+            ))
+        } else
+            filterMessage(msgEvent)
 
         if(msgEvent.getTag("bits").isPresent)
             twitchBot.get.client.getEventManager.callEvent(new TwitchCheerEvent(msgEvent.getMessageEvent, msgEvent.getTag("bits").get().getValue.get().toInt))

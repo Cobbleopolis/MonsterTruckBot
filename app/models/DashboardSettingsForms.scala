@@ -3,9 +3,9 @@ package models
 import javax.inject.{Inject, Singleton}
 
 import com.cobble.bot.common.models.{BitTrackingFormData, CustomCommand, FilterSettings}
-import com.cobble.bot.common.ref.{BitTrackingRef, MessageRef, MtrConfigRef}
-import play.api.data.{Form, FormError}
+import com.cobble.bot.common.ref.{MessageRef, MtrConfigRef}
 import play.api.data.Forms._
+import play.api.data.{Form, FormError}
 
 @Singleton
 class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
@@ -41,10 +41,12 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
 
     val bitTrackingForm: Form[BitTrackingFormData] = Form(
         mapping(
-            "totalBits" -> number(min = 0),
-            "goalAmount" -> number(min = 0),
-            "toNextGoal" -> number(min = 0),
-            "goalCount" -> number(min = 0)
+            "guildId" -> ignored(mtrConfigRef.guildId),
+            "currentMode" -> number,
+            "nipDipTemplate" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
+            "nipDipGoalAmount" -> number(min = 0),
+            "nipDipToNextGoal" -> number(min = 0),
+            "nipDipGoalCount" -> number(min = 0)
         )(BitTrackingFormData.apply)(BitTrackingFormData.unapply)
     )
 

@@ -2,7 +2,7 @@ package data
 
 import javax.inject.{Inject, Singleton}
 
-import com.cobble.bot.common.models.{BotInstance, FilterSettings}
+import com.cobble.bot.common.models.{BitTrackingSettings, BotInstance, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
 import play.api.Configuration
 import play.api.cache.SyncCacheApi
@@ -19,4 +19,7 @@ class DatabaseCreation @Inject()(implicit db: Database, conf: Configuration, cac
     if (filterSettingsOpt.isEmpty)
         FilterSettings.insert(mtrConfigRef.guildId, FilterSettings(mtrConfigRef.guildId))
 
+    val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(mtrConfigRef.guildId)
+    if (bitTrackingSettingsOpt.isEmpty)
+        BitTrackingSettings.insert(mtrConfigRef.guildId, BitTrackingSettings(mtrConfigRef.guildId))
 }
