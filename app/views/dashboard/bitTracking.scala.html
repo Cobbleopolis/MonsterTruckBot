@@ -18,7 +18,7 @@
             '_label -> "dashboard.forms.bitTracking.currentMode.label"
         )
         <fieldset>
-            <legend>@messagesProv.messages("dashboard.forms.bitTracking.nipDip.title")</legend>
+            <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.nip_dip")</legend>
             @b3.textarea(bitTrackingForm("nipDipTemplate"),
                 '_label -> "dashboard.forms.bitTracking.nipDip.template.label",
                 '_help -> messagesProv.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.nipDipMode.getFormattingVariables.keys.mkString(", ")),
@@ -33,6 +33,22 @@
             @b3.number(bitTrackingForm("nipDipGoalCount"),
                 '_label -> "dashboard.forms.bitTracking.goalCount.label"
             )
+        </fieldset>
+        <fieldset>
+            <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.rbg")</legend>
+            <p>@messagesProv.messages("global.notYetImplemented")</p>
+        </fieldset>
+        <fieldset>
+            <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.jackshots")</legend>
+            <p>@messagesProv.messages("global.notYetImplemented")</p>
+        </fieldset>
+        <fieldset>
+            <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.push_up")</legend>
+            <p>@messagesProv.messages("global.notYetImplemented")</p>
+        </fieldset>
+        <fieldset>
+            <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.sing_it_or_slam_it")</legend>
+            <p>@messagesProv.messages("global.notYetImplemented")</p>
         </fieldset>
         @b3.submit('class -> "btn btn-primary") {@messagesProv.messages("global.forms.save")}
     }
