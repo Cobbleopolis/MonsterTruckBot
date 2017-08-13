@@ -11,4 +11,6 @@ abstract class BitGameMode {
     val numberFormatString: String = "%,d"
 
     def getFormattingVariables: Map[String, String]
+
+    def getFormattingVariablesString: String = getFormattingVariables.keys.mkString("{", "}, {", "}")
 }

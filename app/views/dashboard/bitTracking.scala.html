@@ -21,7 +21,7 @@
             <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.nip_dip")</legend>
             @b3.textarea(bitTrackingForm("nipDipTemplate"),
                 '_label -> "dashboard.forms.bitTracking.nipDip.template.label",
-                '_help -> messagesProv.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.nipDipMode.getFormattingVariables.keys.mkString(", ")),
+                '_help -> messagesProv.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.nipDipMode.getFormattingVariablesString),
                 'rows -> 5
             )
             @b3.number(bitTrackingForm("nipDipGoalAmount"),
@@ -42,7 +42,7 @@
             <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.jackshots")</legend>
             @b3.textarea(bitTrackingForm("jackshotsTemplate"),
                 '_label -> "dashboard.forms.bitTracking.jackshots.template.label",
-                '_help -> messagesProv.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.jackshotsMode.getFormattingVariables.keys.mkString(", ")),
+                '_help -> messagesProv.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.jackshotsMode.getFormattingVariablesString),
                 'rows -> 5
             )
             @b3.number(bitTrackingForm("jackshotsGoalAmount"),
