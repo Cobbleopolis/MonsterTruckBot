@@ -3,7 +3,7 @@ package twitch
 import javax.inject.Inject
 
 import com.cobble.bot.common.api.{BitTrackingMode, TwitchChannelInfo}
-import com.cobble.bot.common.bitTracking.{BasicGameMode, NipDipMode}
+import com.cobble.bot.common.bitTracking.{BitGameMode, CollectiveBitGameMode, NipDipMode}
 import com.cobble.bot.common.models.BitTrackingSettings
 import com.cobble.bot.common.ref.MtrConfigRef
 import com.cobble.bot.common.util.BitTrackingUtil
@@ -29,7 +29,7 @@ class TwitchBotCheerEventHandler @Inject()(
             }
     }
 
-    def handleBasicGameMode(twitchCheerEvent: TwitchCheerEvent, basicGameMode: BasicGameMode): Unit = {
+    def handleBasicGameMode(twitchCheerEvent: TwitchCheerEvent, basicGameMode: CollectiveBitGameMode): Unit = {
         basicGameMode.addToToNextGoalAmount(twitchCheerEvent.getCheerAmount)
 
         if (basicGameMode.getToNextGoal >= basicGameMode.getGoalAmount) {
