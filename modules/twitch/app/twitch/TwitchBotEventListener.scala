@@ -75,13 +75,8 @@ class TwitchBotEventListener @Inject()(
             commandOpt.get.execute(commandEvent)
         else {
             val customCommandOpt: Option[CustomCommand] = CustomCommand.get(mtrConfigRef.guildId, commandEvent.getCommand)
-            if (customCommandOpt.isDefined && getUserPermissionLevel(commandEvent) >= customCommandOpt.get.getPermissionLevel) {
-                val formattedCommandContent: String = s"/me ${customCommandOpt.get.commandContent}"
-                if (formattedCommandContent.length > MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE)
-                    twitchMessageUtil.reply("bot.commandMessageTooLong")(commandEvent)
-                else
-                    commandEvent.getChannel.sendMessage(formattedCommandContent)
-            }
+            if (customCommandOpt.isDefined && getUserPermissionLevel(commandEvent) >= customCommandOpt.get.getPermissionLevel)
+                twitchMessageUtil.replyToMessageWithMe(commandEvent.getMessageEvent, customCommandOpt.get.commandContent, commandEvent.getArgs: _*)
         }
     }
 
