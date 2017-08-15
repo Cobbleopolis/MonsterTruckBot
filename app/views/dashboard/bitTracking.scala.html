@@ -1,8 +1,8 @@
 @import com.cobble.bot.common.ref.MtrConfigRef
 @import org.webjars.play.WebJarsUtil
 @import sx.blah.discord.handle.obj.IGuild
-@import com.cobble.bot.common.models.BitTrackingFormData
 @import com.cobble.bot.common.api.BitTrackingMode
+@import com.cobble.bot.common.models.bitTrackingFormData.BitTrackingFormData
 @import com.cobble.bot.common.util.BitTrackingUtil
 @(guild: IGuild, bitTrackingForm: Form[BitTrackingFormData], bitTrackingUtil: BitTrackingUtil)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef, request: MessagesRequest[AnyContent])
 
@@ -19,18 +19,18 @@
         )
         <fieldset>
             <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.nip_dip")</legend>
-            @b3.textarea(bitTrackingForm("nipDipTemplate"),
+            @b3.textarea(bitTrackingForm("nipDip.template"),
                 '_label -> "dashboard.forms.bitTracking.nipDip.template.label",
                 '_help -> messagesProv.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.nipDipMode.getFormattingVariablesString),
                 'rows -> 5
             )
-            @b3.number(bitTrackingForm("nipDipGoalAmount"),
+            @b3.number(bitTrackingForm("nipDip.goalAmount"),
                 '_label -> "dashboard.forms.bitTracking.goalAmount.label"
             )
-            @b3.number(bitTrackingForm("nipDipToNextGoal"),
+            @b3.number(bitTrackingForm("nipDip.toNextGoal"),
                 '_label -> "dashboard.forms.bitTracking.toNextGoal.label"
             )
-            @b3.number(bitTrackingForm("nipDipGoalCount"),
+            @b3.number(bitTrackingForm("nipDip.goalCount"),
                 '_label -> "dashboard.forms.bitTracking.goalCount.label"
             )
         </fieldset>
@@ -40,18 +40,18 @@
         </fieldset>
         <fieldset>
             <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.jackshots")</legend>
-            @b3.textarea(bitTrackingForm("jackshotsTemplate"),
+            @b3.textarea(bitTrackingForm("jackshots.template"),
                 '_label -> "dashboard.forms.bitTracking.jackshots.template.label",
                 '_help -> messagesProv.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.jackshotsMode.getFormattingVariablesString),
                 'rows -> 5
             )
-            @b3.number(bitTrackingForm("jackshotsGoalAmount"),
+            @b3.number(bitTrackingForm("jackshots.goalAmount"),
                 '_label -> "dashboard.forms.bitTracking.goalAmount.label"
             )
-            @b3.number(bitTrackingForm("jackshotsToNextGoal"),
+            @b3.number(bitTrackingForm("jackshots.toNextGoal"),
                 '_label -> "dashboard.forms.bitTracking.toNextGoal.label"
             )
-            @b3.number(bitTrackingForm("jackshotsGoalCount"),
+            @b3.number(bitTrackingForm("jackshots.goalCount"),
                 '_label -> "dashboard.forms.bitTracking.goalCount.label"
             )
         </fieldset>

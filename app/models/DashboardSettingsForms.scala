@@ -2,7 +2,8 @@ package models
 
 import javax.inject.{Inject, Singleton}
 
-import com.cobble.bot.common.models.{BitTrackingFormData, CustomCommand, FilterSettings}
+import com.cobble.bot.common.models.bitTrackingFormData.{BitTrackingFormData, CollectiveModeFormData}
+import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.{MessageRef, MtrConfigRef}
 import play.api.data.Forms._
 import play.api.data.{Form, FormError}
@@ -44,16 +45,18 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
             "guildId" -> ignored(mtrConfigRef.guildId),
             "currentMode" -> number,
             //Nip Dip
-            "nipDipTemplate" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
-            "nipDipGoalAmount" -> number(min = 0),
-            "nipDipToNextGoal" -> number(min = 0),
-            "nipDipGoalCount" -> number(min = 0),
-            //RBG
-            //Jackshots
-            "jackshotsTemplate" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
-            "jackshotsGoalAmount" -> number(min = 0),
-            "jackshotsToNextGoal" -> number(min = 0),
-            "jackshotsGoalCount" -> number(min = 0)
+            "nipDip" -> mapping(
+                "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
+                "goalAmount" -> number(min = 0),
+                "toNextGoal" -> number(min = 0),
+                "goalCount" -> number(min = 0)
+            )(CollectiveModeFormData.apply)(CollectiveModeFormData.unapply),
+            "jackshots" -> mapping(
+                "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
+                "goalAmount" -> number(min = 0),
+                "toNextGoal" -> number(min = 0),
+                "goalCount" -> number(min = 0)
+            )(CollectiveModeFormData.apply)(CollectiveModeFormData.unapply)
         )(BitTrackingFormData.apply)(BitTrackingFormData.unapply)
     )
 

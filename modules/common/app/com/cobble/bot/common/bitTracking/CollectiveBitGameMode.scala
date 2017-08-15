@@ -1,5 +1,6 @@
 package com.cobble.bot.common.bitTracking
 
+import com.cobble.bot.common.models.bitTrackingFormData.CollectiveModeFormData
 import com.cobble.bot.common.ref.BitTrackingRef
 
 trait CollectiveBitGameMode extends BitGameMode {
@@ -31,5 +32,13 @@ trait CollectiveBitGameMode extends BitGameMode {
     def getGoalAmount: Int = cache.get[Int](BitTrackingRef.getGoalAmountLocation(domain)).getOrElse(defaultGoalAmount)
 
     def setGoalAmount(goalAmount: Int): Unit = cache.set(BitTrackingRef.getGoalAmountLocation(domain), goalAmount)
+
+    def getCollectiveModeFormData(template: String): CollectiveModeFormData = CollectiveModeFormData(template, getGoalAmount, getToNextGoal, getGoalCount)
+
+    def setFromCollectiveModeFormData(collectiveModeFormData: CollectiveModeFormData): Unit = {
+        setGoalAmount(collectiveModeFormData.goalAmount)
+        setToNextGoal(collectiveModeFormData.toNextGoal)
+        setGoalCount(collectiveModeFormData.goalCount)
+    }
 
 }
