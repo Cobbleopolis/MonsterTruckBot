@@ -2,7 +2,7 @@ package models
 
 import javax.inject.{Inject, Singleton}
 
-import com.cobble.bot.common.models.bitTrackingFormData.{BitTrackingFormData, CollectiveModeFormData}
+import com.cobble.bot.common.models.bitTrackingFormData.{BitTrackingFormData, CollectiveModeFormData, RBGModeFormData}
 import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.{MessageRef, MtrConfigRef}
 import play.api.data.Forms._
@@ -44,13 +44,21 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
         mapping(
             "guildId" -> ignored(mtrConfigRef.guildId),
             "currentMode" -> number,
-            //Nip Dip
             "nipDip" -> mapping(
                 "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
                 "goalAmount" -> number(min = 0),
                 "toNextGoal" -> number(min = 0),
                 "goalCount" -> number(min = 0)
             )(CollectiveModeFormData.apply)(CollectiveModeFormData.unapply),
+            "rbg" -> mapping(
+                "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
+                "greenShotAmount" -> number(min = 0),
+                "greenShotCount" -> number(min = 0),
+                "blueShotAmount" -> number(min = 0),
+                "blueShotCount" -> number(min = 0),
+                "redShotAmount" -> number(min = 0),
+                "redShotCount" -> number(min = 0)
+            )(RBGModeFormData.apply)(RBGModeFormData.unapply),
             "jackshots" -> mapping(
                 "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
                 "goalAmount" -> number(min = 0),
