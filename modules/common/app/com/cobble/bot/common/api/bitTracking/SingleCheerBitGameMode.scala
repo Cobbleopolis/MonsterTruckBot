@@ -1,4 +1,4 @@
-package com.cobble.bot.common.bitTracking
+package com.cobble.bot.common.api.bitTracking
 
 import com.cobble.bot.common.ref.BitTrackingRef
 

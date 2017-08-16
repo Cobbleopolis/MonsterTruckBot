@@ -1,6 +1,6 @@
-package com.cobble.bot.common.bitTracking
+package com.cobble.bot.common.api.bitTracking
 
-import com.cobble.bot.common.api.BitTrackingMode.BitTrackingMode
+import BitTrackingMode.BitTrackingMode
 import play.api.cache.SyncCacheApi
 
 import scala.collection.mutable

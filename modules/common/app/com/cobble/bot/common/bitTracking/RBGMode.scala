@@ -2,8 +2,8 @@ package com.cobble.bot.common.bitTracking
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.api.BitTrackingMode
-import com.cobble.bot.common.api.BitTrackingMode.BitTrackingMode
+import com.cobble.bot.common.api.bitTracking.BitTrackingMode.BitTrackingMode
+import com.cobble.bot.common.api.bitTracking.{BitTrackingMode, SingleCheerBitGameMode}
 import com.cobble.bot.common.models.bitTrackingFormData.RBGModeFormData
 import com.cobble.bot.common.ref.BitTrackingRef
 import play.api.cache.SyncCacheApi

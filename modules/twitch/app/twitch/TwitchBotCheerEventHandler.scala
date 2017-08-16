@@ -3,8 +3,9 @@ package twitch
 import javax.inject.Inject
 
 import com.cobble.bot.common.DefaultLang
-import com.cobble.bot.common.api.{BitTrackingMode, TwitchChannelInfo}
-import com.cobble.bot.common.bitTracking.{CollectiveBitGameMode, RBGMode}
+import com.cobble.bot.common.api.bitTracking.{BitTrackingMode, CollectiveBitGameMode}
+import com.cobble.bot.common.api.TwitchChannelInfo
+import com.cobble.bot.common.bitTracking.RBGMode
 import com.cobble.bot.common.models.BitTrackingSettings
 import com.cobble.bot.common.ref.MtrConfigRef
 import com.cobble.bot.common.util.BitTrackingUtil

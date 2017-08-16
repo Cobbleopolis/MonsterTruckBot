@@ -1,52 +1,63 @@
+@import b3.inline.InlineFieldConstructor
+@import com.cobble.bot.common.api.bitTracking.{BitTrackingMode, CollectiveBitGameMode}
+@import com.cobble.bot.common.models.bitTrackingFormData.BitTrackingFormData
 @import com.cobble.bot.common.ref.MtrConfigRef
+@import com.cobble.bot.common.util.BitTrackingUtil
 @import org.webjars.play.WebJarsUtil
 @import sx.blah.discord.handle.obj.IGuild
-@import com.cobble.bot.common.api.BitTrackingMode
-@import com.cobble.bot.common.models.bitTrackingFormData.BitTrackingFormData
-@import com.cobble.bot.common.util.BitTrackingUtil
+@import com.cobble.bot.common.api.bitTracking.GameCheerMode
 @(guild: IGuild, bitTrackingForm: Form[BitTrackingFormData], bitTrackingUtil: BitTrackingUtil)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef, request: MessagesRequest[AnyContent])
 
-@implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-10") }
+@fieldLabelColWidth = @{2}
+@fieldInputColWidth = @{10}
 
-@renderRBGShotType(shotType: String) = {
-    @b3.number(bitTrackingForm(s"rbg.${shotType}ShotAmount"),
-        '_label -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotAmount.label", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType")),
-        '_help -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotAmount.help", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType").toLowerCase)
-    )(implicitFieldConstructor, messagesProv)
-    @b3.number(bitTrackingForm(s"rbg.${shotType}ShotCount"),
-        '_label -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotCount.label", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType")),
-        '_help -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotCount.help", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType").toLowerCase)
-    )(implicitFieldConstructor, messagesProv)
+@implicitFieldConstructor = @{
+    b3.horizontal.fieldConstructor("col-md-" + fieldLabelColWidth, "col-md-" + fieldInputColWidth)
 }
 
-@dashboardPage(guild, "bitTracking"){
+@renderCollectiveGameMode(gameModeName: String, collectiveBitGameMode: CollectiveBitGameMode) = {
+@b3.textarea(bitTrackingForm(s"$gameModeName.template"),
+    '_label -> "dashboard.forms.bitTracking.nipDip.template.label",
+    '_help -> messagesProv.messages("dashboard.forms.bitTracking.variables", collectiveBitGameMode.getFormattingVariablesString),
+    'rows -> 5
+)(implicitFieldConstructor, messagesProv)
+@b3.number(bitTrackingForm(s"$gameModeName.goalAmount"),
+    '_label -> "dashboard.forms.bitTracking.collective.goalAmount.label",
+    '_help -> "dashboard.forms.bitTracking.collective.goalAmount.help"
+)(implicitFieldConstructor, messagesProv)
+@b3.number(bitTrackingForm(s"$gameModeName.toNextGoal"),
+    '_label -> "dashboard.forms.bitTracking.collective.toNextGoal.label",
+    '_help -> "dashboard.forms.bitTracking.collective.toNextGoal.help"
+)(implicitFieldConstructor, messagesProv)
+@b3.number(bitTrackingForm(s"$gameModeName.goalCount"),
+    '_label -> "dashboard.forms.bitTracking.collective.goalCount.label",
+    '_help -> "dashboard.forms.bitTracking.collective.goalCount.help"
+)(implicitFieldConstructor, messagesProv)
+}
+
+@renderRBGShotType(shotType: String) = {
+@b3.number(bitTrackingForm(s"rbg.${shotType}ShotAmount"),
+    '_label -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotAmount.label", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType")),
+    '_help -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotAmount.help", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType").toLowerCase)
+)(implicitFieldConstructor, messagesProv)
+@b3.number(bitTrackingForm(s"rbg.${shotType}ShotCount"),
+    '_label -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotCount.label", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType")),
+    '_help -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotCount.help", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType").toLowerCase)
+)(implicitFieldConstructor, messagesProv)
+}
+
+@dashboardPage(guild, "bitTracking") {
 
 } {
     @b3.form(routes.Dashboard.submitBitTracking()) {
         @helper.CSRF.formField
         @b3.select(bitTrackingForm("currentMode"),
-            options = BitTrackingMode.map.toSeq.sortBy(_._1),
+            options = BitTrackingMode.map.toSeq,
             '_label -> "dashboard.forms.bitTracking.currentMode.label"
         )
         <fieldset>
             <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.nip_dip")</legend>
-            @b3.textarea(bitTrackingForm("nipDip.template"),
-                '_label -> "dashboard.forms.bitTracking.nipDip.template.label",
-                '_help -> messagesProv.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.nipDipMode.getFormattingVariablesString),
-                'rows -> 5
-            )
-            @b3.number(bitTrackingForm("nipDip.goalAmount"),
-                '_label -> "dashboard.forms.bitTracking.goalAmount.label",
-                '_help -> "dashboard.forms.bitTracking.goalAmount.help"
-            )
-            @b3.number(bitTrackingForm("nipDip.toNextGoal"),
-                '_label -> "dashboard.forms.bitTracking.toNextGoal.label",
-                '_help -> "dashboard.forms.bitTracking.toNextGoal.help"
-            )
-            @b3.number(bitTrackingForm("nipDip.goalCount"),
-                '_label -> "dashboard.forms.bitTracking.goalCount.label",
-                '_help -> "dashboard.forms.bitTracking.goalCount.help"
-            )
+            @renderCollectiveGameMode("nipDip", bitTrackingUtil.nipDipMode)
         </fieldset>
         <fieldset>
             <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.rbg")</legend>
@@ -61,32 +72,42 @@
         </fieldset>
         <fieldset>
             <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.jackshots")</legend>
-            @b3.textarea(bitTrackingForm("jackshots.template"),
-                '_label -> "dashboard.forms.bitTracking.jackshots.template.label",
-                '_help -> messagesProv.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.jackshotsMode.getFormattingVariablesString),
-                'rows -> 5
-            )
-            @b3.number(bitTrackingForm("jackshots.goalAmount"),
-                '_label -> "dashboard.forms.bitTracking.goalAmount.label",
-                '_help -> "dashboard.forms.bitTracking.goalAmount.help"
-            )
-            @b3.number(bitTrackingForm("jackshots.toNextGoal"),
-                '_label -> "dashboard.forms.bitTracking.toNextGoal.label",
-                '_help -> "dashboard.forms.bitTracking.toNextGoal.help"
-            )
-            @b3.number(bitTrackingForm("jackshots.goalCount"),
-                '_label -> "dashboard.forms.bitTracking.goalCount.label",
-                '_help -> "dashboard.forms.bitTracking.goalCount.help"
-            )
+            @renderCollectiveGameMode("jackshots", bitTrackingUtil.jackshotsMode)
         </fieldset>
         <fieldset>
             <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.push_up")</legend>
-            <p>@messagesProv.messages("global.notYetImplemented")</p>
+            @b3.textarea(bitTrackingForm("pushUp.template"),
+                '_label -> "dashboard.forms.bitTracking.pushUp.template.label",
+                '_help -> messagesProv.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.pushUpMode.getFormattingVariablesString), 'rows -> 5
+            )
+            @b3.select(bitTrackingForm("pushUp.cheerMode"),
+                options = GameCheerMode.map.toSeq,
+                '_label -> "dashboard.forms.bitTracking.pushUp.cheerMode.label",
+                '_help -> "dashboard.forms.bitTracking.pushUp.cheerMode.help"
+            )
+            @b3.number(bitTrackingForm("pushUp.goalAmount"),
+                '_label -> "dashboard.forms.bitTracking.pushUp.goalAmount.label",
+                '_help -> "dashboard.forms.bitTracking.pushUp.goalAmount.help"
+            )
+            @b3.number(bitTrackingForm("pushUp.toNextGoal"),
+                '_label -> "dashboard.forms.bitTracking.pushUp.toNextGoal.label",
+                '_help -> "dashboard.forms.bitTracking.pushUp.toNextGoal.help"
+            )
+            @b3.number(bitTrackingForm("pushUp.pushUpSetAmount"),
+                '_label -> "dashboard.forms.bitTracking.pushUp.pushUpSetAmount.label",
+                '_help -> "dashboard.forms.bitTracking.pushUp.pushUpSetAmount.help"
+            )
+            @b3.number(bitTrackingForm("pushUp.goalCount"),
+                '_label -> "dashboard.forms.bitTracking.pushUp.goalCount.label",
+                '_help -> "dashboard.forms.bitTracking.pushUp.goalCount.help"
+            )
         </fieldset>
         <fieldset>
             <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.sing_it_or_slam_it")</legend>
             <p>@messagesProv.messages("global.notYetImplemented")</p>
         </fieldset>
-        @b3.submit('class -> "btn btn-primary") {@messagesProv.messages("global.forms.save")}
+        @b3.submit('class -> "btn btn-primary") {
+            @messagesProv.messages("global.forms.save")
+        }
     }
 }

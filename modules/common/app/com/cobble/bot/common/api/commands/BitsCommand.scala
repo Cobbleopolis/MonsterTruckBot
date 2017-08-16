@@ -1,7 +1,8 @@
 package com.cobble.bot.common.api.commands
 
 import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
-import com.cobble.bot.common.api.{BitTrackingMode, Command, PermissionLevel}
+import com.cobble.bot.common.api.bitTracking.BitTrackingMode
+import com.cobble.bot.common.api.{Command, PermissionLevel}
 import com.cobble.bot.common.models.BitTrackingSettings
 import com.cobble.bot.common.util.BitTrackingUtil
 
@@ -27,6 +28,7 @@ trait BitsCommand extends Command {
             case BitTrackingMode.NIP_DIP => bitTrackingUtil.nipDipMode.getFormattingVariables
             case BitTrackingMode.RBG => bitTrackingUtil.rbgMode.getFormattingVariables
             case BitTrackingMode.JACKSHOTS => bitTrackingUtil.jackshotsMode.getFormattingVariables
+            case BitTrackingMode.PUSH_UP => bitTrackingUtil.pushUpMode.getFormattingVariables
             case _ => mutable.LinkedHashMap()
         }
         variables.foreach(kv => responseString = responseString.replaceAll(s"\\{${kv._1}\\}", kv._2))

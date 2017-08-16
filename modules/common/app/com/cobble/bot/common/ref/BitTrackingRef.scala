@@ -8,7 +8,7 @@ object BitTrackingRef {
 
     def getGoalAmountLocation(domain: String): String = getBitTrackingLocation(domain, GOAL_AMOUNT_SUFFIX)
 
-    val DEFAULT_GOAL_AMOUNT: Int = 10000
+    val DEFAULT_GOAL_AMOUNT: Int = BitCheerLevels.RED_BIT
 
     val TO_NEXT_GOAL_SUFFIX: String = "toNextGoal"
 
@@ -37,7 +37,11 @@ object BitTrackingRef {
         val RED_BIT: Int = 10000
 
         val GOLD_BIT: Int = 100000
+    }
 
+    object PushUpMode {
+
+        val DEFAULT_PUSH_UP_SET_AMOUNT: Int = 20
     }
 
 }

@@ -1,8 +1,9 @@
 package com.cobble.bot.common.models
 
 import anorm.{Macro, NamedParameter, RowParser, SqlParser}
-import com.cobble.bot.common.api.BitTrackingMode.BitTrackingMode
-import com.cobble.bot.common.api.{BitTrackingMode, Model, ModelAccessor}
+import com.cobble.bot.common.api.bitTracking.BitTrackingMode
+import com.cobble.bot.common.api.bitTracking.BitTrackingMode.BitTrackingMode
+import com.cobble.bot.common.api.{Model, ModelAccessor}
 
 case class BitTrackingSettings(guildId: Long, currentMode: Int = 0, nipDipTemplate: String = "", rbgTemplate: String = "", jackshotsTemplate: String = "", pushUpTemplate: String = "", singItOrSlamItTemplate: String = "") extends Model {
 
