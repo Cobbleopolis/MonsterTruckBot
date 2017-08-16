@@ -8,6 +8,15 @@
 
 @implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-10") }
 
+@renderRBGShotType(shotType: String) = {
+    @b3.number(bitTrackingForm(s"rbg.${shotType}ShotAmount"),
+        '_label -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotAmount", messagesProv.messages(s"dashboard.forms.bitTracking.rbg.shotTypes.$shotType"))
+    )(implicitFieldConstructor, messagesProv)
+    @b3.number(bitTrackingForm(s"rbg.${shotType}ShotCount"),
+        '_label -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotCount", messagesProv.messages(s"dashboard.forms.bitTracking.rbg.shotTypes.$shotType"))
+    )(implicitFieldConstructor, messagesProv)
+}
+
 @dashboardPage(guild, "bitTracking"){
 
 } {
@@ -36,7 +45,14 @@
         </fieldset>
         <fieldset>
             <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.rbg")</legend>
-            <p>@messagesProv.messages("global.notYetImplemented")</p>
+            @b3.textarea(bitTrackingForm("rbg.template"),
+                '_label -> "dashboard.forms.bitTracking.rbg.template.label",
+                '_help -> messagesProv.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.rbgMode.getFormattingVariablesString),
+                'rows -> 5
+            )
+            @renderRBGShotType("green")
+            @renderRBGShotType("blue")
+            @renderRBGShotType("red")
         </fieldset>
         <fieldset>
             <legend>@messagesProv.messages("dashboard.forms.bitTracking.modes.jackshots")</legend>

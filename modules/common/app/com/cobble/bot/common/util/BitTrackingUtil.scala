@@ -24,6 +24,7 @@ class BitTrackingUtil @Inject()(implicit mtrConfigRef: MtrConfigRef, db: Databas
 
     def setBitTrackingFormData(bitTrackingFormData: BitTrackingFormData): Unit = {
         nipDipMode.setFromCollectiveModeFormData(bitTrackingFormData.nipDipFormData)
+        rbgMode.setFromRBGFormData(bitTrackingFormData.rbgFormData)
         jackshotsMode.setFromCollectiveModeFormData(bitTrackingFormData.jackshotsFormData)
     }
 

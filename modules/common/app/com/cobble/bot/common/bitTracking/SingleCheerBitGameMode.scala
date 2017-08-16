@@ -2,6 +2,8 @@ package com.cobble.bot.common.bitTracking
 
 import com.cobble.bot.common.ref.BitTrackingRef
 
+import scala.collection.mutable
+
 trait SingleCheerBitGameMode extends BitGameMode {
 
     val defaultGoalAmount: Int
@@ -18,7 +20,7 @@ trait SingleCheerBitGameMode extends BitGameMode {
 
     def setGoalCount(goalCount: Int): Unit = cache.set(BitTrackingRef.getGoalCountLocation(domain), goalCount)
 
-    override def getFormattingVariables: Map[String, String] = Map(
+    override def getFormattingVariables: mutable.LinkedHashMap[String, String] = mutable.LinkedHashMap(
         "goalAmount" -> numberFormatString.format(getGoalAmount),
         "goalCount" -> numberFormatString.format(getGoalCount)
     )

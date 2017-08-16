@@ -3,6 +3,8 @@ package com.cobble.bot.common.bitTracking
 import com.cobble.bot.common.models.bitTrackingFormData.CollectiveModeFormData
 import com.cobble.bot.common.ref.BitTrackingRef
 
+import scala.collection.mutable
+
 trait CollectiveBitGameMode extends BitGameMode {
 
     val defaultGoalAmount: Int
@@ -23,7 +25,7 @@ trait CollectiveBitGameMode extends BitGameMode {
 
     def setGoalCount(goalCount: Int): Unit = cache.set(BitTrackingRef.getGoalCountLocation(domain), goalCount)
 
-    override def getFormattingVariables: Map[String, String] = Map(
+    override def getFormattingVariables: mutable.LinkedHashMap[String, String] = mutable.LinkedHashMap(
         "goalAmount" -> numberFormatString.format(getGoalAmount),
         "toNextGoal" -> numberFormatString.format(getToNextGoal),
         "goalCount" -> numberFormatString.format(getGoalCount)

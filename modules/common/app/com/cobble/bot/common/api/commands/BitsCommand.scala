@@ -5,6 +5,8 @@ import com.cobble.bot.common.api.{BitTrackingMode, Command, PermissionLevel}
 import com.cobble.bot.common.models.BitTrackingSettings
 import com.cobble.bot.common.util.BitTrackingUtil
 
+import scala.collection.mutable
+
 trait BitsCommand extends Command {
 
     override val name: String = "bits"
@@ -21,10 +23,11 @@ trait BitsCommand extends Command {
             case BitTrackingMode.SING_IT_OR_SLAM_IT => bitTrackingSettings.singItOrSlamItTemplate
             case _ => "bot.bitTracking.unknownBitTrackingMode"
         }
-        val variables: Map[String, String] = bitTrackingSettings.getCurrentMode match {
+        val variables: mutable.LinkedHashMap[String, String] = bitTrackingSettings.getCurrentMode match {
             case BitTrackingMode.NIP_DIP => bitTrackingUtil.nipDipMode.getFormattingVariables
+            case BitTrackingMode.RBG => bitTrackingUtil.rbgMode.getFormattingVariables
             case BitTrackingMode.JACKSHOTS => bitTrackingUtil.jackshotsMode.getFormattingVariables
-            case _ => Map()
+            case _ => mutable.LinkedHashMap()
         }
         variables.foreach(kv => responseString = responseString.replaceAll(s"\\{${kv._1}\\}", kv._2))
         responseString

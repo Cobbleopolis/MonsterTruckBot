@@ -8,6 +8,8 @@ import com.cobble.bot.common.models.bitTrackingFormData.RBGModeFormData
 import com.cobble.bot.common.ref.BitTrackingRef
 import play.api.cache.SyncCacheApi
 
+import scala.collection.mutable
+
 class RBGMode @Inject()(val cache: SyncCacheApi) extends SingleCheerBitGameMode {
 
     override val defaultGoalAmount: Int = BitTrackingRef.BitCheerLevels.RED_BIT
@@ -59,7 +61,7 @@ class RBGMode @Inject()(val cache: SyncCacheApi) extends SingleCheerBitGameMode 
 
     def setRedShotCount(redShotCount: Int): Unit = cache.set(BitTrackingRef.getBitTrackingLocation(domain, RED_SHOT_COUNT_SUFFIX), redShotCount)
 
-    override def getFormattingVariables: Map[String, String] = Map(
+    override def getFormattingVariables: mutable.LinkedHashMap[String, String] = mutable.LinkedHashMap(
         "greenShotAmount" -> numberFormatString.format(getGreenShotAmount),
         "greenShotCount" -> numberFormatString.format(getGreenShotCount),
         "blueShotAmount" -> numberFormatString.format(getBlueShotAmount),
@@ -69,4 +71,13 @@ class RBGMode @Inject()(val cache: SyncCacheApi) extends SingleCheerBitGameMode 
     )
 
     def getRBGFormData(template: String): RBGModeFormData = RBGModeFormData(template, getGreenShotAmount, getGreenShotCount, getBlueShotAmount, getBlueShotCount, getRedShotAmount, getRedShotCount)
+    
+    def setFromRBGFormData(rbgModeFormData: RBGModeFormData): Unit = {
+        setGreenShotAmount(rbgModeFormData.greenShotAmount)
+        setGreenShotCount(rbgModeFormData.greenShotCount)
+        setBlueShotAmount(rbgModeFormData.blueShotAmount)
+        setBlueShotCount(rbgModeFormData.blueShotCount)
+        setRedShotAmount(rbgModeFormData.redShotAmount)
+        setRedShotCount(rbgModeFormData.redShotCount)
+    }
 }
