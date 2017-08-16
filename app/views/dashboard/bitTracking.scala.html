@@ -10,10 +10,12 @@
 
 @renderRBGShotType(shotType: String) = {
     @b3.number(bitTrackingForm(s"rbg.${shotType}ShotAmount"),
-        '_label -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotAmount", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType"))
+        '_label -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotAmount.label", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType")),
+        '_help -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotAmount.help", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType").toLowerCase)
     )(implicitFieldConstructor, messagesProv)
     @b3.number(bitTrackingForm(s"rbg.${shotType}ShotCount"),
-        '_label -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotCount", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType"))
+        '_label -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotCount.label", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType")),
+        '_help -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotCount.help", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType").toLowerCase)
     )(implicitFieldConstructor, messagesProv)
 }
 
@@ -34,13 +36,16 @@
                 'rows -> 5
             )
             @b3.number(bitTrackingForm("nipDip.goalAmount"),
-                '_label -> "dashboard.forms.bitTracking.goalAmount.label"
+                '_label -> "dashboard.forms.bitTracking.goalAmount.label",
+                '_help -> "dashboard.forms.bitTracking.goalAmount.help"
             )
             @b3.number(bitTrackingForm("nipDip.toNextGoal"),
-                '_label -> "dashboard.forms.bitTracking.toNextGoal.label"
+                '_label -> "dashboard.forms.bitTracking.toNextGoal.label",
+                '_help -> "dashboard.forms.bitTracking.toNextGoal.help"
             )
             @b3.number(bitTrackingForm("nipDip.goalCount"),
-                '_label -> "dashboard.forms.bitTracking.goalCount.label"
+                '_label -> "dashboard.forms.bitTracking.goalCount.label",
+                '_help -> "dashboard.forms.bitTracking.goalCount.help"
             )
         </fieldset>
         <fieldset>
@@ -62,13 +67,16 @@
                 'rows -> 5
             )
             @b3.number(bitTrackingForm("jackshots.goalAmount"),
-                '_label -> "dashboard.forms.bitTracking.goalAmount.label"
+                '_label -> "dashboard.forms.bitTracking.goalAmount.label",
+                '_help -> "dashboard.forms.bitTracking.goalAmount.help"
             )
             @b3.number(bitTrackingForm("jackshots.toNextGoal"),
-                '_label -> "dashboard.forms.bitTracking.toNextGoal.label"
+                '_label -> "dashboard.forms.bitTracking.toNextGoal.label",
+                '_help -> "dashboard.forms.bitTracking.toNextGoal.help"
             )
             @b3.number(bitTrackingForm("jackshots.goalCount"),
-                '_label -> "dashboard.forms.bitTracking.goalCount.label"
+                '_label -> "dashboard.forms.bitTracking.goalCount.label",
+                '_help -> "dashboard.forms.bitTracking.goalCount.help"
             )
         </fieldset>
         <fieldset>
