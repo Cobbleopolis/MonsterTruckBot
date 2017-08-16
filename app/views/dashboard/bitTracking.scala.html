@@ -10,10 +10,10 @@
 
 @renderRBGShotType(shotType: String) = {
     @b3.number(bitTrackingForm(s"rbg.${shotType}ShotAmount"),
-        '_label -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotAmount", messagesProv.messages(s"dashboard.forms.bitTracking.rbg.shotTypes.$shotType"))
+        '_label -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotAmount", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType"))
     )(implicitFieldConstructor, messagesProv)
     @b3.number(bitTrackingForm(s"rbg.${shotType}ShotCount"),
-        '_label -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotCount", messagesProv.messages(s"dashboard.forms.bitTracking.rbg.shotTypes.$shotType"))
+        '_label -> messagesProv.messages("dashboard.forms.bitTracking.rbg.shotCount", messagesProv.messages(s"bot.bitTracking.rbg.shotTypes.$shotType"))
     )(implicitFieldConstructor, messagesProv)
 }
 
