@@ -9,7 +9,7 @@ import play.api.i18n.{Lang, MessagesApi}
 import sx.blah.discord.handle.obj.{IMessage, IUser}
 
 @Singleton
-class DiscordMessageUtil @Inject()(implicit messagesApi: MessagesApi) extends DefaultLang {
+class DiscordMessageUtil @Inject()(implicit val messagesApi: MessagesApi) extends DefaultLang {
 
     def reply(content: String, args: Any*)(implicit event: DiscordCommandExecutionEvent): Unit = replyToMessage(event.getMessage, content, args: _*)
 

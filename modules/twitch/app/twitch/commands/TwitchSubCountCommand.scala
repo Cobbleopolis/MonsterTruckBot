@@ -20,7 +20,7 @@ class TwitchSubCountCommand @Inject()(implicit val messageUtil: TwitchMessageUti
         if (executionEvent.getArgs.headOption.isDefined && mtrConfigRef.twitchChannels.contains(executionEvent.getArgs.head.toLowerCase))
             channelName = executionEvent.getArgs.head.toLowerCase
 
-        getTotalSubCount(mtrConfigRef.twitchChannels.get(channelName), twitchApiUtil).onComplete {
+        getTotalSubCount(mtrConfigRef.twitchChannels.get(channelName), twitchApiUtil)(executionContext, messageUtil.messagesApi).onComplete {
             case Success(subCount) =>
                 if (messageUtil.isDefined("bot.count." + channelName))
                     messageUtil.replyMe("bot.count." + channelName, subCount)
