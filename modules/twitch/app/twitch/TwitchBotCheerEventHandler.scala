@@ -44,31 +44,38 @@ class TwitchBotCheerEventHandler @Inject()(
         collectiveGameMode.addToToNextGoalAmount(twitchCheerEvent.getCheerAmount)
 
         if (collectiveGameMode.getToNextGoal >= collectiveGameMode.getGoalAmount) {
-
-            collectiveGameMode.addToGoalCount(collectiveGameMode.getToNextGoal / collectiveGameMode.getGoalAmount)
+            val goalDelta: Int = collectiveGameMode.getToNextGoal / collectiveGameMode.getGoalAmount
+            collectiveGameMode.addToGoalCount(goalDelta)
             collectiveGameMode.setToNextGoal(collectiveGameMode.getToNextGoal % collectiveGameMode.getGoalAmount)
 
-            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.${collectiveGameMode.domain}")
+            if (goalDelta > 1)
+                twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.${collectiveGameMode.domain}.multiple", goalDelta)
+            else
+                twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.${collectiveGameMode.domain}.single")
         }
     }
 
     def handleSingleCheerGameMode(twitchCheerEvent: TwitchCheerEvent, twitchChannelInfo: TwitchChannelInfo, singleCheerBitGameMode: SingleCheerBitGameMode): Unit = {
         if (twitchCheerEvent.getCheerAmount >= singleCheerBitGameMode.getGoalCount) {
-            singleCheerBitGameMode.addToGoalCount(twitchCheerEvent.getCheerAmount / singleCheerBitGameMode.getGoalAmount)
-            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.${singleCheerBitGameMode.domain}")
+            val goalDelta: Int = twitchCheerEvent.getCheerAmount / singleCheerBitGameMode.getGoalAmount
+            singleCheerBitGameMode.addToGoalCount(goalDelta)
+            if (goalDelta > 1)
+                twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.${singleCheerBitGameMode.domain}.multiple", goalDelta)
+            else
+                twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.${singleCheerBitGameMode.domain}.single")
         }
     }
 
     def handleRBGGameMode(twitchCheerEvent: TwitchCheerEvent, twitchChannelInfo: TwitchChannelInfo, rbgMode: RBGMode): Unit = {
         if (twitchCheerEvent.getCheerAmount >= rbgMode.getRedShotAmount) {
             rbgMode.addToRedShotCount(1)
-            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, "bot.bitTracking.event.rbg", messages("bot.bitTracking.rbg.shotTypes.red").toLowerCase)
+            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, "bot.bitTracking.event.rbg.single", messages("bot.bitTracking.rbg.shotTypes.red").toLowerCase)
         } else if (twitchCheerEvent.getCheerAmount >= rbgMode.getBlueShotAmount) {
             rbgMode.addToBlueShotCount(1)
-            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, "bot.bitTracking.event.rbg", messages("bot.bitTracking.rbg.shotTypes.blue").toLowerCase)
+            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, "bot.bitTracking.event.rbg.single", messages("bot.bitTracking.rbg.shotTypes.blue").toLowerCase)
         } else if (twitchCheerEvent.getCheerAmount >= rbgMode.getGreenShotAmount) {
             rbgMode.addToGreenShotCount(1)
-            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, "bot.bitTracking.event.rbg", messages("bot.bitTracking.rbg.shotTypes.green").toLowerCase)
+            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, "bot.bitTracking.event.rbg.single", messages("bot.bitTracking.rbg.shotTypes.green").toLowerCase)
         }
     }
 
@@ -77,14 +84,22 @@ class TwitchBotCheerEventHandler @Inject()(
             case GameCheerMode.COLLECTIVE =>
                 pushUpMode.addToToNextGoalAmount(twitchCheerEvent.getCheerAmount)
                 if(pushUpMode.getToNextGoal >= pushUpMode.getGoalAmount) {
-                    pushUpMode.addToGoalCount(pushUpMode.getPushSetUpAmount)
+                    val goalDelta: Int = twitchCheerEvent.getCheerAmount / pushUpMode.getToNextGoal
+                    pushUpMode.addToGoalCount(pushUpMode.getPushSetUpAmount * goalDelta)
                     pushUpMode.setToNextGoal(pushUpMode.getToNextGoal % pushUpMode.getGoalAmount)
-                    twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.pushUp", pushUpMode.getPushSetUpAmount)
+                    if (goalDelta > 1)
+                        twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.pushUp.multiple", goalDelta, pushUpMode.getPushSetUpAmount)
+                    else
+                        twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.pushUp.single", pushUpMode.getPushSetUpAmount)
                 }
             case GameCheerMode.SINGLE_CHEER =>
                 if(twitchCheerEvent.getCheerAmount >= pushUpMode.getGoalAmount) {
-                    pushUpMode.addToGoalCount(pushUpMode.getPushSetUpAmount)
-                    twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.pushUp", pushUpMode.getPushSetUpAmount)
+                    val goalDelta: Int = twitchCheerEvent.getCheerAmount / pushUpMode.getToNextGoal
+                    pushUpMode.addToGoalCount(pushUpMode.getPushSetUpAmount * goalDelta)
+                    if (goalDelta > 1)
+                        twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.pushUp.multiple", goalDelta, pushUpMode.getPushSetUpAmount)
+                    else
+                        twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.pushUp.single", pushUpMode.getPushSetUpAmount)
                 }
         }
     }
