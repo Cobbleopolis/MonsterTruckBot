@@ -3,9 +3,9 @@ package twitch
 import javax.inject.Inject
 
 import com.cobble.bot.common.DefaultLang
-import com.cobble.bot.common.api.bitTracking.{BitTrackingMode, CollectiveBitGameMode}
+import com.cobble.bot.common.api.bitTracking.{BitTrackingMode, CollectiveBitGameMode, GameCheerMode}
 import com.cobble.bot.common.api.TwitchChannelInfo
-import com.cobble.bot.common.bitTracking.RBGMode
+import com.cobble.bot.common.bitTracking.{PushUpMode, RBGMode}
 import com.cobble.bot.common.models.BitTrackingSettings
 import com.cobble.bot.common.ref.MtrConfigRef
 import com.cobble.bot.common.util.BitTrackingUtil
@@ -26,45 +26,59 @@ class TwitchBotCheerEventHandler @Inject()(
 
     def handleEvent(twitchCheerEvent: TwitchCheerEvent): Unit = {
         val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(mtrConfigRef.guildId)
-        if (bitTrackingSettingsOpt.isDefined)
-            bitTrackingSettingsOpt.get.getCurrentMode match {
-                case BitTrackingMode.NIP_DIP => handleBasicGameMode(twitchCheerEvent, bitTrackingUtil.nipDipMode)
-                case BitTrackingMode.RBG => handleRBGGameMode(twitchCheerEvent, bitTrackingUtil.rbgMode)
-                case BitTrackingMode.JACKSHOTS => handleBasicGameMode(twitchCheerEvent, bitTrackingUtil.jackshotsMode)
-            }
+        val twitchChannelInfoOpt: Option[TwitchChannelInfo] = mtrConfigRef.twitchChannels.get(twitchCheerEvent.channelName)
+        if (twitchChannelInfoOpt.isDefined)
+            if (bitTrackingSettingsOpt.isDefined)
+                bitTrackingSettingsOpt.get.getCurrentMode match {
+                    case BitTrackingMode.NIP_DIP => handleBasicGameMode(twitchCheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.nipDipMode)
+                    case BitTrackingMode.RBG => handleRBGGameMode(twitchCheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.rbgMode)
+                    case BitTrackingMode.JACKSHOTS => handleBasicGameMode(twitchCheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.jackshotsMode)
+                    case BitTrackingMode.PUSH_UP => handlePushUpGameMode(twitchCheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.pushUpMode)
+                }
+        else
+            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchCheerEvent.channelName, "error.twitch.channelDoesNotExist")
     }
 
-    def handleBasicGameMode(twitchCheerEvent: TwitchCheerEvent, basicGameMode: CollectiveBitGameMode): Unit = {
-        basicGameMode.addToToNextGoalAmount(twitchCheerEvent.getCheerAmount)
+    def handleBasicGameMode(twitchCheerEvent: TwitchCheerEvent, twitchChannelInfo: TwitchChannelInfo, collectiveGameMode: CollectiveBitGameMode): Unit = {
+        collectiveGameMode.addToToNextGoalAmount(twitchCheerEvent.getCheerAmount)
 
-        if (basicGameMode.getToNextGoal >= basicGameMode.getGoalAmount) {
+        if (collectiveGameMode.getToNextGoal >= collectiveGameMode.getGoalAmount) {
 
-            basicGameMode.addToGoalCount(basicGameMode.getToNextGoal / basicGameMode.getGoalAmount)
-            basicGameMode.setToNextGoal(basicGameMode.getToNextGoal % basicGameMode.getGoalAmount)
+            collectiveGameMode.addToGoalCount(collectiveGameMode.getToNextGoal / collectiveGameMode.getGoalAmount)
+            collectiveGameMode.setToNextGoal(collectiveGameMode.getToNextGoal % collectiveGameMode.getGoalAmount)
 
-            val twitchChannelInfoOpt: Option[TwitchChannelInfo] = mtrConfigRef.twitchChannels.get(twitchCheerEvent.channelName)
-            if (twitchChannelInfoOpt.isDefined)
-                twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfoOpt.get.displayName, s"bot.bitTracking.event.${basicGameMode.domain}")
-            else
-                twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchCheerEvent.channelName, "error.twitch.channelDoesNotExist")
+            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.${collectiveGameMode.domain}")
         }
     }
 
-    def handleRBGGameMode(twitchCheerEvent: TwitchCheerEvent, rbgMode: RBGMode): Unit = {
-        val twitchChannelInfoOpt: Option[TwitchChannelInfo] = mtrConfigRef.twitchChannels.get(twitchCheerEvent.channelName)
-        if (twitchChannelInfoOpt.isDefined) {
-            if (twitchCheerEvent.getCheerAmount >= rbgMode.getRedShotAmount) {
-                rbgMode.addToRedShotCount(1)
-                twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfoOpt.get.displayName, "bot.bitTracking.event.rbg", messages("bot.bitTracking.rbg.shotTypes.red").toLowerCase)
-            } else if (twitchCheerEvent.getCheerAmount >= rbgMode.getBlueShotAmount) {
-                rbgMode.addToBlueShotCount(1)
-                twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfoOpt.get.displayName, "bot.bitTracking.event.rbg", messages("bot.bitTracking.rbg.shotTypes.blue").toLowerCase)
-            } else if (twitchCheerEvent.getCheerAmount >= rbgMode.getGreenShotAmount) {
-                rbgMode.addToGreenShotCount(1)
-                twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfoOpt.get.displayName, "bot.bitTracking.event.rbg", messages("bot.bitTracking.rbg.shotTypes.green").toLowerCase)
-            }
-        } else
-            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchCheerEvent.channelName, "error.twitch.channelDoesNotExist")
+    def handleRBGGameMode(twitchCheerEvent: TwitchCheerEvent, twitchChannelInfo: TwitchChannelInfo, rbgMode: RBGMode): Unit = {
+        if (twitchCheerEvent.getCheerAmount >= rbgMode.getRedShotAmount) {
+            rbgMode.addToRedShotCount(1)
+            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, "bot.bitTracking.event.rbg", messages("bot.bitTracking.rbg.shotTypes.red").toLowerCase)
+        } else if (twitchCheerEvent.getCheerAmount >= rbgMode.getBlueShotAmount) {
+            rbgMode.addToBlueShotCount(1)
+            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, "bot.bitTracking.event.rbg", messages("bot.bitTracking.rbg.shotTypes.blue").toLowerCase)
+        } else if (twitchCheerEvent.getCheerAmount >= rbgMode.getGreenShotAmount) {
+            rbgMode.addToGreenShotCount(1)
+            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, "bot.bitTracking.event.rbg", messages("bot.bitTracking.rbg.shotTypes.green").toLowerCase)
+        }
+    }
+
+    def handlePushUpGameMode(twitchCheerEvent: TwitchCheerEvent, twitchChannelInfo: TwitchChannelInfo, pushUpMode: PushUpMode): Unit = {
+        pushUpMode.getCheerMode match {
+            case GameCheerMode.COLLECTIVE =>
+                pushUpMode.addToToNextGoalAmount(twitchCheerEvent.getCheerAmount)
+                if(pushUpMode.getToNextGoal >= pushUpMode.getGoalAmount) {
+                    pushUpMode.addToGoalCount(pushUpMode.getPushSetUpAmount)
+                    pushUpMode.setToNextGoal(pushUpMode.getToNextGoal % pushUpMode.getGoalAmount)
+                    twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.pushUp", pushUpMode.getPushSetUpAmount)
+                }
+            case GameCheerMode.SINGLE_CHEER =>
+                if(twitchCheerEvent.getCheerAmount >= pushUpMode.getGoalAmount) {
+                    pushUpMode.addToGoalCount(pushUpMode.getPushSetUpAmount)
+                    twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.pushUp", pushUpMode.getPushSetUpAmount)
+                }
+        }
     }
 
 }
