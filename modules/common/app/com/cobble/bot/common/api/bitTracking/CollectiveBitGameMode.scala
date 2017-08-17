@@ -7,11 +7,11 @@ import scala.collection.mutable
 
 trait CollectiveBitGameMode extends BitGameMode {
 
-    val defaultGoalAmount: Int
+    val defaultGoalAmount: Int = BitTrackingRef.DEFAULT_GOAL_AMOUNT
 
-    val defaultToNextGoalAmount: Int = 0
+    val defaultToNextGoalAmount: Int = BitTrackingRef.DEFAULT_TO_NEXT_GOAL
 
-    val defaultGoalCount: Int = 0
+    val defaultGoalCount: Int = BitTrackingRef.DEFAULT_GOAL_COUNT
 
     def addToToNextGoalAmount(delta: Int): Unit = setToNextGoal(getToNextGoal + delta)
 

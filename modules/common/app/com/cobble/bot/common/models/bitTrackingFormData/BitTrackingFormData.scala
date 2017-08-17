@@ -8,7 +8,8 @@ case class BitTrackingFormData(
                                   nipDipFormData: CollectiveModeFormData,
                                   rbgFormData: RBGModeFormData,
                                   jackshotsFormData: CollectiveModeFormData,
-                                  pushUpModeFormData: PushUpModeFormData
+                                  pushUpModeFormData: PushUpModeFormData,
+                                  singItOrSlamItModeFormData: SingItOrSlamItModeFormData
                               ) {
     def getBitTrackingSettings: BitTrackingSettings = BitTrackingSettings(
         guildId = guildId,
@@ -16,6 +17,7 @@ case class BitTrackingFormData(
         nipDipTemplate = nipDipFormData.template,
         rbgTemplate = rbgFormData.template,
         jackshotsTemplate = jackshotsFormData.template,
-        pushUpTemplate = pushUpModeFormData.template
+        pushUpTemplate = pushUpModeFormData.template,
+        singItOrSlamItTemplate = singItOrSlamItModeFormData.template
     )
 }

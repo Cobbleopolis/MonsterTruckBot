@@ -42,6 +42,15 @@ object BitTrackingRef {
     object PushUpMode {
 
         val DEFAULT_PUSH_UP_SET_AMOUNT: Int = 20
+
+    }
+
+    object SingItOrSlamIt {
+
+        val DEFAULT_ROUNDS_WON: Int = 0
+
+        val DEFAULT_ROUNDS_LOST: Int = 0
+
     }
 
 }

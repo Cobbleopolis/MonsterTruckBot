@@ -29,6 +29,7 @@ trait BitsCommand extends Command {
             case BitTrackingMode.RBG => bitTrackingUtil.rbgMode.getFormattingVariables
             case BitTrackingMode.JACKSHOTS => bitTrackingUtil.jackshotsMode.getFormattingVariables
             case BitTrackingMode.PUSH_UP => bitTrackingUtil.pushUpMode.getFormattingVariables
+            case BitTrackingMode.SING_IT_OR_SLAM_IT => bitTrackingUtil.singItOrSlamItMode.getFormattingVariables
             case _ => mutable.LinkedHashMap()
         }
         variables.foreach(kv => responseString = responseString.replaceAll(s"\\{${kv._1}\\}", kv._2))

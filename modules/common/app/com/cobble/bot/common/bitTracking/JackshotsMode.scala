@@ -4,13 +4,10 @@ import javax.inject.Inject
 
 import com.cobble.bot.common.api.bitTracking.BitTrackingMode.BitTrackingMode
 import com.cobble.bot.common.api.bitTracking.{BitTrackingMode, CollectiveBitGameMode}
-import com.cobble.bot.common.ref.BitTrackingRef
 import play.api.cache.SyncCacheApi
 
 class JackshotsMode @Inject()(val cache: SyncCacheApi) extends CollectiveBitGameMode {
 
     override val mode: BitTrackingMode = BitTrackingMode.JACKSHOTS
-
-    override val defaultGoalAmount: Int = BitTrackingRef.DEFAULT_GOAL_AMOUNT
 
 }

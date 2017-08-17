@@ -2,7 +2,7 @@ package models
 
 import javax.inject.{Inject, Singleton}
 
-import com.cobble.bot.common.models.bitTrackingFormData.{BitTrackingFormData, CollectiveModeFormData, PushUpModeFormData, RBGModeFormData}
+import com.cobble.bot.common.models.bitTrackingFormData._
 import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.{MessageRef, MtrConfigRef}
 import play.api.data.Forms._
@@ -72,7 +72,14 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
                 "toNextGoal" -> number(min = 0),
                 "pushUpSetAmount" -> number(min = 0),
                 "goalCount" -> number(min = 0)
-            )(PushUpModeFormData.apply)(PushUpModeFormData.unapply)
+            )(PushUpModeFormData.apply)(PushUpModeFormData.unapply),
+            "singItOrSlamIt" -> mapping(
+                "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
+                "goalAmount" -> number(min = 0),
+                "goalCount" -> number(min = 0),
+                "roundsWon" -> number(min = 0),
+                "roundsLost" -> number(min = 0)
+            )(SingItOrSlamItModeFormData.apply)(SingItOrSlamItModeFormData.unapply)
         )(BitTrackingFormData.apply)(BitTrackingFormData.unapply)
     )
 

@@ -6,7 +6,7 @@ import scala.collection.mutable
 
 trait SingleCheerBitGameMode extends BitGameMode {
 
-    val defaultGoalAmount: Int
+    val defaultGoalAmount: Int = BitTrackingRef.DEFAULT_GOAL_AMOUNT
 
     val defaultGoalCount: Int = BitTrackingRef.DEFAULT_GOAL_COUNT
 
