@@ -82,7 +82,7 @@ class TwitchBotEventListener @Inject()(
 
     @Handler
     def twitchCheerEvent(twitchCheerEvent: TwitchCheerEvent): Unit = {
-        TwitchLogger.info(s"Cheer! ${twitchCheerEvent.displayName} just cheered ${twitchCheerEvent.getCheerAmount} bits!") //TODO Remove at some point
+        TwitchLogger.debug(s"Cheer! ${twitchCheerEvent.displayName} just cheered ${twitchCheerEvent.getCheerAmount} bits! Message: ${twitchCheerEvent.getMessage}")
         twitchBotCheerEventHandler.handleEvent(twitchCheerEvent)
     }
 
