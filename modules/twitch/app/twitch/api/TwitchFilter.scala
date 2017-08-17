@@ -5,6 +5,15 @@ import twitch.events.TwitchMessageEvent
 
 trait TwitchFilter {
 
-    def filterMessage(message: TwitchMessageEvent, filterSettings: FilterSettings): Unit
+    def doesMessageMatchFilter(str: String, settings: FilterSettings): Boolean
+
+    def filterMessage(message: TwitchMessageEvent, filterSettings: FilterSettings): Boolean = {
+        val matchFilter: Boolean = doesMessageMatchFilter(message.getMessage, filterSettings)
+        if(matchFilter)
+            onMessageFilter(message)
+        matchFilter
+    }
+
+    def onMessageFilter(message: TwitchMessageEvent): Unit
 
 }

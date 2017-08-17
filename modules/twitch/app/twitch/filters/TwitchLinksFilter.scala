@@ -12,11 +12,8 @@ import twitch.util.TwitchMessageUtil
 
 class TwitchLinksFilter @Inject()(twitchMessageUtil: TwitchMessageUtil, messagesApi: MessagesApi) extends TwitchFilter with LinksFilter with DefaultLang {
 
-    override def filterMessage(message: TwitchMessageEvent, filterSettings: FilterSettings): Unit = {
-        if (doesMessageMatchFilter(message.getMessage, filterSettings)) {
-            message.timeoutUser(messagesApi("bot.filter.noLinks.reason"))
-            twitchMessageUtil.replyToMessage(message.getMessageEvent, message.displayName, "bot.filter.noLinks.message")
-        }
+    override def onMessageFilter(message: TwitchMessageEvent): Unit = {
+        message.timeoutUser(messagesApi("bot.filter.noLinks.reason"))
+        twitchMessageUtil.replyToMessage(message.getMessageEvent, message.displayName, "bot.filter.noLinks.message")
     }
-
 }

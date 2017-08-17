@@ -10,11 +10,9 @@ import sx.blah.discord.handle.obj.IMessage
 
 class DiscordBlacklistFilter @Inject()(discordMessageUtil: DiscordMessageUtil) extends DiscordFilter with BlacklistFilter {
 
-    override def filterMessage(message: IMessage, filterSettings: FilterSettings): Unit = {
-        if (doesMessageMatchFilter(message.getContent, filterSettings)) {
-            message.delete()
-            discordMessageUtil.replyToMessage(message, "bot.filter.blacklistedWord.message")
-        }
+    override def onMessageFilter(message: IMessage): Unit = {
+        message.delete()
+        discordMessageUtil.replyToMessage(message, "bot.filter.blacklistedWord.message")
     }
 
 }
