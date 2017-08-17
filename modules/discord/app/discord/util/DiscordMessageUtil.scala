@@ -3,10 +3,11 @@ package discord.util
 import javax.inject.{Inject, Singleton}
 
 import com.cobble.bot.common.DefaultLang
+import com.cobble.bot.common.ref.MessageRef
 import com.cobble.bot.common.util.MessageUtil
 import discord.event.DiscordCommandExecutionEvent
-import play.api.i18n.{Lang, MessagesApi}
-import sx.blah.discord.handle.obj.{IMessage, IUser}
+import play.api.i18n.MessagesApi
+import sx.blah.discord.handle.obj.{IChannel, IMessage, IUser}
 
 @Singleton
 class DiscordMessageUtil @Inject()(implicit val messagesApi: MessagesApi) extends DefaultLang {
@@ -15,15 +16,22 @@ class DiscordMessageUtil @Inject()(implicit val messagesApi: MessagesApi) extend
 
     def replyDM(content: String, args: Any*)(implicit event: DiscordCommandExecutionEvent): Unit = sendDM(event.getUser, content, args: _*)
 
-//    def reply(content: String, args: Any*)(implicit message: IMessage): Unit = replyToMessage(message, content, args)
-
     def sendDM(user: IUser, content: String, args: Any*): Unit = user.getOrCreatePMChannel().sendMessage(messagesApi(content, args: _*))
 
-    def replyToMessage(message: IMessage, content: String, args: Any*): Unit = message.getChannel.sendMessage(MessageUtil.formatMessage(message.getAuthor.mention(), content, args))
+    def replyToMessage(message: IMessage, content: String, args: Any*): Unit = sendMessage(message, MessageUtil.formatMessage(message.getAuthor.mention(), content, args))
 
     def replyNoAt(content: String, args: Any*)(implicit event: DiscordCommandExecutionEvent): Unit = replyToMessageWithoutAt(event.getMessage, content, args: _*)
 
-    def replyToMessageWithoutAt(message: IMessage, content: String, args: Any*): Unit = message.getChannel.sendMessage(messagesApi(content, args: _*))
+    def replyToMessageWithoutAt(message: IMessage, content: String, args: Any*): Unit = sendMessage(message, messagesApi(content, args: _*))
+
+    def sendMessage(message: IMessage, localizedContent: String): Unit = sendMessage(message.getChannel, localizedContent)
+
+    def sendMessage(channel: IChannel, localizedContent: String): Unit = {
+        if (localizedContent.length > MessageRef.DISCORD_MAX_MESSAGE_LENGTH)
+            channel.sendMessage(messagesApi("bot.commandMessageTooLong"))
+        else
+            channel.sendMessage(localizedContent)
+    }
 
     def isDefined(key: String): Boolean = messagesApi.isDefinedAt(key)
 

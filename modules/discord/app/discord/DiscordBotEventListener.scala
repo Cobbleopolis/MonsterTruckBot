@@ -68,10 +68,7 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
         } else {
             val customCommandOpt: Option[CustomCommand] = CustomCommand.get(config.guildId, event.getCommand)
             if (customCommandOpt.isDefined && userPermissionLevel >= customCommandOpt.get.getPermissionLevel)
-                if(customCommandOpt.get.commandContent.length > MessageRef.DISCORD_MAX_MESSAGE_LENGTH)
-                    discordMessageUtil.reply("bot.commandMessageTooLong")(event)
-                else
-                    message.getChannel.sendMessage(customCommandOpt.get.commandContent)
+                discordMessageUtil.replyToMessageWithoutAt(message, customCommandOpt.get.commandContent)
         }
     }
 
