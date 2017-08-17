@@ -10,11 +10,8 @@ import sx.blah.discord.handle.obj.IMessage
 
 class DiscordCapsFilter @Inject()(discordMessageUtil: DiscordMessageUtil) extends DiscordFilter with CapsFilter {
 
-    override def filterMessage(message: IMessage, filterSettings: FilterSettings): Unit = {
-        if(doesMessageMatchFilter(message.getContent, filterSettings)) {
-            message.delete()
-            discordMessageUtil.replyToMessage(message, "bot.filter.noCaps.message")
-        }
+    override def onMessageFilter(message: IMessage): Unit = {
+        message.delete()
+        discordMessageUtil.replyToMessage(message, "bot.filter.noCaps.message")
     }
-
 }

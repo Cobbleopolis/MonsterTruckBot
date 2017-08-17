@@ -41,31 +41,33 @@ class TwitchBotEventListener @Inject()(
 
     @Handler
     def twitchMessageReceived(msgEvent: TwitchMessageEvent): Unit = {
-        if (msgEvent.getMessage.startsWith(mtrConfigRef.commandPrefix)) {
-            val messageSplit: Array[String] = msgEvent.getMessage.split("\\s")
-            twitchBot.get.client.getEventManager.callEvent(new TwitchCommandExecutionEvent(
-                msgEvent.getMessageEvent,
-                messageSplit.head.substring(mtrConfigRef.commandPrefix.length),
-                messageSplit.tail
-            ))
-        } else
-            filterMessage(msgEvent)
+        if (!filterMessage(msgEvent))
+            if (msgEvent.getMessage.startsWith(mtrConfigRef.commandPrefix)) {
+                val messageSplit: Array[String] = msgEvent.getMessage.split("\\s")
+                twitchBot.get.client.getEventManager.callEvent(new TwitchCommandExecutionEvent(
+                    msgEvent.getMessageEvent,
+                    messageSplit.head.substring(mtrConfigRef.commandPrefix.length),
+                    messageSplit.tail
+                ))
+            }
 
         if(msgEvent.getTag("bits").isPresent)
             twitchBot.get.client.getEventManager.callEvent(new TwitchCheerEvent(msgEvent.getMessageEvent, msgEvent.getTag("bits").get().getValue.get().toInt))
     }
 
-    def filterMessage(message: TwitchMessageEvent): Unit = {
+    def filterMessage(message: TwitchMessageEvent): Boolean = {
+        var hasBeenFiltered: Boolean = false
         val filterSettings: Option[FilterSettings] = FilterSettings.get(mtrConfigRef.guildId)
         if (filterSettings.isDefined) {
             val userPermissionLevel: PermissionLevel = getUserPermissionLevel(message)
             if (filterSettings.get.capsFilterEnabled && userPermissionLevel < filterSettings.get.getCapsFilterExemptionLevel)
-                capsFilter.filterMessage(message, filterSettings.get)
+                hasBeenFiltered = hasBeenFiltered || capsFilter.filterMessage(message, filterSettings.get)
             if (filterSettings.get.linksFilterEnabled && userPermissionLevel < filterSettings.get.getLinksFilterExemptionLevel)
-                linksFilter.filterMessage(message, filterSettings.get)
+                hasBeenFiltered = hasBeenFiltered || linksFilter.filterMessage(message, filterSettings.get)
             if (filterSettings.get.blacklistFilterEnabled && userPermissionLevel < filterSettings.get.getBlackListFilterExemptionLevel)
-                blacklistFilter.filterMessage(message, filterSettings.get)
+                hasBeenFiltered = hasBeenFiltered || blacklistFilter.filterMessage(message, filterSettings.get)
         }
+        hasBeenFiltered
     }
 
     @Handler

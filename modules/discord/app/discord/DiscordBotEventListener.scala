@@ -32,8 +32,9 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
     @EventSubscriber
     def onMessageReceivedEvent(event: MessageReceivedEvent): Unit = {
         implicit val message: IMessage = event.getMessage
-        if (!message.getAuthor.isBot)
-            if (message.getContent.startsWith(config.commandPrefix)) {
+        if (!message.getAuthor.isBot) {
+            val checkForCommand: Boolean = if (!message.getChannel.isPrivate && message.getGuild.getLongID == config.guildId) filterMessage(message) else false
+            if (!checkForCommand && message.getContent.startsWith(config.commandPrefix)) {
                 val contentSplit: Array[String] = message.getContent.split("\\s")
                 discordBot.get().client.getDispatcher.dispatch(new DiscordCommandExecutionEvent(
                     message,
@@ -41,21 +42,23 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
                     contentSplit.tail,
                     message.getAuthor
                 ))
-            } else if (!message.getChannel.isPrivate && message.getGuild.getLongID == config.guildId)
-                filterMessage(message)
+            }
+        }
     }
 
-    def filterMessage(message: IMessage): Unit = {
+    def filterMessage(message: IMessage): Boolean = {
+        var hasBeenFiltered: Boolean = false
         val filterSettings: Option[FilterSettings] = FilterSettings.get(message.getGuild.getLongID)
         if (filterSettings.isDefined) {
             val userPermissionLevel: PermissionLevel = getUserPermissionLevel(message.getAuthor)
             if (filterSettings.get.capsFilterEnabled && userPermissionLevel < filterSettings.get.getCapsFilterExemptionLevel)
-                capsFilter.filterMessage(message, filterSettings.get)
+                hasBeenFiltered = hasBeenFiltered || capsFilter.filterMessage(message, filterSettings.get)
             if (filterSettings.get.linksFilterEnabled && userPermissionLevel < filterSettings.get.getLinksFilterExemptionLevel)
-                linksFilter.filterMessage(message, filterSettings.get)
+                hasBeenFiltered = hasBeenFiltered || linksFilter.filterMessage(message, filterSettings.get)
             if (filterSettings.get.blacklistFilterEnabled && userPermissionLevel < filterSettings.get.getBlackListFilterExemptionLevel)
-                blacklistFilter.filterMessage(message, filterSettings.get)
+                hasBeenFiltered = hasBeenFiltered || blacklistFilter.filterMessage(message, filterSettings.get)
         }
+        hasBeenFiltered
     }
 
     @EventSubscriber

@@ -12,10 +12,8 @@ import twitch.util.TwitchMessageUtil
 
 class TwitchCapsFilter @Inject()(twitchMessageUtil: TwitchMessageUtil, messagesApi: MessagesApi) extends TwitchFilter with CapsFilter with DefaultLang {
 
-    override def filterMessage(message: TwitchMessageEvent, filterSettings: FilterSettings): Unit = {
-        if(doesMessageMatchFilter(message.getMessage, filterSettings)) {
-            message.timeoutUser(messagesApi("bot.filter.noCaps.reason"))
-            twitchMessageUtil.replyToMessage(message.getMessageEvent, message.displayName, "bot.filter.noCaps.message")
-        }
+    override def onMessageFilter(message: TwitchMessageEvent): Unit = {
+        message.timeoutUser(messagesApi("bot.filter.noCaps.reason"))
+        twitchMessageUtil.replyToMessage(message.getMessageEvent, message.displayName, "bot.filter.noCaps.message")
     }
 }
