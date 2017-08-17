@@ -3,7 +3,7 @@ package twitch
 import javax.inject.Inject
 
 import com.cobble.bot.common.DefaultLang
-import com.cobble.bot.common.api.bitTracking.{BitTrackingMode, CollectiveBitGameMode, GameCheerMode}
+import com.cobble.bot.common.api.bitTracking.{BitTrackingMode, CollectiveBitGameMode, GameCheerMode, SingleCheerBitGameMode}
 import com.cobble.bot.common.api.TwitchChannelInfo
 import com.cobble.bot.common.bitTracking.{PushUpMode, RBGMode}
 import com.cobble.bot.common.models.BitTrackingSettings
@@ -30,16 +30,17 @@ class TwitchBotCheerEventHandler @Inject()(
         if (twitchChannelInfoOpt.isDefined)
             if (bitTrackingSettingsOpt.isDefined)
                 bitTrackingSettingsOpt.get.getCurrentMode match {
-                    case BitTrackingMode.NIP_DIP => handleBasicGameMode(twitchCheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.nipDipMode)
+                    case BitTrackingMode.NIP_DIP => handleCollectiveGameMode(twitchCheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.nipDipMode)
                     case BitTrackingMode.RBG => handleRBGGameMode(twitchCheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.rbgMode)
-                    case BitTrackingMode.JACKSHOTS => handleBasicGameMode(twitchCheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.jackshotsMode)
+                    case BitTrackingMode.JACKSHOTS => handleCollectiveGameMode(twitchCheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.jackshotsMode)
                     case BitTrackingMode.PUSH_UP => handlePushUpGameMode(twitchCheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.pushUpMode)
+                    case BitTrackingMode.SING_IT_OR_SLAM_IT => handleSingleCheerGameMode(twitchCheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.singItOrSlamItMode)
                 }
         else
             twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchCheerEvent.channelName, "error.twitch.channelDoesNotExist")
     }
 
-    def handleBasicGameMode(twitchCheerEvent: TwitchCheerEvent, twitchChannelInfo: TwitchChannelInfo, collectiveGameMode: CollectiveBitGameMode): Unit = {
+    def handleCollectiveGameMode(twitchCheerEvent: TwitchCheerEvent, twitchChannelInfo: TwitchChannelInfo, collectiveGameMode: CollectiveBitGameMode): Unit = {
         collectiveGameMode.addToToNextGoalAmount(twitchCheerEvent.getCheerAmount)
 
         if (collectiveGameMode.getToNextGoal >= collectiveGameMode.getGoalAmount) {
@@ -48,6 +49,13 @@ class TwitchBotCheerEventHandler @Inject()(
             collectiveGameMode.setToNextGoal(collectiveGameMode.getToNextGoal % collectiveGameMode.getGoalAmount)
 
             twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.${collectiveGameMode.domain}")
+        }
+    }
+
+    def handleSingleCheerGameMode(twitchCheerEvent: TwitchCheerEvent, twitchChannelInfo: TwitchChannelInfo, singleCheerBitGameMode: SingleCheerBitGameMode): Unit = {
+        if (twitchCheerEvent.getCheerAmount >= singleCheerBitGameMode.getGoalCount) {
+            singleCheerBitGameMode.addToGoalCount(twitchCheerEvent.getCheerAmount / singleCheerBitGameMode.getGoalAmount)
+            twitchMessageUtil.replyToMessage(twitchCheerEvent.getMessageEvent, twitchChannelInfo.displayName, s"bot.bitTracking.event.${singleCheerBitGameMode.domain}")
         }
     }
 
