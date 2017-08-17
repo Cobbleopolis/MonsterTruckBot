@@ -38,10 +38,10 @@ class MtrConfigRef @Inject()(implicit conf: Configuration) {
     val twitchNeededOauthScopes: Seq[String] = conf.get[Seq[String]]("mtrBot.twitch.neededOauthScopes")
 
     val twitchChannels: Map[String, TwitchChannelInfo] = conf.get[Seq[Configuration]]("mtrBot.twitch.channels").map(channel =>
-        channel.get[String]("name") -> TwitchChannelInfo(
+        channel.get[String]("name").toLowerCase -> TwitchChannelInfo(
             channel.get[String]("name"),
-            channel.get[String]("oauth"),
-            channel.get[String]("displayName")
+            channel.getOptional[Int]("channelId"),
+            channel.getOptional[String]("oauth"),
         )
     ).toMap
 

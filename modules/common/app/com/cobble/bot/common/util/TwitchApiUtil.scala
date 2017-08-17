@@ -13,12 +13,13 @@ class TwitchApiUtil @Inject()(ws: WSClient, mtrConfigRef: MtrConfigRef) {
     def baseWSRequest(url: String, twitchChannelInfo: TwitchChannelInfo): WSRequest = ws.url(url)
         .withHttpHeaders(
             "Accept" -> "application/vnd.twitchtv.v5+json",
-            "Client-ID" -> mtrConfigRef.twitchUsername,
-            "Authorization" -> s"OAuth ${twitchChannelInfo.oauth}"
+            "Client-ID" -> mtrConfigRef.twitchClientId,
+            "Authorization" -> s"OAuth ${twitchChannelInfo.oauth.get}"
         )
 
-    def channelSubscriptionsRequest(twitchChannelInfo: TwitchChannelInfo): WSRequest = baseWSRequest(channelSubscriptionsUrl(twitchChannelInfo.name), twitchChannelInfo)
+    def channelSubscriptionsRequest(twitchChannelInfo: TwitchChannelInfo): WSRequest =
+        baseWSRequest(channelSubscriptionsUrl(twitchChannelInfo.channelId.get), twitchChannelInfo)
 
-    def channelSubscriptionsUrl(name: String): String = s"$baseTwitchApiURL/channels/$name/subscriptions"
+    def channelSubscriptionsUrl(channelId: Int): String = s"$baseTwitchApiURL/channels/$channelId/subscriptions"
 
 }

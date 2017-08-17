@@ -10,7 +10,7 @@ import play.api.i18n.MessagesApi
 import twitch.api.TwitchEvent
 
 @Singleton
-class TwitchMessageUtil @Inject()(implicit messagesApi: MessagesApi) extends DefaultLang {
+class TwitchMessageUtil @Inject()(implicit val messagesApi: MessagesApi) extends DefaultLang {
 
     def reply(content: String, args: Any*)(implicit event: TwitchEvent): Unit = replyToMessage(event.getMessageEvent, event.displayName, content, args: _*)
 
