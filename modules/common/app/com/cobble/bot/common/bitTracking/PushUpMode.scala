@@ -52,7 +52,7 @@ class PushUpMode @Inject()(val cache: SyncCacheApi) extends CollectiveBitGameMod
         setCheerMode(pushUpModeFormData.getCurrentCheerMode)
         setGoalAmount(pushUpModeFormData.goalAmount)
         setToNextGoal(pushUpModeFormData.toNextGoal)
-        setPushUpSetAmount(pushUpModeFormData.toNextGoal)
+        setPushUpSetAmount(pushUpModeFormData.pushUpSetAmount)
         setGoalCount(pushUpModeFormData.goalCount)
     }
 }
