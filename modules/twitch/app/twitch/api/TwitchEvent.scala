@@ -17,7 +17,9 @@ trait TwitchEvent extends TwitchSingleMessageEvent {
 
     def getMessage: String
 
-    val displayName: String = getTag("display-name").get().getValue.get()
+    val displayName: String = getTag("display-name").get().getValue.orElse(getActor.getNick)
+
+    val channelName: String = getChannel.getName.substring(1)
 
     val isMod: Boolean = getTag("mod").get().getValue.get().equals("1")
 

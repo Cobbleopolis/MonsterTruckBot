@@ -12,7 +12,7 @@ import org.kitteh.irc.client.library.event.client.ClientConnectedEvent
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
 import twitch.api.TwitchEvent
-import twitch.events.{TwitchCommandExecutionEvent, TwitchMessageEvent}
+import twitch.events.{TwitchCheerEvent, TwitchCommandExecutionEvent, TwitchMessageEvent}
 import twitch.filters.{TwitchBlacklistFilter, TwitchCapsFilter, TwitchLinksFilter}
 import twitch.util.TwitchMessageUtil
 
@@ -25,7 +25,8 @@ class TwitchBotEventListener @Inject()(
                                           capsFilter: TwitchCapsFilter,
                                           linksFilter: TwitchLinksFilter,
                                           blacklistFilter: TwitchBlacklistFilter,
-                                          twitchMessageUtil: TwitchMessageUtil
+                                          twitchMessageUtil: TwitchMessageUtil,
+                                          twitchBotCheerEventHandler: TwitchBotCheerEventHandler
                                       ) {
 
     @Handler
@@ -49,6 +50,9 @@ class TwitchBotEventListener @Inject()(
             ))
         } else
             filterMessage(msgEvent)
+
+        if(msgEvent.getTag("bits").isPresent)
+            twitchBot.get.client.getEventManager.callEvent(new TwitchCheerEvent(msgEvent.getMessageEvent, msgEvent.getTag("bits").get().getValue.get().toInt))
     }
 
     def filterMessage(message: TwitchMessageEvent): Unit = {
@@ -71,18 +75,19 @@ class TwitchBotEventListener @Inject()(
             commandOpt.get.execute(commandEvent)
         else {
             val customCommandOpt: Option[CustomCommand] = CustomCommand.get(mtrConfigRef.guildId, commandEvent.getCommand)
-            if (customCommandOpt.isDefined && getUserPermissionLevel(commandEvent) >= customCommandOpt.get.getPermissionLevel) {
-                val formattedCommandContent: String = s"/me ${customCommandOpt.get.commandContent}"
-                if (formattedCommandContent.length > MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE)
-                    twitchMessageUtil.reply("bot.commandMessageTooLong")(commandEvent)
-                else
-                    commandEvent.getChannel.sendMessage(formattedCommandContent)
-            }
+            if (customCommandOpt.isDefined && getUserPermissionLevel(commandEvent) >= customCommandOpt.get.getPermissionLevel)
+                twitchMessageUtil.replyToMessageWithMe(commandEvent.getMessageEvent, customCommandOpt.get.commandContent, commandEvent.getArgs: _*)
         }
     }
 
+    @Handler
+    def twitchCheerEvent(twitchCheerEvent: TwitchCheerEvent): Unit = {
+        TwitchLogger.debug(s"Cheer! ${twitchCheerEvent.displayName} just cheered ${twitchCheerEvent.getCheerAmount} bits! Message: ${twitchCheerEvent.getMessage}")
+        twitchBotCheerEventHandler.handleEvent(twitchCheerEvent)
+    }
+
     def getUserPermissionLevel(twitchEvent: TwitchEvent): PermissionLevel = {
-        if (twitchEvent.getChannel.getName == "#" + twitchEvent.getActor.getNick)
+        if (twitchEvent.channelName == twitchEvent.getActor.getNick)
             PermissionLevel.OWNER
         else if (twitchEvent.isMod)
             PermissionLevel.MODERATORS
