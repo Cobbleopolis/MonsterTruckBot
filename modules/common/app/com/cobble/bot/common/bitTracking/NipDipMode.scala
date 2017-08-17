@@ -9,4 +9,5 @@ import play.api.cache.SyncCacheApi
 class NipDipMode @Inject()(val cache: SyncCacheApi) extends CollectiveBitGameMode {
 
     override val mode: BitTrackingMode = BitTrackingMode.NIP_DIP
+
 }
