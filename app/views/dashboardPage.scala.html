@@ -1,7 +1,8 @@
 @import com.cobble.bot.common.ref.MtrConfigRef
 @import sx.blah.discord.handle.obj.IGuild
 @import org.webjars.play.WebJarsUtil
-@(guild: IGuild, currentPage: String)(head: Html)(content: Html)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef)
+@import discord.DiscordBot
+@(guild: IGuild, currentPage: String)(head: Html)(content: Html)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 
     @main("dashboard")(head) {
         <h2>@guild.getName</h2>

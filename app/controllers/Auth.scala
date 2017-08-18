@@ -5,12 +5,13 @@ import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 import com.cobble.bot.common.ref.MtrConfigRef
+import discord.DiscordBot
 import org.webjars.play.WebJarsUtil
 import play.api.db.Database
 import play.api.libs.ws.WSClient
 import play.api.mvc._
 
-class Auth @Inject()(implicit cc: ControllerComponents, messagesAction: MessagesActionBuilder, db: Database, webJarsUtil: WebJarsUtil, ws: WSClient, mtrConfigRef: MtrConfigRef) extends AbstractController(cc) {
+class Auth @Inject()(implicit cc: ControllerComponents, messagesAction: MessagesActionBuilder, db: Database, webJarsUtil: WebJarsUtil, ws: WSClient, mtrConfigRef: MtrConfigRef, discordBot: DiscordBot) extends AbstractController(cc) {
 
     def twitchToken: Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         val twitchOAuthRedirectUrl: String = "https://api.twitch.tv/kraken/oauth2/authorize?response_type=token" +

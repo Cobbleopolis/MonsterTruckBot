@@ -16,13 +16,7 @@ class Application @Inject()(implicit cc: ControllerComponents, messagesAction: M
     val jsMessagesFactory = new JsMessagesFactory(messagesApi)
 
     def index: Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
-        if (discordBot.client.getGuildByID(config.guildId) != null)
-            if (request.queryString.isEmpty)
-                Ok(views.html.index())
-            else
-                Redirect(routes.Application.index())
-        else
-            Redirect(discordBot.getInviteLink(routes.Application.index().absoluteURL()))
+        Ok(views.html.index())
     }
 
     def jsMessages(page: String): Action[AnyContent] = Action { implicit request =>

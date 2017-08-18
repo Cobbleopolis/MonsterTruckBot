@@ -1,4 +1,5 @@
-@()(implicit messagesProv: MessagesProvider)
+@import discord.DiscordBot
+@()(implicit messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent])
 
 <header>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -19,6 +20,7 @@
                         <li><a href="@routes.Dashboard.dashboard()">@messagesProv.messages("global.pageNames.dashboard")</a></li>
                         <li class="divider"></li>
                         <li><a href="@routes.Auth.twitchToken()">@messagesProv.messages("global.pageNames.twitchAuthentication")</a></li>
+                        <li><a href="@discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL())">@messagesProv.messages("global.pageNames.discordBotInviteLink")</a></li>
                     </ul>
                 </li>
             </ul>

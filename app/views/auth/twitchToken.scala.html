@@ -1,5 +1,6 @@
 @import org.webjars.play.WebJarsUtil
-@(twitchOAuthRedirectUrl: String, errorType: Option[String], errorDescription: Option[String])(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider)
+@import discord.DiscordBot
+@(twitchOAuthRedirectUrl: String, errorType: Option[String], errorDescription: Option[String])(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent])
 
 @main("twitchAuthentication") {
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/twitchToken.css")">

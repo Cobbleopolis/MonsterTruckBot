@@ -29,23 +29,15 @@ class Dashboard @Inject()(
 
     def dashboard(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         val guild: IGuild = discordBot.client.getGuildByID(mtrConfigRef.guildId)
-        if (guild != null)
-            Ok(views.html.dashboard.coreSettings(guild))
-        else
-            Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
+        Ok(views.html.dashboard.coreSettings(guild))
     }
 
     def filterSettings(): Action[AnyContent] = messagesAction { implicit request =>
-        val filterSettings: Option[FilterSettings] = FilterSettings.get(mtrConfigRef.guildId)
+        val filterSettings: FilterSettings = FilterSettings.get(mtrConfigRef.guildId).get
         val guild: IGuild = discordBot.client.getGuildByID(mtrConfigRef.guildId)
-        if (filterSettings.isDefined
-            && guild != null
-        ) {
-            Ok(views.html.dashboard.filterSettings(guild,
-                dashboardSettingsForms.filterForm.fill(filterSettings.get)
-            ))
-        } else
-            Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
+        Ok(views.html.dashboard.filterSettings(guild,
+            dashboardSettingsForms.filterForm.fill(filterSettings)
+        ))
     }
 
     def submitFilterSettings(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
@@ -68,11 +60,8 @@ class Dashboard @Inject()(
 
     def customCommands(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         val guild: IGuild = discordBot.client.getGuildByID(mtrConfigRef.guildId)
-        if (guild != null) {
-            val commandForms = CustomCommand.getByGuildId(mtrConfigRef.guildId).map(dashboardSettingsForms.commandForm.fill)
-            Ok(views.html.dashboard.customCommands(guild, dashboardSettingsForms.commandForm, commandForms))
-        } else
-            Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
+        val commandForms = CustomCommand.getByGuildId(mtrConfigRef.guildId).map(dashboardSettingsForms.commandForm.fill)
+        Ok(views.html.dashboard.customCommands(guild, dashboardSettingsForms.commandForm, commandForms))
     }
 
     def customCommandRedirect(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
@@ -118,10 +107,7 @@ class Dashboard @Inject()(
 
     def bitTracking(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         val guild: IGuild = discordBot.client.getGuildByID(mtrConfigRef.guildId)
-        if (guild != null)
-            Ok(views.html.dashboard.bitTracking(guild, dashboardSettingsForms.bitTrackingForm.fill(bitTrackingUtil.getBitTrackingFormData), bitTrackingUtil))
-        else
-            Redirect(discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL()))
+        Ok(views.html.dashboard.bitTracking(guild, dashboardSettingsForms.bitTrackingForm.fill(bitTrackingUtil.getBitTrackingFormData), bitTrackingUtil))
     }
 
     def submitBitTracking = messagesAction { implicit request: MessagesRequest[AnyContent] =>
