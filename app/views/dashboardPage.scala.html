@@ -5,7 +5,11 @@
 @(guild: IGuild, currentPage: String)(head: Html)(content: Html)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 
     @main("dashboard")(head) {
-        <h2>@guild.getName</h2>
+        @if(guild != null) {
+            <h2>@guild.getName</h2>
+        } else {
+            <h2>@request.messages("error.unknownGuild")</h2>
+        }
 
         @for(flashType <- flash.data) {
             <div class="alert alert-dismissible alert-@flashType._1">
