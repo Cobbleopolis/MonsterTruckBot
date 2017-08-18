@@ -1,5 +1,5 @@
 @import discord.DiscordBot
-@()(implicit messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent])
+@()(implicit discordBot: DiscordBot, request: MessagesRequest[AnyContent])
 
 <header>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -15,12 +15,12 @@
             </div>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">@messagesProv.messages("global.pages") <span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">@request.messages("global.pages") <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="@routes.Dashboard.dashboard()">@messagesProv.messages("global.pageNames.dashboard")</a></li>
+                        <li><a href="@routes.Dashboard.dashboard()">@request.messages("global.pageNames.dashboard")</a></li>
                         <li class="divider"></li>
-                        <li><a href="@routes.Auth.twitchToken()">@messagesProv.messages("global.pageNames.twitchAuthentication")</a></li>
-                        <li><a href="@discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL())">@messagesProv.messages("global.pageNames.discordBotInviteLink")</a></li>
+                        <li><a href="@routes.Auth.twitchToken()">@request.messages("global.pageNames.twitchAuthentication")</a></li>
+                        <li><a href="@discordBot.getInviteLink(routes.Dashboard.dashboard().absoluteURL())">@request.messages("global.pageNames.discordBotInviteLink")</a></li>
                     </ul>
                 </li>
             </ul>
