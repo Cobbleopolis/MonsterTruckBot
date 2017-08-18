@@ -39,10 +39,7 @@ class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBo
             Permissions.READ_MESSAGES,
             Permissions.SEND_MESSAGES,
             Permissions.EMBED_LINKS,
-            Permissions.ATTACH_FILES,
-            Permissions.MENTION_EVERYONE,
-            Permissions.VOICE_CONNECT,
-            Permissions.VOICE_SPEAK
+            Permissions.MENTION_EVERYONE
         ))
         inviteBuilder.build() + "&guild_id=" + java.lang.Long.toUnsignedString(conf.guildId) + "&response_type=code&redirect_uri=" + URLEncoder.encode(redirectTo, StandardCharsets.UTF_8.name())
     }

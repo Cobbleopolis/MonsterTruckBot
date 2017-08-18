@@ -1,7 +1,8 @@
 @import com.cobble.bot.common.ref.MtrConfigRef
 @import org.webjars.play.WebJarsUtil
 @import sx.blah.discord.handle.obj.IGuild
-@(guild: IGuild)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef)
+@import discord.DiscordBot
+@(guild: IGuild)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 
 @dashboardPage(guild, "") {
 

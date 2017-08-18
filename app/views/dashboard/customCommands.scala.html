@@ -4,7 +4,8 @@
 @import sx.blah.discord.handle.obj.IGuild
 @import views.html.component.formErrors
 @import org.webjars.play.WebJarsUtil
-@(guild: IGuild, newCommandForm: Form[CustomCommand], commandForms: List[Form[CustomCommand]])(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef, request: MessagesRequest[AnyContent])
+@import discord.DiscordBot
+@(guild: IGuild, newCommandForm: Form[CustomCommand], commandForms: List[Form[CustomCommand]])(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 
 @implicitFieldConstructor = @{
     b3.horizontal.fieldConstructor("col-md-2", "col-md-10")

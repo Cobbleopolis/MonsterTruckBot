@@ -1,6 +1,7 @@
 @import component.header
 @import org.webjars.play.WebJarsUtil
-@(pageName: String)(head: Html)(content: Html)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider)
+@import discord.DiscordBot
+@(pageName: String)(head: Html)(content: Html)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent])
 
 <!DOCTYPE html>
 

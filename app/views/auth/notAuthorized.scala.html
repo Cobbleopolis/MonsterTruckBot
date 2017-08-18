@@ -1,5 +1,6 @@
 @import org.webjars.play.WebJarsUtil
-@()(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider)
+@import discord.DiscordBot
+@()(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent])
 
 @main(messagesProv.messages("error.auth.notAuthorized.page")){
 

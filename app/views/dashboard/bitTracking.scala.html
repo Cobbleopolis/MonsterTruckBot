@@ -6,7 +6,8 @@
 @import org.webjars.play.WebJarsUtil
 @import sx.blah.discord.handle.obj.IGuild
 @import com.cobble.bot.common.api.bitTracking.GameCheerMode
-@(guild: IGuild, bitTrackingForm: Form[BitTrackingFormData], bitTrackingUtil: BitTrackingUtil)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, flash: Flash, mtrConfigRef: MtrConfigRef, request: MessagesRequest[AnyContent])
+@import discord.DiscordBot
+@(guild: IGuild, bitTrackingForm: Form[BitTrackingFormData], bitTrackingUtil: BitTrackingUtil)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 
 @fieldLabelColWidth = @{2}
 @fieldInputColWidth = @{10}
