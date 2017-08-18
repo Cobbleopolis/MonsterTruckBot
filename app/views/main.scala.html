@@ -1,14 +1,14 @@
 @import component.header
 @import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
-@(pageName: String)(head: Html)(content: Html)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent])
+@(pageName: String)(head: Html)(content: Html)(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent])
 
 <!DOCTYPE html>
 
 <html>
     <head>
-        @if(messagesProv.messages.isDefinedAt(s"global.pageNames.$pageName")) {
-            <title>@messagesProv.messages(s"global.pageNames.$pageName")</title>
+        @if(request.messages.isDefinedAt(s"global.pageNames.$pageName")) {
+            <title>@request.messages(s"global.pageNames.$pageName")</title>
         } else {
             <title>@pageName</title>
         }

@@ -1,9 +1,9 @@
 @import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
-@()(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent])
+@()(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent])
 
 @main(buildinfo.BuildInfo.displayName){
 
 }{
-    @messagesProv.messages("index.welcome")
+    @request.messages("index.welcome")
 }

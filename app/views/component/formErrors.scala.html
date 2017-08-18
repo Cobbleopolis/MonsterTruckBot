@@ -1,12 +1,12 @@
-@(form: Form[Any])(implicit messagesProv: MessagesProvider)
+@(form: Form[Any])(implicit request: MessagesRequest[AnyContent])
 
 @if(form.hasGlobalErrors) {
     <div class="alert alert-dismissible alert-danger">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <strong>@messagesProv.messages("error.ohSnap")</strong>
+        <strong>@request.messages("error.ohSnap")</strong>
         <ul>
         @for(error <- form.globalErrors) {
-            <li>@messagesProv.messages(error.messages, error.args)</li>
+            <li>@request.messages(error.messages, error.args)</li>
         }
         </ul>
     </div>
@@ -15,6 +15,6 @@
 @if(form.hasErrors) {
     <div class="alert alert-dismissible alert-danger">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <strong>@messagesProv.messages("error.ohSnap")</strong> @messagesProv.messages("error.formSubmission")
+        <strong>@request.messages("error.ohSnap")</strong> @request.messages("error.formSubmission")
     </div>
 }

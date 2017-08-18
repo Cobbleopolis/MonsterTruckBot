@@ -2,7 +2,7 @@
 @import org.webjars.play.WebJarsUtil
 @import sx.blah.discord.handle.obj.IGuild
 @import discord.DiscordBot
-@(guild: IGuild, missingSetting: String)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
+@(guild: IGuild, missingSetting: String)(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 
 @dashboardPage(guild, missingSetting) {
 
@@ -12,7 +12,7 @@
             <h3 class="panel-title">@request.messages("error.settingsMissing.title")</h3>
         </div>
         <div class="panel-body">
-            <strong>@messagesProv.messages("error.ohSnap")</strong> @request.messages("error.settingsMissing.message", request.messages(s"error.settingsMissing.settingsTypes.$missingSetting"), if(guild != null) guild.getStringID else request.messages("error.unknownGuild"))
+            <strong>@request.messages("error.ohSnap")</strong> @request.messages("error.settingsMissing.message", request.messages(s"error.settingsMissing.settingsTypes.$missingSetting"), if(guild != null) guild.getStringID else request.messages("error.unknownGuild"))
         </div>
     </div>
 }
