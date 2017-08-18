@@ -33,11 +33,12 @@ class Dashboard @Inject()(
     }
 
     def filterSettings(): Action[AnyContent] = messagesAction { implicit request =>
-        val filterSettings: FilterSettings = FilterSettings.get(mtrConfigRef.guildId).get
+        val filterSettingsOpt: Option[FilterSettings] = FilterSettings.get(mtrConfigRef.guildId)
         val guild: IGuild = discordBot.client.getGuildByID(mtrConfigRef.guildId)
-        Ok(views.html.dashboard.filterSettings(guild,
-            dashboardSettingsForms.filterForm.fill(filterSettings)
-        ))
+        if (filterSettingsOpt.isDefined)
+            Ok(views.html.dashboard.filterSettings(guild, dashboardSettingsForms.filterForm.fill(filterSettingsOpt.get)))
+        else
+            InternalServerError(views.html.dashboard.settingsMissing(guild, "filterSettings"))
     }
 
     def submitFilterSettings(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
@@ -107,7 +108,11 @@ class Dashboard @Inject()(
 
     def bitTracking(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
         val guild: IGuild = discordBot.client.getGuildByID(mtrConfigRef.guildId)
-        Ok(views.html.dashboard.bitTracking(guild, dashboardSettingsForms.bitTrackingForm.fill(bitTrackingUtil.getBitTrackingFormData), bitTrackingUtil))
+        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(mtrConfigRef.guildId)
+        if (bitTrackingSettingsOpt.isDefined)
+            Ok(views.html.dashboard.bitTracking(guild, dashboardSettingsForms.bitTrackingForm.fill(bitTrackingUtil.getBitTrackingFormData), bitTrackingUtil))
+        else
+            InternalServerError(views.html.dashboard.settingsMissing(guild, "bitTracking"))
     }
 
     def submitBitTracking = messagesAction { implicit request: MessagesRequest[AnyContent] =>
