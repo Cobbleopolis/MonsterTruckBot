@@ -35,6 +35,8 @@ class TwitchBotCheerEventHandler @Inject()(
                     case BitTrackingMode.JACKSHOTS => handleCollectiveGameMode(cheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.jackshotsMode)
                     case BitTrackingMode.PUSH_UP => handlePushUpGameMode(cheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.pushUpMode)
                     case BitTrackingMode.SING_IT_OR_SLAM_IT => handleSingleCheerGameMode(cheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.singItOrSlamItMode)
+                    case BitTrackingMode.NONE =>
+                    case _ =>
                 }
         else
             twitchMessageUtil.replyToMessage(cheerEvent.getMessageEvent, cheerEvent.channelName, "error.twitch.channelDoesNotExist")
