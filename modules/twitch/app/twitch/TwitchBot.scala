@@ -25,8 +25,8 @@ class TwitchBot @Inject()(implicit mtrConfigRef: MtrConfigRef, lifecycle: Applic
             client.getEventManager.registerEventListener(twitchBotEventListener)
         })
 
-//    clientBuilder.listenInput((line: String) => println("[I] " + line))
-//    clientBuilder.listenOutput((line: String) => println("[O] " + line))
+    clientBuilder.listenInput((line: String) => TwitchLogger.trace("[I] " + line))
+    clientBuilder.listenOutput((line: String) => TwitchLogger.trace("[O] " + line))
 
     val client: Client = clientBuilder.build()
 //    client.getCapabilityManager.getSupportedCapabilities.forEach(capability => println("Capability: " + capability))
