@@ -20,7 +20,7 @@ trait SubCountCommand extends Command with DefaultLang {
         if (twitchChannelInfo.isDefined)
             if (twitchChannelInfo.get.oauth.isDefined)
                 if (twitchChannelInfo.get.channelId.isDefined)
-                    twitchApiUtil.channelSubscriptionsRequest(twitchChannelInfo.get).get().map(response => (response.json \ "_total").as[Int])
+                    twitchApiUtil.channelSubscriptionsRequest(twitchChannelInfo.get).get().map(response => (response.json \ "_total").as[Int] - 1) // Subtract 1 because Twitch counts the twitch channel user as a sub.
                 else
                     Future.failed(new ConfigurationException(messagesApi("error.twitch.missing.channelId")))
             else
