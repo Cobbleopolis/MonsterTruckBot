@@ -12,7 +12,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TwitchBot @Inject()(implicit mtrConfigRef: MtrConfigRef, lifecycle: ApplicationLifecycle, ex: ExecutionContext, db: Database, twitchBotEventListener: TwitchBotEventListener) {
-    TwitchLogger.info("Twitch bot has not been implemented yet")
 
     private val clientBuilder: Client.Builder = Client.builder()
         .serverHost("irc.chat.twitch.tv")
