@@ -2,7 +2,6 @@ package discord.util
 
 import javax.inject.{Inject, Singleton}
 
-import com.cobble.bot.common.DefaultLang
 import com.cobble.bot.common.ref.MessageRef
 import com.cobble.bot.common.util.MessageUtil
 import discord.event.DiscordCommandExecutionEvent
@@ -10,15 +9,15 @@ import play.api.i18n.MessagesApi
 import sx.blah.discord.handle.obj.{IChannel, IMessage, IUser}
 
 @Singleton
-class DiscordMessageUtil @Inject()(implicit val messagesApi: MessagesApi) extends DefaultLang {
+class DiscordMessageUtil @Inject()(implicit val messagesApi: MessagesApi) extends MessageUtil(messagesApi) {
 
     def reply(content: String, args: Any*)(implicit event: DiscordCommandExecutionEvent): Unit = replyToMessage(event.getMessage, content, args: _*)
 
     def replyDM(content: String, args: Any*)(implicit event: DiscordCommandExecutionEvent): Unit = sendDM(event.getUser, content, args: _*)
 
-    def sendDM(user: IUser, content: String, args: Any*): Unit = user.getOrCreatePMChannel().sendMessage(messagesApi(content, args: _*))
+    def sendDM(user: IUser, content: String, args: Any*): Unit = sendMessage(user.getOrCreatePMChannel(), messagesApi(content, args: _*))
 
-    def replyToMessage(message: IMessage, content: String, args: Any*): Unit = sendMessage(message, MessageUtil.formatMessage(message.getAuthor.mention(), content, args))
+    def replyToMessage(message: IMessage, content: String, args: Any*): Unit = sendMessage(message, formatMessage(message.getAuthor.mention(), content, args: _*))
 
     def replyNoAt(content: String, args: Any*)(implicit event: DiscordCommandExecutionEvent): Unit = replyToMessageWithoutAt(event.getMessage, content, args: _*)
 
@@ -32,7 +31,5 @@ class DiscordMessageUtil @Inject()(implicit val messagesApi: MessagesApi) extend
         else
             channel.sendMessage(localizedContent)
     }
-
-    def isDefined(key: String): Boolean = messagesApi.isDefinedAt(key)
 
 }
