@@ -27,7 +27,7 @@ class DiscordSubCountCommand @Inject()(implicit val messageUtil: DiscordMessageU
                 else
                     messageUtil.replyNoAt("bot.count.default", subCount)
             case Failure(t) =>
-                messageUtil.reply("bot.count.error", t.getMessage.substring(0, Math.min(t.getMessage.length, MessageRef.DISCORD_MAX_MESSAGE_LENGTH)))
+                messageUtil.reply("bot.count.error", t.getMessage)
                 discord.DiscordLogger.error("Error getting twitch sub count", t)
         }
     }

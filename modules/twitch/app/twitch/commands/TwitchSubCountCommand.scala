@@ -2,9 +2,8 @@ package twitch.commands
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.DefaultLang
 import com.cobble.bot.common.api.commands.SubCountCommand
-import com.cobble.bot.common.ref.{MessageRef, MtrConfigRef}
+import com.cobble.bot.common.ref.MtrConfigRef
 import com.cobble.bot.common.util.TwitchApiUtil
 import twitch.api.TwitchCommand
 import twitch.events.TwitchCommandExecutionEvent
@@ -27,7 +26,7 @@ class TwitchSubCountCommand @Inject()(implicit val messageUtil: TwitchMessageUti
                 else
                     messageUtil.replyMe("bot.count.default", subCount.toString)
             case Failure(t) =>
-                messageUtil.reply("bot.count.error", t.getMessage.substring(0, Math.min(t.getMessage.length, MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE - 50))) //Subtract 50 for the error prefix.
+                messageUtil.reply("bot.count.error", t.getMessage)
                 twitch.TwitchLogger.error("Error getting twitch sub count", t)
         }
     }
