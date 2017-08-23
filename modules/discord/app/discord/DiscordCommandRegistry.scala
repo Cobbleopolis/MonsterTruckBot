@@ -12,6 +12,7 @@ class DiscordCommandRegistry @Inject()(
                                           val versionCommand: DiscordVersionCommand,
                                           val sosCommand: DiscordSoSCommand,
                                           val subCountCommand: DiscordSubCountCommand,
+                                          val uptimeCommand: DiscordUptimeCommand,
                                           val bitsCommand: DiscordBitsCommand
                                       ) {
 
@@ -21,6 +22,7 @@ class DiscordCommandRegistry @Inject()(
         versionCommand.name -> versionCommand,
         sosCommand.name -> sosCommand,
         subCountCommand.name -> subCountCommand,
+        uptimeCommand.name -> uptimeCommand,
         bitsCommand.name -> bitsCommand
     )
 
