@@ -21,9 +21,9 @@ class TwitchMessageUtil @Inject()(implicit val messagesApi: MessagesApi) extends
 
     def sendMessage(message: ChannelMessageEvent, localizedContent: String): Unit = {
         if (localizedContent.length > MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE)
-            message.sendReply(cleanMessage(messagesApi("bot.commandMessageTooLong")))
+            message.sendReply(cleanMessage(messagesApi("bot.commandMessageTooLong")).trim)
         else
-            message.sendReply(cleanMessage(localizedContent))
+            message.sendReply(cleanMessage(localizedContent).trim)
     }
 
     def cleanMessage(message: String): String = message.replaceAll("\\R", " | ")
