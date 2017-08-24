@@ -5,9 +5,9 @@ import java.util
 import org.kitteh.irc.client.library.Client
 import org.kitteh.irc.client.library.element.{Channel, ServerMessage, User}
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
-import twitch.api.TwitchEvent
+import twitch.api.TwitchChatMessageEvent
 
-class TwitchCommandExecutionEvent(messageEvent: ChannelMessageEvent, command: String, args: Array[String]) extends TwitchEvent {
+class TwitchCommandExecutionEvent(messageEvent: ChannelMessageEvent, command: String, args: Array[String]) extends TwitchChatMessageEvent {
 
     override def getMessageEvent: ChannelMessageEvent = messageEvent
 

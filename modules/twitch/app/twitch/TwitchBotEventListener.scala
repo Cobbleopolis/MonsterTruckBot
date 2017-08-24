@@ -9,10 +9,12 @@ import com.cobble.bot.common.ref.{MessageRef, MtrConfigRef}
 import net.engio.mbassy.listener.Handler
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
 import org.kitteh.irc.client.library.event.client.ClientConnectedEvent
+import org.kitteh.irc.client.library.feature.twitch.event.UserNoticeEvent
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
-import twitch.api.TwitchEvent
-import twitch.events.{TwitchCheerEvent, TwitchCommandExecutionEvent, TwitchMessageEvent}
+import twitch.api.{TwitchChatMessageEvent, TwitchEvent}
+import twitch.api.usernotice.UserNoticeMessageId
+import twitch.events.{TwitchCheerEvent, TwitchCommandExecutionEvent, TwitchMessageEvent, TwitchSubEvent}
 import twitch.filters.{TwitchBlacklistFilter, TwitchCapsFilter, TwitchLinksFilter}
 import twitch.util.TwitchMessageUtil
 
@@ -55,6 +57,11 @@ class TwitchBotEventListener @Inject()(
             twitchBot.get.client.getEventManager.callEvent(new TwitchCheerEvent(msgEvent.getMessageEvent, msgEvent.getTag("bits").get().getValue.get().toInt))
     }
 
+    @Handler
+    def twitchUserNoticeRecived(userNoticeEvent: UserNoticeEvent): Unit = {
+        twitchBot.get.client.getEventManager.callEvent(new TwitchSubEvent(userNoticeEvent))
+    }
+
     def filterMessage(message: TwitchMessageEvent): Boolean = {
         var hasBeenFiltered: Boolean = false
         val filterSettings: Option[FilterSettings] = FilterSettings.get(mtrConfigRef.guildId)
@@ -88,8 +95,19 @@ class TwitchBotEventListener @Inject()(
         twitchBotCheerEventHandler.handleEvent(twitchCheerEvent)
     }
 
-    def getUserPermissionLevel(twitchEvent: TwitchEvent): PermissionLevel = {
-        if (twitchEvent.channelName == twitchEvent.getActor.getNick)
+    @Handler
+    def twitchSubEvent(twitchSubEvent: TwitchSubEvent): Unit = {
+        TwitchLogger.debug(s"Subscription! ${twitchSubEvent.displayName} just subscribed!")
+        twitchSubEvent match {
+            case UserNoticeMessageId.SUBSCRIPTION => twitchMessageUtil.replyToChannel(twitchSubEvent.getChannel, twitchSubEvent.displayName, "bot.subMessage.subscription")
+            case UserNoticeMessageId.RESUBSCRIPTION => twitchMessageUtil.replyToChannel(twitchSubEvent.getChannel, twitchSubEvent.displayName, "bot.subMessage.resubscription", twitchSubEvent.resubMonthCount.getOrElse(1))
+            case UserNoticeMessageId.CHARITY =>
+            case _ =>
+        }
+    }
+
+    def getUserPermissionLevel(twitchEvent: TwitchChatMessageEvent): PermissionLevel = {
+        if (twitchEvent.channelName == twitchEvent.nick)
             PermissionLevel.OWNER
         else if (twitchEvent.isMod)
             PermissionLevel.MODERATORS
