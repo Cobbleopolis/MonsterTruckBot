@@ -31,7 +31,7 @@ class TwitchSubEvent(userNoticeEvent: UserNoticeEvent) extends TwitchEvent {
             None
     }
 
-    val displayName: String = getTag("display-name").get().getValue.orElse("")
+    val displayName: String = getTag("display-name").get().getValue.orElse(getTag("login").get().getValue.orElse(""))
 
     override def getClient: Client = userNoticeEvent.getClient
 
