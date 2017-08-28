@@ -5,14 +5,14 @@ import javax.inject.{Inject, Provider}
 import com.cobble.bot.common.api.PermissionLevel
 import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
 import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
-import com.cobble.bot.common.ref.{MessageRef, MtrConfigRef}
+import com.cobble.bot.common.ref.MtrConfigRef
 import net.engio.mbassy.listener.Handler
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
 import org.kitteh.irc.client.library.event.client.ClientConnectedEvent
 import org.kitteh.irc.client.library.feature.twitch.event.UserNoticeEvent
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
-import twitch.api.{TwitchChatMessageEvent, TwitchEvent}
+import twitch.api.TwitchChatMessageEvent
 import twitch.api.usernotice.UserNoticeMessageId
 import twitch.events.{TwitchCheerEvent, TwitchCommandExecutionEvent, TwitchMessageEvent, TwitchSubEvent}
 import twitch.filters.{TwitchBlacklistFilter, TwitchCapsFilter, TwitchLinksFilter}
@@ -53,7 +53,7 @@ class TwitchBotEventListener @Inject()(
                 ))
             }
 
-        if(msgEvent.getTag("bits").isPresent)
+        if (msgEvent.getTag("bits").isPresent)
             twitchBot.get.client.getEventManager.callEvent(new TwitchCheerEvent(msgEvent.getMessageEvent, msgEvent.getTag("bits").get().getValue.get().toInt))
     }
 
@@ -100,13 +100,13 @@ class TwitchBotEventListener @Inject()(
         TwitchLogger.debug(s"Subscription! ${twitchSubEvent.displayName} just subscribed!")
         var subMessage: String = twitchSubEvent.channelName
         var resubMessage: String = twitchSubEvent.channelName
-        if (!twitchMessageUtil.isDefined(s"bot.subMessage.subscription.$subMessage"))
+        if (!twitchMessageUtil.isDefined(s"bot.subMessages.subscription.$subMessage"))
             subMessage = "default"
-        if (!twitchMessageUtil.isDefined(s"bot.subMessage.resubscription.$resubMessage"))
+        if (!twitchMessageUtil.isDefined(s"bot.subMessages.resubscription.$resubMessage"))
             resubMessage = "default"
-        twitchSubEvent match {
-            case UserNoticeMessageId.SUBSCRIPTION => twitchMessageUtil.replyToChannel(twitchSubEvent.getChannel, twitchSubEvent.displayName, s"bot.subMessage.subscription.$subMessage")
-            case UserNoticeMessageId.RESUBSCRIPTION => twitchMessageUtil.replyToChannel(twitchSubEvent.getChannel, twitchSubEvent.displayName, s"bot.subMessage.resubscription.$resubMessage", twitchSubEvent.resubMonthCount.getOrElse(1))
+        twitchSubEvent.msgId match {
+            case UserNoticeMessageId.SUBSCRIPTION => twitchMessageUtil.replyToChannel(twitchSubEvent.getChannel, twitchSubEvent.displayName, s"bot.subMessages.subscription.$subMessage")
+            case UserNoticeMessageId.RESUBSCRIPTION => twitchMessageUtil.replyToChannel(twitchSubEvent.getChannel, twitchSubEvent.displayName, s"bot.subMessages.resubscription.$resubMessage", twitchSubEvent.resubMonthCount.getOrElse(1))
             case UserNoticeMessageId.CHARITY =>
             case _ =>
         }

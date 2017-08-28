@@ -1,6 +1,6 @@
 package twitch.util
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.{Inject, Provider, Singleton}
 
 import com.cobble.bot.common.ref.MessageRef
 import com.cobble.bot.common.util.MessageUtil
@@ -11,7 +11,7 @@ import twitch.TwitchBot
 import twitch.api.TwitchChatMessageEvent
 
 @Singleton
-class TwitchMessageUtil @Inject()(implicit val messagesApi: MessagesApi, twitchBot: TwitchBot) extends MessageUtil(messagesApi) {
+class TwitchMessageUtil @Inject()(implicit val messagesApi: MessagesApi, twitchBot: Provider[TwitchBot]) extends MessageUtil(messagesApi) {
 
     def reply(content: String, args: Any*)(implicit event: TwitchChatMessageEvent): Unit = replyToMessage(event.getMessageEvent, event.displayName, content, args: _*)
 
@@ -24,11 +24,11 @@ class TwitchMessageUtil @Inject()(implicit val messagesApi: MessagesApi, twitchB
 
     def replyToMessageWithMe(message: ChannelMessageEvent, content: String, args: Any*): Unit = sendMessage(message, s"/me ${messagesApi(content, args: _*)}")
 
-    def sendMessageToChannel(channel: Channel, content: String, args: Any*): Unit = twitchBot.client.sendMessage(channel, s"/me ${localizeMessage(content, args: _*)}")
+    def sendMessageToChannel(channel: Channel, content: String, args: Any*): Unit = twitchBot.get().client.sendMessage(channel, s"/me ${localizeMessage(content, args: _*)}")
 
     def replyToChannel(channel: Channel, displayName: String, content: String, args: Any*): Unit = {
         val userMention: String = if (displayName.startsWith("@")) displayName else "@" + displayName
-        twitchBot.client.sendMessage(channel, cleanMessage(formatMessage(userMention, content, args: _*)))
+        twitchBot.get().client.sendMessage(channel, cleanMessage(formatMessage(userMention, content, args: _*)))
     }
 
     def sendMessage(message: ChannelMessageEvent, localizedContent: String): Unit = {
