@@ -104,9 +104,21 @@ class TwitchBotEventListener @Inject()(
             subMessage = "default"
         if (!twitchMessageUtil.isDefined(s"bot.subMessages.resubscription.$resubMessage"))
             resubMessage = "default"
+        val displayName: String = if(twitchSubEvent.displayName.startsWith("@"))
+            twitchSubEvent.displayName
+        else
+            "@" + twitchSubEvent.displayName
         twitchSubEvent.msgId match {
-            case UserNoticeMessageId.SUBSCRIPTION => twitchMessageUtil.replyToChannel(twitchSubEvent.getChannel, twitchSubEvent.displayName, s"bot.subMessages.subscription.$subMessage")
-            case UserNoticeMessageId.RESUBSCRIPTION => twitchMessageUtil.replyToChannel(twitchSubEvent.getChannel, twitchSubEvent.displayName, s"bot.subMessages.resubscription.$resubMessage", twitchSubEvent.resubMonthCount.getOrElse(1))
+            case UserNoticeMessageId.SUBSCRIPTION =>
+                twitchMessageUtil.sendMessageToChannel(
+                    twitchSubEvent.getChannel,
+                    twitchMessageUtil.formatMessage(displayName, s"bot.subMessages.subscription.$subMessage")
+                )
+            case UserNoticeMessageId.RESUBSCRIPTION =>
+                twitchMessageUtil.sendMessageToChannel(
+                    twitchSubEvent.getChannel,
+                    twitchMessageUtil.formatMessage(displayName, s"bot.subMessages.resubscription.$resubMessage", twitchSubEvent.resubMonthCount.getOrElse(1))
+                )
             case UserNoticeMessageId.CHARITY =>
             case _ =>
         }
