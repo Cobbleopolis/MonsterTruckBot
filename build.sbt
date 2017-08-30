@@ -40,7 +40,7 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
         libraryDependencies ++= Seq(
             "org.postgresql" % "postgresql" % "42.0.0.jre7",
             "org.webjars" %% "webjars-play" % "2.6.1",
-            "com.adrianhurt" %% "play-bootstrap" % "1.2-P26-B3-RC2",
+            "com.adrianhurt" %% "play-bootstrap" % "1.2-P26-B3",
             "org.webjars.npm" % "bootstrap-sass" % "3.3.7",
             "org.webjars.bower" % "font-awesome-sass" % "4.6.2",
             "org.webjars" % "jquery" % "3.2.1",

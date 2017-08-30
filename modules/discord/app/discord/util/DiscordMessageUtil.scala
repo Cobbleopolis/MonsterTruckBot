@@ -27,7 +27,7 @@ class DiscordMessageUtil @Inject()(implicit val messagesApi: MessagesApi) extend
 
     def sendMessage(channel: IChannel, localizedContent: String): Unit = {
         if (localizedContent.length > MessageRef.DISCORD_MAX_MESSAGE_LENGTH)
-            channel.sendMessage(messagesApi("bot.commandMessageTooLong").trim)
+            channel.sendMessage(messagesApi("bot.messageTooLong").trim)
         else
             channel.sendMessage(localizedContent.trim)
     }

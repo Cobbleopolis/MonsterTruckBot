@@ -5,14 +5,16 @@ import javax.inject.{Inject, Provider}
 import com.cobble.bot.common.api.PermissionLevel
 import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
 import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
-import com.cobble.bot.common.ref.{MessageRef, MtrConfigRef}
+import com.cobble.bot.common.ref.MtrConfigRef
 import net.engio.mbassy.listener.Handler
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
 import org.kitteh.irc.client.library.event.client.ClientConnectedEvent
+import org.kitteh.irc.client.library.feature.twitch.event.UserNoticeEvent
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
-import twitch.api.TwitchEvent
-import twitch.events.{TwitchCheerEvent, TwitchCommandExecutionEvent, TwitchMessageEvent}
+import twitch.api.TwitchChatMessageEvent
+import twitch.api.usernotice.UserNoticeMessageId
+import twitch.events.{TwitchCheerEvent, TwitchCommandExecutionEvent, TwitchMessageEvent, TwitchSubEvent}
 import twitch.filters.{TwitchBlacklistFilter, TwitchCapsFilter, TwitchLinksFilter}
 import twitch.util.TwitchMessageUtil
 
@@ -51,8 +53,13 @@ class TwitchBotEventListener @Inject()(
                 ))
             }
 
-        if(msgEvent.getTag("bits").isPresent)
+        if (msgEvent.getTag("bits").isPresent)
             twitchBot.get.client.getEventManager.callEvent(new TwitchCheerEvent(msgEvent.getMessageEvent, msgEvent.getTag("bits").get().getValue.get().toInt))
+    }
+
+    @Handler
+    def twitchUserNoticeRecived(userNoticeEvent: UserNoticeEvent): Unit = {
+        twitchBot.get.client.getEventManager.callEvent(new TwitchSubEvent(userNoticeEvent))
     }
 
     def filterMessage(message: TwitchMessageEvent): Boolean = {
@@ -88,8 +95,37 @@ class TwitchBotEventListener @Inject()(
         twitchBotCheerEventHandler.handleEvent(twitchCheerEvent)
     }
 
-    def getUserPermissionLevel(twitchEvent: TwitchEvent): PermissionLevel = {
-        if (twitchEvent.channelName == twitchEvent.getActor.getNick)
+    @Handler
+    def twitchSubEvent(twitchSubEvent: TwitchSubEvent): Unit = {
+        TwitchLogger.debug(s"Subscription! ${twitchSubEvent.displayName} just subscribed!")
+        var subMessage: String = twitchSubEvent.channelName
+        var resubMessage: String = twitchSubEvent.channelName
+        if (!twitchMessageUtil.isDefined(s"bot.subMessages.subscription.$subMessage"))
+            subMessage = "default"
+        if (!twitchMessageUtil.isDefined(s"bot.subMessages.resubscription.$resubMessage"))
+            resubMessage = "default"
+        val displayName: String = if(twitchSubEvent.displayName.startsWith("@"))
+            twitchSubEvent.displayName
+        else
+            "@" + twitchSubEvent.displayName
+        twitchSubEvent.msgId match {
+            case UserNoticeMessageId.SUBSCRIPTION =>
+                twitchMessageUtil.sendMessageToChannel(
+                    twitchSubEvent.getChannel,
+                    twitchMessageUtil.formatMessage(displayName, s"bot.subMessages.subscription.$subMessage")
+                )
+            case UserNoticeMessageId.RESUBSCRIPTION =>
+                twitchMessageUtil.sendMessageToChannel(
+                    twitchSubEvent.getChannel,
+                    twitchMessageUtil.formatMessage(displayName, s"bot.subMessages.resubscription.$resubMessage", twitchSubEvent.resubMonthCount.getOrElse(1))
+                )
+            case UserNoticeMessageId.CHARITY =>
+            case _ =>
+        }
+    }
+
+    def getUserPermissionLevel(twitchEvent: TwitchChatMessageEvent): PermissionLevel = {
+        if (twitchEvent.channelName == twitchEvent.nick)
             PermissionLevel.OWNER
         else if (twitchEvent.isMod)
             PermissionLevel.MODERATORS
