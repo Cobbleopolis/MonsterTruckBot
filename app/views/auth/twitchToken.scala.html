@@ -6,23 +6,25 @@
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/twitchToken.css")">
     <script src="@routes.Assets.at("js/twitchToken.js")"></script>
 } {
-    <h2>@request.messages("global.pageNames.twitchAuthentication")</h2>
-    <div class="panel panel-default">
-        <div class="panel-body">
-            @if(errorType.isDefined) {
-                <div class="alert alert-dismissible alert-danger">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <strong>@request.messages("error.ohSnap")</strong> @request.messages("error.auth.twitch.unableToGetOAuth") <br/>
-                    @request.messages("error.type"): @errorType.getOrElse(request.messages("global.notAvailable")) <br/>
-                    @request.messages("error.description"): @errorDescription.getOrElse(request.messages("global.notAvailable"))
+    <div class="container">
+        <h2>@request.messages("global.pageNames.twitchAuthentication")</h2>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @if(errorType.isDefined) {
+                    <div class="alert alert-dismissible alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>@request.messages("error.ohSnap")</strong> @request.messages("error.auth.twitch.unableToGetOAuth") <br/>
+                        @request.messages("error.type"): @errorType.getOrElse(request.messages("global.notAvailable")) <br/>
+                        @request.messages("error.description"): @errorDescription.getOrElse(request.messages("global.notAvailable"))
+                    </div>
+                }
+                <div id="tokenDisplayContainer">
+                    <h4>@request.messages("auth.twitch.oAuthToken.header")</h4>
+                    <code id="tokenDisplay">@request.messages("global.notAvailable")</code>
+                    <p class="help-block">@request.messages("auth.twitch.oAuthToken.instructions")</p>
                 </div>
-            }
-            <div id="tokenDisplayContainer">
-                <h4>@request.messages("auth.twitch.oAuthToken.header")</h4>
-                <code id="tokenDisplay">@request.messages("global.notAvailable")</code>
-                <p class="help-block">@request.messages("auth.twitch.oAuthToken.instructions")</p>
+                <a id="twitchLink" href="@twitchOAuthRedirectUrl"></a>
             </div>
-            <a id="twitchLink" href="@twitchOAuthRedirectUrl"></a>
         </div>
     </div>
 

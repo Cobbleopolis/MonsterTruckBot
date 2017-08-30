@@ -133,8 +133,8 @@ class Dashboard @Inject()(
 
 object Dashboard {
     val dashboardPages: Map[String, String] = Map(
-        "filterSettings" -> "dashboard.forms.filters.title",
-        "customCommands" -> "dashboard.forms.customCommands.title",
-        "bitTracking" -> "dashboard.forms.bitTracking.title"
+        "filterSettings" -> "dashboard.pageNames.filterSettings",
+        "customCommands" -> "dashboard.pageNames.customCommands",
+        "bitTracking" -> "dashboard.pageNames.bitTracking"
     )
 }
