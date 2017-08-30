@@ -4,8 +4,8 @@
 @import discord.DiscordBot
 @(guild: IGuild)(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 
-@dashboardPage(guild, "") {
+@dashboardPage(guild, "coreSettings") {
 
 } {
-    Test
+    @request.messages("global.notYetImplemented")
 }

@@ -52,10 +52,12 @@
 } {
     @b3.form(routes.Dashboard.submitBitTracking()) {
         @helper.CSRF.formField
-        @b3.select(bitTrackingForm("currentMode"),
-            options = BitTrackingMode.map.toSeq,
-            '_label -> "dashboard.forms.bitTracking.currentMode.label"
-        )
+        <fieldset>
+            @b3.select(bitTrackingForm("currentMode"),
+                options = BitTrackingMode.map.toSeq,
+                '_label -> "dashboard.forms.bitTracking.currentMode.label"
+            )
+        </fieldset>
         <fieldset>
             <legend>@request.messages("dashboard.forms.bitTracking.modes.nip_dip")</legend>
             @renderCollectiveGameMode("nipDip", bitTrackingUtil.nipDipMode)

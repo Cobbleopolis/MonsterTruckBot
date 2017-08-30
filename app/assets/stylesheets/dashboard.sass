@@ -1,0 +1,37 @@
+@import "variables"
+@import "lib/bootstrap-sass/assets/stylesheets/bootstrap/variables"
+
+#sidebar
+    position: fixed
+    left: 0
+    background-color: $navbar-inverse-bg
+    height: 100%
+    color: $navbar-inverse-color
+    > .sidebar-items
+        padding-left: 0
+        list-style: none
+        > .sidebar-brand
+            color: $navbar-inverse-brand-color
+            font-size: $font-size-large
+            line-height: $line-height-computed
+            &:hover
+                > span
+                    color: $navbar-inverse-brand-hover-color
+                    background-color: $navbar-inverse-brand-hover-bg
+        > li
+            border-bottom: 1px solid $navbar-inverse-border
+            > a, span
+                display: block
+                padding: $navbar-padding-vertical $navbar-padding-horizontal
+                color: $navbar-inverse-link-color
+                text-decoration: none
+                &:hover, &:focus
+                    color: $navbar-inverse-link-hover-color
+                    background-color: darken($navbar-inverse-bg, 5%)
+        > .active
+            > a,span
+                background-color: $navbar-inverse-link-active-bg
+                color: $navbar-inverse-link-active-color
+                &:hover
+                    background-color: $navbar-inverse-link-active-bg
+                    color: $navbar-inverse-link-active-color
