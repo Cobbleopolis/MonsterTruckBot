@@ -21,7 +21,7 @@ class TwitchCommandExecutionEvent(messageEvent: ChannelMessageEvent, command: St
 
     override def getMessage: String = messageEvent.getMessage
 
-    def getCommand: String = command
+    def getCommand: String = command.toLowerCase
 
     def getArgs: Array[String] = args
 

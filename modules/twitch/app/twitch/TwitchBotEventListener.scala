@@ -48,7 +48,7 @@ class TwitchBotEventListener @Inject()(
                 val messageSplit: Array[String] = msgEvent.getMessage.split("\\s")
                 twitchBot.get.client.getEventManager.callEvent(new TwitchCommandExecutionEvent(
                     msgEvent.getMessageEvent,
-                    messageSplit.head.substring(mtrConfigRef.commandPrefix.length),
+                    messageSplit.head.substring(mtrConfigRef.commandPrefix.length).toLowerCase,
                     messageSplit.tail
                 ))
             }

@@ -7,7 +7,7 @@ class DiscordCommandExecutionEvent(message: IMessage, command: String, args: Arr
 
     def getMessage: IMessage = message
 
-    def getCommand: String = command
+    def getCommand: String = command.toLowerCase
 
     def getArgs: Array[String] = args
 

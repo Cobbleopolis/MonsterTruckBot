@@ -76,7 +76,8 @@ class Dashboard @Inject()(
             formWithErrors => {
                 BadRequest(views.html.dashboard.customCommands(guild, formWithErrors, commandForms))
             },
-            newCustomCommand => {
+            newCustomCommandRaw => {
+                val newCustomCommand: CustomCommand = newCustomCommandRaw.copy(commandName = newCustomCommandRaw.commandName.toLowerCase())
                 if (CustomCommand.get(mtrConfigRef.guildId, newCustomCommand.commandName).isDefined)
                     BadRequest(views.html.dashboard.customCommands(guild, dashboardSettingsForms.commandForm.fill(newCustomCommand).withError(dashboardSettingsForms.existingCommandFormError), commandForms))
                 else {
