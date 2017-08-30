@@ -38,7 +38,7 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
                 val contentSplit: Array[String] = message.getContent.split("\\s")
                 discordBot.get().client.getDispatcher.dispatch(new DiscordCommandExecutionEvent(
                     message,
-                    contentSplit.head.substring(config.commandPrefix.length),
+                    contentSplit.head.substring(config.commandPrefix.length).toLowerCase,
                     contentSplit.tail,
                     message.getAuthor
                 ))
