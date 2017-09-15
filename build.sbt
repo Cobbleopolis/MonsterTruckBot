@@ -32,7 +32,7 @@ lazy val commonSettings = Seq(
     )
 )
 
-lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, JavaServerAppPackaging, DebianPlugin).settings(commonSettings: _*)
+lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, JavaServerAppPackaging, DebianPlugin, SystemdPlugin).settings(commonSettings: _*)
     .settings(
         resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
         unmanagedResourceDirectories in Test += baseDirectory(_ / "target/web/public/test").value,
@@ -50,8 +50,17 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
         maintainer in Linux := "Cobbleopolis <cobbleopolis@gmail.com>",
         packageSummary in Linux := s"$displayName server",
         packageDescription := s"A server that runs the $displayName website, Discord bot and, Twitch bot",
-        debianPackageDependencies in Debian ++= Seq("default-jre | java6-runtime"),
-        bashScriptExtraDefines += """addJava "-Dconfig.file=${app_home}/../conf/production.conf"""",
+        debianPackageDependencies in Debian ++= Seq("default-jre | java8-runtime"),
+        javaOptions in Universal ++= Seq(
+            "-DapplyEvolutions.default=true"
+        ),
+        javaOptions in Linux ++= Seq(
+            s"-Dpidfile.path=/var/run/${packageName.value}/play.pid",
+            s"-Dconfig.file=/usr/share/${packageName.value}/conf/production.conf",
+            s"-Dlogger.file=/usr/share/${packageName.value}/conf/production-logback.xml"
+        ),
+        daemonUser := packageName.value,
+        daemonGroup := packageName.value,
         scalacOptions in Compile in doc ++= Seq(
             "-doc-version", version.value,
             "-doc-title", name.value,
