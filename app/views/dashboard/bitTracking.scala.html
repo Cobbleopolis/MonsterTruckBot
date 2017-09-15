@@ -55,7 +55,9 @@
         <fieldset>
             @b4.select(bitTrackingForm("currentMode"),
                 options = BitTrackingMode.map.toSeq,
-                '_label -> "dashboard.forms.bitTracking.currentMode.label"
+                '_label -> "dashboard.forms.bitTracking.currentMode.label",
+                '_custom -> true,
+                'class -> "w-100"
             )
         </fieldset>
         <fieldset>
@@ -87,7 +89,9 @@
             @b4.select(bitTrackingForm("pushUp.cheerMode"),
                 options = GameCheerMode.map.toSeq,
                 '_label -> "dashboard.forms.bitTracking.pushUp.cheerMode.label",
-                '_help -> "dashboard.forms.bitTracking.pushUp.cheerMode.help"
+                '_help -> "dashboard.forms.bitTracking.pushUp.cheerMode.help",
+                '_custom -> true,
+                'class -> "w-100"
             )
             @b4.number(bitTrackingForm("pushUp.goalAmount"),
                 '_label -> "dashboard.forms.bitTracking.pushUp.goalAmount.label",

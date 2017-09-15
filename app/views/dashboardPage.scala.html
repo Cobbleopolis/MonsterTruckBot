@@ -8,41 +8,45 @@
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/dashboard.css")">
     @head
 } {
-    <div class="row no-gutters">
-        <div class="col-md-2" id="sidebar">
-            <ul class="sidebar-items">
-                <li class="sidebar-brand">
-                @if(guild != null) {
-                    <span>@guild.getName</span>
-                } else {
-                    <span>@request.messages("error.unknownGuild")</span>
-                }
-                </li>
-                <li role="presentation" @if(currentPage == "coreSettings") {class="active"}><a href="/dashboard">@request.messages("dashboard.pageNames.coreSettings")</a></li>
-                @for(page <- Dashboard.dashboardPages) {
-                    <li role="presentation" @if(currentPage == page._1) {class="active"}><a href="/dashboard/@page._1">@request.messages(page._2)</a></li>
-                }
-            </ul>
+    <div class="container-fluid p-0 px-md-3">
+        <div class="row no-gutters">
+            <nav class="navbar col-lg-2 col-md-3 bg-light navbar-light flex-column py-0" id="sidebar">
+                <ul class="nav nav-pills flex-column w-100">
+                    <li class="nav-item">
+                        <span class="nav-link navbar-brand px-3 mr-0 w-100">
+                        @if(guild != null) {
+                            @guild.getName
+                        } else {
+                            @request.messages("error.unknownGuild")
+                        }
+                        </span>
+                    </li>
+                    <li role="presentation" class="nav-item"><a href="/dashboard" @if(currentPage == "coreSettings") {class="active nav-link px-3"} else {class="nav-link px-3"}>@request.messages("dashboard.pageNames.coreSettings")</a></li>
+                    @for(page <- Dashboard.dashboardPages) {
+                        <li role="presentation" class="nav-item"><a href="/dashboard/@page._1" @if(currentPage == page._1) {class="active nav-link px-3"} else {class="nav-link px-3"}>@request.messages(page._2)</a></li>
+                    }
+                </ul>
+            </nav>
+            <main class="col-lg-10 col-md-9 ml-md-auto mt-2">
+                <div class="container-fluid">
+                    <h2>
+                    @if(currentPage == "coreSettings") {
+                        @request.messages("dashboard.pageNames.coreSettings")
+                    } else {
+                        @request.messages(Dashboard.dashboardPages.getOrElse(currentPage, "dashboard.pageNames.unknown"))
+                    }
+                    </h2>
+                    @for(flashType <- flash.data) {
+                        <div class="alert alert-dismissible alert-@flashType._1">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            @flash.get(flashType._1)
+                        </div>
+                    }
+                    <br>
+                    @content
+                </div>
+            </main>
         </div>
-        <main class="col-md-10 col-md-offset-2">
-            <div class="container-fluid">
-                <h2>
-                @if(currentPage == "coreSettings") {
-                    @request.messages("dashboard.pageNames.coreSettings")
-                } else {
-                    @request.messages(Dashboard.dashboardPages.getOrElse(currentPage, "dashboard.pageNames.unknown"))
-                }
-                </h2>
-                @for(flashType <- flash.data) {
-                    <div class="alert alert-dismissible alert-@flashType._1">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        @flash.get(flashType._1)
-                    </div>
-                }
-                <br>
-                @content
-            </div>
-        </main>
     </div>
 
 }
