@@ -5,6 +5,6 @@ import com.cobble.bot.common.models.FilterSettings
 
 trait BlacklistFilter extends Filter {
 
-    override def doesMessageMatchFilter(messageContent: String, filterSettings: FilterSettings): Boolean = filterSettings.blacklistFilterWords.split("\\r\\n").exists(word => word.r.findFirstIn(messageContent).isDefined)
+    override def doesMessageMatchFilter(messageContent: String, filterSettings: FilterSettings): Boolean = filterSettings.blacklistFilterWords.split("\\R+").exists(word => word.r.findFirstIn(messageContent).isDefined)
 
 }
