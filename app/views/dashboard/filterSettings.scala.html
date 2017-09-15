@@ -23,7 +23,9 @@
             @b4.select(filterSettingsForm("capsFilterExemptionLevel"),
                 options = PermissionLevel.map.toSeq,
                 '_label -> "dashboard.forms.filters.capsFilter.exemptionLevel.label",
-                '_help -> "dashboard.forms.filters.capsFilter.exemptionLevel.help"
+                '_help -> "dashboard.forms.filters.capsFilter.exemptionLevel.help",
+                '_custom -> true,
+                'class -> "w-100"
             )
             @b4.number(filterSettingsForm("capsFilterThreshold"),
                 '_label -> "dashboard.forms.filters.capsFilter.threshold.label",
@@ -40,7 +42,9 @@
             @b4.select(filterSettingsForm("linksFilterExemptionLevel"),
                 options = PermissionLevel.map.toSeq,
                 '_label -> "dashboard.forms.filters.linksFilter.exemptionLevel.label",
-                '_help -> "dashboard.forms.filters.linksFilter.exemptionLevel.help"
+                '_help -> "dashboard.forms.filters.linksFilter.exemptionLevel.help",
+                '_custom -> true,
+                'class -> "w-100"
             )
         </fieldset>
         <fieldset>
@@ -53,7 +57,9 @@
             @b4.select(filterSettingsForm("blacklistFilterExemptionLevel"),
                 options = PermissionLevel.map.toSeq,
                 '_label -> "dashboard.forms.filters.blacklistFilter.exemptionLevel.label",
-                '_help -> "dashboard.forms.filters.blacklistFilter.exemptionLevel.help"
+                '_help -> "dashboard.forms.filters.blacklistFilter.exemptionLevel.help",
+                '_custom -> true,
+                'class -> "w-100"
             )
             @b4.textarea(filterSettingsForm("blacklistFilterWords"),
                 '_label -> "dashboard.forms.filters.blacklistFilter.words.label",
