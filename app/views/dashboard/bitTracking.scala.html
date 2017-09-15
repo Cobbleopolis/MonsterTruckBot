@@ -18,21 +18,21 @@
 
 @renderCollectiveGameMode(gameModeName: String, collectiveBitGameMode: CollectiveBitGameMode) = {
     @b4.textarea(bitTrackingForm(s"$gameModeName.template"),
-        '_label -> "dashboard.forms.bitTracking.nipDip.template.label",
+        '_label -> s"dashboard.forms.bitTracking.$gameModeName.template.label",
         '_help -> request.messages("dashboard.forms.bitTracking.variables", collectiveBitGameMode.getFormattingVariablesString),
         'rows -> 5
     )(implicitFieldConstructor, request)
     @b4.number(bitTrackingForm(s"$gameModeName.goalAmount"),
-        '_label -> "dashboard.forms.bitTracking.collective.goalAmount.label",
-        '_help -> "dashboard.forms.bitTracking.collective.goalAmount.help"
+        '_label -> s"dashboard.forms.bitTracking.$gameModeName.goalAmount.label",
+        '_help -> s"dashboard.forms.bitTracking.$gameModeName.goalAmount.help"
     )(implicitFieldConstructor, request)
     @b4.number(bitTrackingForm(s"$gameModeName.toNextGoal"),
-        '_label -> "dashboard.forms.bitTracking.collective.toNextGoal.label",
-        '_help -> "dashboard.forms.bitTracking.collective.toNextGoal.help"
+        '_label -> s"dashboard.forms.bitTracking.$gameModeName.toNextGoal.label",
+        '_help -> s"dashboard.forms.bitTracking.$gameModeName.toNextGoal.help"
     )(implicitFieldConstructor, request)
     @b4.number(bitTrackingForm(s"$gameModeName.goalCount"),
-        '_label -> "dashboard.forms.bitTracking.collective.goalCount.label",
-        '_help -> "dashboard.forms.bitTracking.collective.goalCount.help"
+        '_label -> s"dashboard.forms.bitTracking.$gameModeName.goalCount.label",
+        '_help -> s"dashboard.forms.bitTracking.$gameModeName.goalCount.help"
     )(implicitFieldConstructor, request)
 }
 
