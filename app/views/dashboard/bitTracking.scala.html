@@ -1,4 +1,4 @@
-@import b3.inline.InlineFieldConstructor
+@import b4.inline.InlineFieldConstructor
 @import com.cobble.bot.common.api.bitTracking.{BitTrackingMode, CollectiveBitGameMode}
 @import com.cobble.bot.common.models.bitTrackingFormData.BitTrackingFormData
 @import com.cobble.bot.common.ref.MtrConfigRef
@@ -13,35 +13,35 @@
 @fieldInputColWidth = @{10}
 
 @implicitFieldConstructor = @{
-    b3.horizontal.fieldConstructor("col-md-" + fieldLabelColWidth, "col-md-" + fieldInputColWidth)
+    b4.horizontal.fieldConstructor("col-md-" + fieldLabelColWidth, "col-md-" + fieldInputColWidth)
 }
 
 @renderCollectiveGameMode(gameModeName: String, collectiveBitGameMode: CollectiveBitGameMode) = {
-    @b3.textarea(bitTrackingForm(s"$gameModeName.template"),
+    @b4.textarea(bitTrackingForm(s"$gameModeName.template"),
         '_label -> "dashboard.forms.bitTracking.nipDip.template.label",
         '_help -> request.messages("dashboard.forms.bitTracking.variables", collectiveBitGameMode.getFormattingVariablesString),
         'rows -> 5
     )(implicitFieldConstructor, request)
-    @b3.number(bitTrackingForm(s"$gameModeName.goalAmount"),
+    @b4.number(bitTrackingForm(s"$gameModeName.goalAmount"),
         '_label -> "dashboard.forms.bitTracking.collective.goalAmount.label",
         '_help -> "dashboard.forms.bitTracking.collective.goalAmount.help"
     )(implicitFieldConstructor, request)
-    @b3.number(bitTrackingForm(s"$gameModeName.toNextGoal"),
+    @b4.number(bitTrackingForm(s"$gameModeName.toNextGoal"),
         '_label -> "dashboard.forms.bitTracking.collective.toNextGoal.label",
         '_help -> "dashboard.forms.bitTracking.collective.toNextGoal.help"
     )(implicitFieldConstructor, request)
-    @b3.number(bitTrackingForm(s"$gameModeName.goalCount"),
+    @b4.number(bitTrackingForm(s"$gameModeName.goalCount"),
         '_label -> "dashboard.forms.bitTracking.collective.goalCount.label",
         '_help -> "dashboard.forms.bitTracking.collective.goalCount.help"
     )(implicitFieldConstructor, request)
 }
 
 @renderRBGShotType(shotType: String) = {
-    @b3.number(bitTrackingForm(s"rbg.${shotType}ShotAmount"),
+    @b4.number(bitTrackingForm(s"rbg.${shotType}ShotAmount"),
         '_label -> request.messages("dashboard.forms.bitTracking.rbg.shotAmount.label", request.messages(s"bot.bitTracking.rbg.shotTypes.$shotType")),
         '_help -> request.messages("dashboard.forms.bitTracking.rbg.shotAmount.help", request.messages(s"bot.bitTracking.rbg.shotTypes.$shotType").toLowerCase)
     )(implicitFieldConstructor, request)
-    @b3.number(bitTrackingForm(s"rbg.${shotType}ShotCount"),
+    @b4.number(bitTrackingForm(s"rbg.${shotType}ShotCount"),
         '_label -> request.messages("dashboard.forms.bitTracking.rbg.shotCount.label", request.messages(s"bot.bitTracking.rbg.shotTypes.$shotType")),
         '_help -> request.messages("dashboard.forms.bitTracking.rbg.shotCount.help", request.messages(s"bot.bitTracking.rbg.shotTypes.$shotType").toLowerCase)
     )(implicitFieldConstructor, request)
@@ -50,10 +50,10 @@
 @dashboardPage(guild, "bitTracking") {
 
 } {
-    @b3.form(routes.Dashboard.submitBitTracking()) {
+    @b4.form(routes.Dashboard.submitBitTracking()) {
         @helper.CSRF.formField
         <fieldset>
-            @b3.select(bitTrackingForm("currentMode"),
+            @b4.select(bitTrackingForm("currentMode"),
                 options = BitTrackingMode.map.toSeq,
                 '_label -> "dashboard.forms.bitTracking.currentMode.label"
             )
@@ -64,7 +64,7 @@
         </fieldset>
         <fieldset>
             <legend>@request.messages("dashboard.forms.bitTracking.modes.rbg")</legend>
-            @b3.textarea(bitTrackingForm("rbg.template"),
+            @b4.textarea(bitTrackingForm("rbg.template"),
                 '_label -> "dashboard.forms.bitTracking.rbg.template.label",
                 '_help -> request.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.rbgMode.getFormattingVariablesString),
                 'rows -> 5
@@ -79,58 +79,58 @@
         </fieldset>
         <fieldset>
             <legend>@request.messages("dashboard.forms.bitTracking.modes.push_up")</legend>
-            @b3.textarea(bitTrackingForm("pushUp.template"),
+            @b4.textarea(bitTrackingForm("pushUp.template"),
                 '_label -> "dashboard.forms.bitTracking.pushUp.template.label",
                 '_help -> request.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.pushUpMode.getFormattingVariablesString),
                 'rows -> 5
             )
-            @b3.select(bitTrackingForm("pushUp.cheerMode"),
+            @b4.select(bitTrackingForm("pushUp.cheerMode"),
                 options = GameCheerMode.map.toSeq,
                 '_label -> "dashboard.forms.bitTracking.pushUp.cheerMode.label",
                 '_help -> "dashboard.forms.bitTracking.pushUp.cheerMode.help"
             )
-            @b3.number(bitTrackingForm("pushUp.goalAmount"),
+            @b4.number(bitTrackingForm("pushUp.goalAmount"),
                 '_label -> "dashboard.forms.bitTracking.pushUp.goalAmount.label",
                 '_help -> "dashboard.forms.bitTracking.pushUp.goalAmount.help"
             )
-            @b3.number(bitTrackingForm("pushUp.toNextGoal"),
+            @b4.number(bitTrackingForm("pushUp.toNextGoal"),
                 '_label -> "dashboard.forms.bitTracking.pushUp.toNextGoal.label",
                 '_help -> "dashboard.forms.bitTracking.pushUp.toNextGoal.help"
             )
-            @b3.number(bitTrackingForm("pushUp.pushUpSetAmount"),
+            @b4.number(bitTrackingForm("pushUp.pushUpSetAmount"),
                 '_label -> "dashboard.forms.bitTracking.pushUp.pushUpSetAmount.label",
                 '_help -> "dashboard.forms.bitTracking.pushUp.pushUpSetAmount.help"
             )
-            @b3.number(bitTrackingForm("pushUp.goalCount"),
+            @b4.number(bitTrackingForm("pushUp.goalCount"),
                 '_label -> "dashboard.forms.bitTracking.pushUp.goalCount.label",
                 '_help -> "dashboard.forms.bitTracking.pushUp.goalCount.help"
             )
         </fieldset>
         <fieldset>
             <legend>@request.messages("dashboard.forms.bitTracking.modes.sing_it_or_slam_it")</legend>
-            @b3.textarea(bitTrackingForm("singItOrSlamIt.template"),
+            @b4.textarea(bitTrackingForm("singItOrSlamIt.template"),
                 '_label -> "dashboard.forms.bitTracking.singItOrSlamIt.template.label",
                 '_help -> request.messages("dashboard.forms.bitTracking.variables", bitTrackingUtil.singItOrSlamItMode.getFormattingVariablesString),
                 'rows -> 5
             )
-            @b3.number(bitTrackingForm("singItOrSlamIt.goalAmount"),
+            @b4.number(bitTrackingForm("singItOrSlamIt.goalAmount"),
                 '_label -> "dashboard.forms.bitTracking.singItOrSlamIt.goalAmount.label",
                 '_help -> "dashboard.forms.bitTracking.singItOrSlamIt.goalAmount.help"
             )
-            @b3.number(bitTrackingForm("singItOrSlamIt.goalCount"),
+            @b4.number(bitTrackingForm("singItOrSlamIt.goalCount"),
                 '_label -> "dashboard.forms.bitTracking.singItOrSlamIt.goalCount.label",
                 '_help -> "dashboard.forms.bitTracking.singItOrSlamIt.goalCount.help"
             )
-            @b3.number(bitTrackingForm("singItOrSlamIt.roundsWon"),
+            @b4.number(bitTrackingForm("singItOrSlamIt.roundsWon"),
                 '_label -> "dashboard.forms.bitTracking.singItOrSlamIt.roundsWon.label",
                 '_help -> "dashboard.forms.bitTracking.singItOrSlamIt.roundsWon.help"
             )
-            @b3.number(bitTrackingForm("singItOrSlamIt.roundsLost"),
+            @b4.number(bitTrackingForm("singItOrSlamIt.roundsLost"),
                 '_label -> "dashboard.forms.bitTracking.singItOrSlamIt.roundsLost.label",
                 '_help -> "dashboard.forms.bitTracking.singItOrSlamIt.roundsLost.help"
             )
         </fieldset>
-        @b3.submit('class -> "btn btn-primary") {
+        @b4.submit('class -> "btn btn-success") {
             @request.messages("global.forms.save")
         }
     }

@@ -8,7 +8,7 @@
 @(guild: IGuild, newCommandForm: Form[CustomCommand], commandForms: List[Form[CustomCommand]])(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 
 @implicitFieldConstructor = @{
-    b3.horizontal.fieldConstructor("col-md-2", "col-md-10")
+    b4.horizontal.fieldConstructor("col-md-2", "col-md-10")
 }
 
 @dashboardPage(guild, "customCommands"){
@@ -17,29 +17,31 @@
 
     @formErrors(newCommandForm.asInstanceOf[Form[Any]])
 
-    @b3.form(routes.Dashboard.submitNewCommand()) {
+    @b4.form(routes.Dashboard.submitNewCommand()) {
         @helper.CSRF.formField
         <fieldset>
             <legend>@request.messages("dashboard.forms.customCommands.newCommand.title")</legend>
-            @b3.inputWrapped("text", newCommandForm("commandName"),
+            @b4.inputWrapped("text", newCommandForm("commandName"),
                 '_label -> "dashboard.forms.customCommands.newCommand.commandName.label",
-                'placeholder -> "dashboard.forms.customCommands.newCommand.commandName.placeholder"
+                'placeholder -> request.messages("dashboard.forms.customCommands.newCommand.commandName.placeholder")
             ) { input =>
                 <div class="input-group">
                     <span class="input-group-addon">@mtrConfigRef.commandPrefix</span>
                     @input
                 </div>
             }
-            @b3.textarea(newCommandForm("commandContent"),
+            @b4.textarea(newCommandForm("commandContent"),
                 '_label -> "dashboard.forms.customCommands.newCommand.commandContent.label",
-                'placeholder -> "dashboard.forms.customCommands.newCommand.commandContent.placeholder"
+                'placeholder -> request.messages("dashboard.forms.customCommands.newCommand.commandContent.placeholder")
             )
-            @b3.select(newCommandForm("permissionLevel"),
+            @b4.select(newCommandForm("permissionLevel"),
                 options = PermissionLevel.map.toSeq,
                 '_label -> "dashboard.forms.customCommands.newCommand.permissionLevel.label",
-                '_help -> "dashboard.forms.customCommands.newCommand.permissionLevel.help"
+                '_help -> "dashboard.forms.customCommands.newCommand.permissionLevel.help",
+                '_custom -> true,
+                'class -> "w-100"
             )
-            @b3.submit('class -> "btn btn-success") {
+            @b4.submit('class -> "btn btn-success") {
                 @request.messages("global.forms.save")
             }
         </fieldset>
@@ -50,21 +52,21 @@
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th class="col-md-2">@request.messages("dashboard.forms.customCommands.editCommand.commandName.label")</th>
-                    <th class="col-md-6">@request.messages("dashboard.forms.customCommands.editCommand.commandContent.label")</th>
-                    <th class="col-md-2">@request.messages("dashboard.forms.customCommands.editCommand.permissionLevel.label")</th>
-                    <th class="col-md-2">@request.messages("dashboard.forms.customCommands.editCommand.actions.label")</th>
+                    <th class="w-10">@request.messages("dashboard.forms.customCommands.editCommand.commandName.label")</th>
+                    <th class="w-60">@request.messages("dashboard.forms.customCommands.editCommand.commandContent.label")</th>
+                    <th class="w-15">@request.messages("dashboard.forms.customCommands.editCommand.permissionLevel.label")</th>
+                    <th class="w-15">@request.messages("dashboard.forms.customCommands.editCommand.actions.label")</th>
                 </tr>
             </thead>
             <tbody>
             @for(commandForm <- commandForms) {
                 <tr>
-                    @b3.inline.form(routes.Dashboard.submitEditCommand()) { implicit ifc =>
+                    @b4.inline.form(routes.Dashboard.submitEditCommand()) { implicit ifc =>
                         @helper.CSRF.formField
-                        @b3.hidden(commandForm("commandName").name, commandForm("commandName").value.get)
+                        @b4.hidden(commandForm("commandName").name, commandForm("commandName").value.get)
                         <td>@mtrConfigRef.commandPrefix@commandForm("commandName").value.get</td>
-                        <td>@b3.textarea(commandForm("commandContent"), 'rows -> "4")</td>
-                        <td>@b3.select(commandForm("permissionLevel"), options = PermissionLevel.map.toSeq)</td>
+                        <td>@b4.textarea(commandForm("commandContent"), 'rows -> "4")</td>
+                        <td>@b4.select(commandForm("permissionLevel"), options = PermissionLevel.map.toSeq)</td>
                         <td>
                             <button type="submit" class="btn btn-info" >@request.messages("global.forms.edit")</button>
                             <a href="@routes.Dashboard.submitDeleteCommand(commandForm("commandName").value.get)" class="btn btn-danger">@request.messages("global.forms.delete")</a>
