@@ -18,7 +18,7 @@
 
 @renderCollectiveGameMode(gameModeName: String, collectiveBitGameMode: CollectiveBitGameMode) = {
     @b4.textarea(bitTrackingForm(s"$gameModeName.template"),
-        '_label -> "dashboard.forms.bitTracking.nipDip.template.label",
+        '_label -> s"dashboard.forms.bitTracking.$gameModeName.template.label",
         '_help -> request.messages("dashboard.forms.bitTracking.variables", collectiveBitGameMode.getFormattingVariablesString),
         'rows -> 5
     )(implicitFieldConstructor, request)
