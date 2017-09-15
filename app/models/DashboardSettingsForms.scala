@@ -10,6 +10,8 @@ import play.api.data.{Form, FormError}
 
 @Singleton
 class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
+    
+    val MAX_INT_INPUT_VALUE: Int = Int.MaxValue - 1
 
     val filterForm: Form[FilterSettings] = Form(
         mapping(
@@ -46,39 +48,39 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
             "currentMode" -> number,
             "nipDip" -> mapping(
                 "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
-                "goalAmount" -> number(min = 0),
-                "toNextGoal" -> number(min = 0),
-                "goalCount" -> number(min = 0)
+                "goalAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "toNextGoal" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "goalCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE)
             )(CollectiveModeFormData.apply)(CollectiveModeFormData.unapply),
             "rbg" -> mapping(
                 "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
-                "greenShotAmount" -> number(min = 0),
-                "greenShotCount" -> number(min = 0),
-                "blueShotAmount" -> number(min = 0),
-                "blueShotCount" -> number(min = 0),
-                "redShotAmount" -> number(min = 0),
-                "redShotCount" -> number(min = 0)
+                "greenShotAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "greenShotCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "blueShotAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "blueShotCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "redShotAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "redShotCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE)
             )(RBGModeFormData.apply)(RBGModeFormData.unapply),
             "jackshots" -> mapping(
                 "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
-                "goalAmount" -> number(min = 0),
-                "toNextGoal" -> number(min = 0),
-                "goalCount" -> number(min = 0)
+                "goalAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "toNextGoal" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "goalCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE)
             )(CollectiveModeFormData.apply)(CollectiveModeFormData.unapply),
             "pushUp" -> mapping(
                 "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
                 "cheerMode" -> nonEmptyText,
-                "goalAmount" -> number(min = 0),
-                "toNextGoal" -> number(min = 0),
-                "pushUpSetAmount" -> number(min = 0),
-                "goalCount" -> number(min = 0)
+                "goalAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "toNextGoal" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "pushUpSetAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "goalCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE)
             )(PushUpModeFormData.apply)(PushUpModeFormData.unapply),
             "singItOrSlamIt" -> mapping(
                 "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
-                "goalAmount" -> number(min = 0),
-                "goalCount" -> number(min = 0),
-                "roundsWon" -> number(min = 0),
-                "roundsLost" -> number(min = 0)
+                "goalAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "goalCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "roundsWon" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+                "roundsLost" -> number(min = 0, max = MAX_INT_INPUT_VALUE)
             )(SingItOrSlamItModeFormData.apply)(SingItOrSlamItModeFormData.unapply)
         )(BitTrackingFormData.apply)(BitTrackingFormData.unapply)
     )
