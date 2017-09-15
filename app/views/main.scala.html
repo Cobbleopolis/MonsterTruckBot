@@ -1,12 +1,14 @@
 @import component.header
-@import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
+@import org.webjars.play.WebJarsUtil
 @(pageName: String)(head: Html)(content: Html)(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent])
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         @if(request.messages.isDefinedAt(s"global.pageNames.$pageName")) {
             <title>@request.messages(s"global.pageNames.$pageName")</title>
         } else {
@@ -15,13 +17,15 @@
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/monster-truck-bot.png")">
         <script src="@webJarsUtil.url("jquery.min.js").get" type="text/javascript"></script>
-        <script src="@webJarsUtil.url("bootstrap-sass", "bootstrap.js").get" type="text/javascript"></script>
+        <script src="@webJarsUtil.url("/dist/umd/popper.js").get" type="text/javascript"></script>
+        <script src="@webJarsUtil.url("bootstrap", "bootstrap.js").get" type="text/javascript"></script>
         @head
-    </head>
+        </head>
     <body>
         @header()
         <div id="page-container">
-            @content
+        @content
         </div>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/monster-truck-bot.png")">
     </body>
 </html>
