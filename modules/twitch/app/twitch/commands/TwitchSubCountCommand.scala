@@ -15,7 +15,7 @@ import scala.util.{Failure, Success}
 class TwitchSubCountCommand @Inject()(implicit val messageUtil: TwitchMessageUtil, twitchApiUtil: TwitchApiUtil, mtrConfigRef: MtrConfigRef, executionContext: ExecutionContext) extends TwitchCommand with SubCountCommand {
 
     override def execute(implicit executionEvent: TwitchCommandExecutionEvent): Unit = {
-        var channelName: String = executionEvent.channelName
+        var channelName: String = executionEvent.channelName.toLowerCase
         if (executionEvent.getArgs.headOption.isDefined && mtrConfigRef.twitchChannels.contains(executionEvent.getArgs.head.toLowerCase))
             channelName = executionEvent.getArgs.head.toLowerCase
 
