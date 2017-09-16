@@ -1,5 +1,6 @@
 package twitch
 
+import java.util.Optional
 import javax.inject.{Inject, Provider}
 
 import com.cobble.bot.common.api.PermissionLevel
@@ -7,6 +8,7 @@ import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
 import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
 import net.engio.mbassy.listener.Handler
+import org.kitteh.irc.client.library.element.MessageTag
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
 import org.kitteh.irc.client.library.event.client.ClientConnectedEvent
 import org.kitteh.irc.client.library.feature.twitch.event.UserNoticeEvent
@@ -59,7 +61,12 @@ class TwitchBotEventListener @Inject()(
 
     @Handler
     def twitchUserNoticeRecived(userNoticeEvent: UserNoticeEvent): Unit = {
-        twitchBot.get.client.getEventManager.callEvent(new TwitchSubEvent(userNoticeEvent))
+        val msgIdTag: Optional[MessageTag] = userNoticeEvent.getTag("msg-id")
+        if (msgIdTag.isPresent && msgIdTag.get().getValue.isPresent) {
+            val msgId: String = msgIdTag.get().getValue.get()
+            if (msgId == "sub" || msgId == "resub")
+                twitchBot.get.client.getEventManager.callEvent(new TwitchSubEvent(userNoticeEvent))
+        }
     }
 
     def filterMessage(message: TwitchMessageEvent): Boolean = {
@@ -98,26 +105,25 @@ class TwitchBotEventListener @Inject()(
     @Handler
     def twitchSubEvent(twitchSubEvent: TwitchSubEvent): Unit = {
         TwitchLogger.debug(s"Subscription! ${twitchSubEvent.displayName} just subscribed!")
-        var subMessage: String = twitchSubEvent.channelName
-        var resubMessage: String = twitchSubEvent.channelName
-        if (!twitchMessageUtil.isDefined(s"bot.subMessages.subscription.$subMessage"))
-            subMessage = "default"
-        if (!twitchMessageUtil.isDefined(s"bot.subMessages.resubscription.$resubMessage"))
-            resubMessage = "default"
+        var messageVariant: String = twitchSubEvent.channelName.toLowerCase
         val displayName: String = if(twitchSubEvent.displayName.startsWith("@"))
             twitchSubEvent.displayName
         else
             "@" + twitchSubEvent.displayName
         twitchSubEvent.msgId match {
             case UserNoticeMessageId.SUBSCRIPTION =>
+                if (!twitchMessageUtil.isDefined(s"bot.subMessages.subscription.$messageVariant"))
+                    messageVariant = "default"
                 twitchMessageUtil.sendMessageToChannel(
                     twitchSubEvent.getChannel,
-                    twitchMessageUtil.formatMessage(displayName, s"bot.subMessages.subscription.$subMessage")
+                    twitchMessageUtil.formatMessage(displayName, s"bot.subMessages.subscription.$messageVariant")
                 )
             case UserNoticeMessageId.RESUBSCRIPTION =>
+                if (!twitchMessageUtil.isDefined(s"bot.subMessages.resubscription.$messageVariant"))
+                    messageVariant = "default"
                 twitchMessageUtil.sendMessageToChannel(
                     twitchSubEvent.getChannel,
-                    twitchMessageUtil.formatMessage(displayName, s"bot.subMessages.resubscription.$resubMessage", twitchSubEvent.resubMonthCount.getOrElse(1))
+                    twitchMessageUtil.formatMessage(displayName, s"bot.subMessages.resubscription.$messageVariant", twitchSubEvent.resubMonthCount.getOrElse(1))
                 )
             case UserNoticeMessageId.CHARITY =>
             case _ =>
