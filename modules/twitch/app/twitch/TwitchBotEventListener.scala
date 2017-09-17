@@ -64,7 +64,7 @@ class TwitchBotEventListener @Inject()(
         val msgIdTag: Optional[MessageTag] = userNoticeEvent.getTag("msg-id")
         if (msgIdTag.isPresent && msgIdTag.get().getValue.isPresent) {
             val msgId: String = msgIdTag.get().getValue.get()
-            if (msgId == "sub" || msgId == "resub")
+            if (msgId == UserNoticeMessageId.SUBSCRIPTION.toString || msgId == UserNoticeMessageId.RESUBSCRIPTION.toString)
                 twitchBot.get.client.getEventManager.callEvent(new TwitchSubEvent(userNoticeEvent))
         }
     }
