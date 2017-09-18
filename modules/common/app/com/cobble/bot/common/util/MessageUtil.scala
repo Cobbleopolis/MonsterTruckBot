@@ -5,24 +5,24 @@ import play.api.i18n.MessagesApi
 
 abstract class MessageUtil(messagesApi: MessagesApi) extends DefaultLang {
 
-    /**
-      * The arrow character used when responding to a command.
-      */
     val arrowChar: Char = '\u21D2'
 
-    /**
-      * Properly formats a response message mentioning a user.
-      *
-      * @param userMention A string used to mention a user.
-      * @param message     The content of the message to format.
-      * @return The formatted message.
-      */
-    def formatMessage(userMention: String, message: String, args: Any*): String = {
-        if (messagesApi.isDefinedAt(message))
-            s"$userMention $arrowChar ${messagesApi(message, args: _*)}"
+    val maxMessageLength: Int
+
+    def cleanMessage(localizedMessage: String): String = {
+        if(localizedMessage.length > maxMessageLength)
+            messagesApi("bot.messageTooLong").trim()
         else
-            s"$userMention $arrowChar $message"
+            localizedMessage.trim()
     }
+
+    def formatMessageText(userMention: String, message: String): String = s"$userMention $arrowChar $message"
+
+    def formatMessage(userMention: Option[String], message: String, args: Any*): String =
+        if(userMention.isDefined)
+            cleanMessage(formatMessageText(userMention.get, messagesApi(message, args: _*)))
+        else
+            cleanMessage(messagesApi(message, args: _*))
 
     def isDefined(key: String): Boolean = messagesApi.isDefinedAt(key)
 }

@@ -92,7 +92,7 @@ class TwitchBotEventListener @Inject()(
         else {
             val customCommandOpt: Option[CustomCommand] = CustomCommand.get(mtrConfigRef.guildId, commandEvent.getCommand)
             if (customCommandOpt.isDefined && getUserPermissionLevel(commandEvent) >= customCommandOpt.get.getPermissionLevel)
-                twitchMessageUtil.replyToMessageWithMe(commandEvent.getMessageEvent, customCommandOpt.get.commandContent, commandEvent.getArgs: _*)
+                twitchMessageUtil.reply(customCommandOpt.get.commandContent, commandEvent.getArgs: _*)(commandEvent)
         }
     }
 
@@ -114,16 +114,18 @@ class TwitchBotEventListener @Inject()(
             case UserNoticeMessageId.SUBSCRIPTION =>
                 if (!twitchMessageUtil.isDefined(s"bot.subMessages.subscription.$messageVariant"))
                     messageVariant = "default"
-                twitchMessageUtil.sendMessageToChannel(
+                twitchMessageUtil.replyToChannel(
                     twitchSubEvent.getChannel,
-                    twitchMessageUtil.formatMessage(displayName, s"bot.subMessages.subscription.$messageVariant")
+                    displayName,
+                    s"bot.subMessages.subscription.$messageVariant", twitchSubEvent.resubMonthCount.getOrElse(1)
                 )
             case UserNoticeMessageId.RESUBSCRIPTION =>
                 if (!twitchMessageUtil.isDefined(s"bot.subMessages.resubscription.$messageVariant"))
                     messageVariant = "default"
-                twitchMessageUtil.sendMessageToChannel(
+                twitchMessageUtil.replyToChannel(
                     twitchSubEvent.getChannel,
-                    twitchMessageUtil.formatMessage(displayName, s"bot.subMessages.resubscription.$messageVariant", twitchSubEvent.resubMonthCount.getOrElse(1))
+                    displayName,
+                    s"bot.subMessages.resubscription.$messageVariant", twitchSubEvent.resubMonthCount.getOrElse(1)
                 )
             case UserNoticeMessageId.CHARITY =>
             case _ =>
