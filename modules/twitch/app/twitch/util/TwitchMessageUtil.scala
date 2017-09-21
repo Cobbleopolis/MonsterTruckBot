@@ -13,33 +13,29 @@ import twitch.api.TwitchChatMessageEvent
 @Singleton
 class TwitchMessageUtil @Inject()(implicit val messagesApi: MessagesApi, twitchBot: Provider[TwitchBot]) extends MessageUtil(messagesApi) {
 
+    override val maxMessageLength: Int = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE
+
     def reply(content: String, args: Any*)(implicit event: TwitchChatMessageEvent): Unit = replyToMessage(event.getMessageEvent, event.displayName, content, args: _*)
 
-    def replyToMessage(message: ChannelMessageEvent, displayName: String, content: String, args: Any*): Unit = {
-        val userMention: String = if (displayName.startsWith("@")) displayName else "@" + displayName
-        sendMessage(message, cleanMessage(formatMessage(userMention, content, args: _*)))
+    def replyToMessage(message: ChannelMessageEvent, displayName: String, content: String, args: Any*): Unit =
+        message.sendReply(formatMessage(Some(displayName), content, args: _*))
+
+    def sendMessageToChannel(channel: Channel, content: String, args: Any*): Unit = twitchBot.get().client.sendMessage(channel, formatMessage(None, content, args: _*))
+
+    def replyToChannel(channel: Channel, displayName: String, content: String, args: Any*): Unit =
+        twitchBot.get().client.sendMessage(channel, formatMessage(Some(displayName), content, args: _*))
+
+    override def formatMessageText(userMention: Option[String], message: String): String = {
+        val defaultFormt: String = if (userMention.isDefined)
+            if(!userMention.get.startsWith("@"))
+                super.formatMessageText(Some("@" + userMention.get) , message)
+            else
+                super.formatMessageText(userMention, message)
+        else
+            super.formatMessageText(None, message)
+        "/me " + defaultFormt
     }
 
-    def replyMe(content: String, args: Any*)(implicit event: TwitchChatMessageEvent): Unit = replyToMessageWithMe(event.getMessageEvent, content, args: _*)
-
-    def replyToMessageWithMe(message: ChannelMessageEvent, content: String, args: Any*): Unit = sendMessage(message, s"/me ${localizeMessage(content, args: _*)}")
-
-    def sendMessageToChannel(channel: Channel, content: String, args: Any*): Unit = twitchBot.get().client.sendMessage(channel, s"/me ${localizeMessage(content, args: _*)}")
-
-    def replyToChannel(channel: Channel, displayName: String, content: String, args: Any*): Unit = {
-        val userMention: String = if (displayName.startsWith("@")) displayName else "@" + displayName
-        twitchBot.get().client.sendMessage(channel, cleanMessage(formatMessage(userMention, content, args: _*)))
-    }
-
-    def sendMessage(message: ChannelMessageEvent, localizedContent: String): Unit = message.sendReply(cleanMessage(localizedContent))
-
-    def localizeMessage(content: String, args: Any*): String = cleanMessage(messagesApi(content, args: _*))
-
-    def cleanMessage(message: String): String = {
-        var out: String = message
-        if (message.length > MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE)
-            out = messagesApi("bot.messageTooLong")
-        out.replaceAll("\\R", " | ").trim
-    }
+    override def cleanMessage(localizedMessage: String): String = super.cleanMessage(localizedMessage).replaceAll("\\R", " | ").trim
 
 }

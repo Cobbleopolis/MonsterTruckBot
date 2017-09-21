@@ -21,7 +21,7 @@ class TwitchUptimeCommand @Inject()(implicit val messageUtil: TwitchMessageUtil,
 
         getStreamUptime(mtrConfigRef.twitchChannels.get(channelName), twitchApiUtil)(executionContext, messageUtil.messagesApi).onComplete {
             case Success(uptime) =>
-                messageUtil.replyMe(uptime)
+                messageUtil.reply(uptime)
             case Failure(t) =>
                 messageUtil.reply("bot.commandExecutionError", t.getMessage)
                 twitch.TwitchLogger.error("Error getting twitch uptime", t)
