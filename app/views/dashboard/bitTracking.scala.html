@@ -74,6 +74,12 @@
                 '_custom -> true,
                 'class -> "w-100"
             )
+            @b4.checkbox(bitTrackingForm("common.paused"),
+                '_label -> "dashboard.forms.bitTracking.common.paused.label",
+                '_text -> "dashboard.forms.bitTracking.common.paused.text",
+                '_help -> "dashboard.forms.bitTracking.common.paused.help",
+                '_custom -> true
+            )
         </fieldset>
         @defining(BitTrackingMode(bitTrackingForm("currentMode").value.get.toInt)) { currentBitTrackingMode =>
             <nav class="nav nav-tabs" id="bit-tracking-nav" role="tablist">

@@ -1,6 +1,6 @@
 package com.cobble.bot.common.api.bitTracking
 
-import scala.collection.{SortedMap, mutable}
+import scala.collection.SortedMap
 
 object BitTrackingMode extends Enumeration {
 

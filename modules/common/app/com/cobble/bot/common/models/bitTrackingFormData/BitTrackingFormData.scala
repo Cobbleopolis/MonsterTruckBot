@@ -5,6 +5,7 @@ import com.cobble.bot.common.models.BitTrackingSettings
 case class BitTrackingFormData(
                                   guildId: Long,
                                   currentMode: Int,
+                                  commonBitTrackingFormData: CommonBitTrackingFormData,
                                   nipDipFormData: CollectiveModeFormData,
                                   rbgFormData: RBGModeFormData,
                                   jackshotsFormData: CollectiveModeFormData,

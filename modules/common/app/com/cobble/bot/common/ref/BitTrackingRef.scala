@@ -24,6 +24,8 @@ object BitTrackingRef {
 
     def getBitTrackingLocation(domain: String, suffix: String): String = s"$BASE_CACHE_LOCATION.$domain.$suffix"
 
+    def getCommonBitTrackingLocation(suffix: String): String = s"$BASE_CACHE_LOCATION.$suffix"
+
     object BitCheerLevels {
 
         val GREY_BIT: Int = 1

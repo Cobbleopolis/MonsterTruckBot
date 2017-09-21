@@ -12,6 +12,7 @@ import play.api.db.Database
 class BitTrackingUtil @Inject()(implicit mtrConfigRef: MtrConfigRef,
                                 db: Database,
                                 cache: SyncCacheApi,
+                                val commonBitTracking: CommonBitTrackingSettings,
                                 val nipDipMode: NipDipMode,
                                 val jackshotsMode: JackshotsMode,
                                 val rbgMode: RBGMode,
@@ -24,6 +25,7 @@ class BitTrackingUtil @Inject()(implicit mtrConfigRef: MtrConfigRef,
         BitTrackingFormData(
             mtrConfigRef.guildId,
             bitTrackingSettings.currentMode,
+            commonBitTracking.getCommonBitTrackingFormData,
             nipDipMode.getCollectiveModeFormData(bitTrackingSettings.nipDipTemplate),
             rbgMode.getRBGFormData(bitTrackingSettings.rbgTemplate),
             jackshotsMode.getCollectiveModeFormData(bitTrackingSettings.jackshotsTemplate),
@@ -33,6 +35,7 @@ class BitTrackingUtil @Inject()(implicit mtrConfigRef: MtrConfigRef,
     }
 
     def setBitTrackingFormData(bitTrackingFormData: BitTrackingFormData): Unit = {
+        commonBitTracking.setFromCommonBitTrackingFormData(bitTrackingFormData.commonBitTrackingFormData)
         nipDipMode.setFromCollectiveModeFormData(bitTrackingFormData.nipDipFormData)
         rbgMode.setFromRBGFormData(bitTrackingFormData.rbgFormData)
         jackshotsMode.setFromCollectiveModeFormData(bitTrackingFormData.jackshotsFormData)
