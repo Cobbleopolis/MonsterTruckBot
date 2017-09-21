@@ -46,6 +46,9 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
         mapping(
             "guildId" -> ignored(mtrConfigRef.guildId),
             "currentMode" -> number,
+            "common" -> mapping(
+                "paused" -> boolean
+            )(CommonBitTrackingFormData.apply)(CommonBitTrackingFormData.unapply),
             "nipDip" -> mapping(
                 "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
                 "goalAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),

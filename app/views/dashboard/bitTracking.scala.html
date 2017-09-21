@@ -9,12 +9,8 @@
 @import discord.DiscordBot
 @(guild: IGuild, bitTrackingForm: Form[BitTrackingFormData], bitTrackingUtil: BitTrackingUtil)(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 
-@fieldLabelColWidth = @{
-    2
-}
-@fieldInputColWidth = @{
-    10
-}
+@fieldLabelColWidth = @{2}
+@fieldInputColWidth = @{10}
 
 @implicitFieldConstructor = @{
     b4.horizontal.fieldConstructor("col-md-" + fieldLabelColWidth, "col-md-" + fieldInputColWidth)
@@ -65,6 +61,11 @@
 @dashboardPage(guild, "bitTracking") {
 
 } {
+    @if(bitTrackingForm("common.paused").value.get.toBoolean) {
+        <div class="alert alert-warning" role="alert">
+            <i class="fa fa-warning"></i>&nbsp;@request.messages("dashboard.forms.bitTracking.currentlyPaused")
+        </div>
+    }
     @b4.form(routes.Dashboard.submitBitTracking()) {
         @helper.CSRF.formField
         <fieldset>
@@ -73,6 +74,12 @@
                 '_label -> "dashboard.forms.bitTracking.currentMode.label",
                 '_custom -> true,
                 'class -> "w-100"
+            )
+            @b4.checkbox(bitTrackingForm("common.paused"),
+                '_label -> "dashboard.forms.bitTracking.common.paused.label",
+                '_text -> "dashboard.forms.bitTracking.common.paused.text",
+                '_help -> "dashboard.forms.bitTracking.common.paused.help",
+                '_custom -> true
             )
         </fieldset>
         @defining(BitTrackingMode(bitTrackingForm("currentMode").value.get.toInt)) { currentBitTrackingMode =>
