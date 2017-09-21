@@ -25,21 +25,23 @@ class TwitchBotCheerEventHandler @Inject()(
                                           ) extends DefaultLang {
 
     def handleEvent(cheerEvent: TwitchCheerEvent): Unit = {
-        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(mtrConfigRef.guildId)
-        val twitchChannelInfoOpt: Option[TwitchChannelInfo] = mtrConfigRef.twitchChannels.get(cheerEvent.channelName)
-        if (twitchChannelInfoOpt.isDefined)
-            if (bitTrackingSettingsOpt.isDefined)
-                bitTrackingSettingsOpt.get.getCurrentMode match {
-                    case BitTrackingMode.NIP_DIP => handleCollectiveGameMode(cheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.nipDipMode)
-                    case BitTrackingMode.RBG => handleRBGGameMode(cheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.rbgMode)
-                    case BitTrackingMode.JACKSHOTS => handleCollectiveGameMode(cheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.jackshotsMode)
-                    case BitTrackingMode.PUSH_UP => handlePushUpGameMode(cheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.pushUpMode)
-                    case BitTrackingMode.SING_IT_OR_SLAM_IT => handleSingleCheerGameMode(cheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.singItOrSlamItMode)
-                    case BitTrackingMode.NONE =>
-                    case _ =>
-                }
-        else
-            twitchMessageUtil.replyToMessage(cheerEvent.getMessageEvent, cheerEvent.channelName, "error.twitch.channelDoesNotExist")
+        if (!bitTrackingUtil.commonBitTracking.getPaused) {
+            val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(mtrConfigRef.guildId)
+            val twitchChannelInfoOpt: Option[TwitchChannelInfo] = mtrConfigRef.twitchChannels.get(cheerEvent.channelName)
+            if (twitchChannelInfoOpt.isDefined)
+                if (bitTrackingSettingsOpt.isDefined)
+                    bitTrackingSettingsOpt.get.getCurrentMode match {
+                        case BitTrackingMode.NIP_DIP => handleCollectiveGameMode(cheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.nipDipMode)
+                        case BitTrackingMode.RBG => handleRBGGameMode(cheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.rbgMode)
+                        case BitTrackingMode.JACKSHOTS => handleCollectiveGameMode(cheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.jackshotsMode)
+                        case BitTrackingMode.PUSH_UP => handlePushUpGameMode(cheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.pushUpMode)
+                        case BitTrackingMode.SING_IT_OR_SLAM_IT => handleSingleCheerGameMode(cheerEvent, twitchChannelInfoOpt.get, bitTrackingUtil.singItOrSlamItMode)
+                        case BitTrackingMode.NONE =>
+                        case _ =>
+                    }
+                else
+                    twitchMessageUtil.replyToMessage(cheerEvent.getMessageEvent, cheerEvent.channelName, "error.twitch.channelDoesNotExist")
+        }
     }
 
     def handleCollectiveGameMode(cheerEvent: TwitchCheerEvent, channelInfo: TwitchChannelInfo, collectiveGameMode: CollectiveBitGameMode): Unit = {
