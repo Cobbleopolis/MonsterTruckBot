@@ -18,16 +18,23 @@ class TwitchMessageUtil @Inject()(implicit val messagesApi: MessagesApi, twitchB
     def reply(content: String, args: Any*)(implicit event: TwitchChatMessageEvent): Unit = replyToMessage(event.getMessageEvent, event.displayName, content, args: _*)
 
     def replyToMessage(message: ChannelMessageEvent, displayName: String, content: String, args: Any*): Unit =
-        message.sendReply(formatMessage(Some(formatUserMention(displayName)), content, args: _*))
+        message.sendReply(formatMessage(Some(displayName), content, args: _*))
 
     def sendMessageToChannel(channel: Channel, content: String, args: Any*): Unit = twitchBot.get().client.sendMessage(channel, formatMessage(None, content, args: _*))
 
     def replyToChannel(channel: Channel, displayName: String, content: String, args: Any*): Unit =
-        twitchBot.get().client.sendMessage(channel, formatMessage(Some(formatUserMention(displayName)), content, args: _*))
+        twitchBot.get().client.sendMessage(channel, formatMessage(Some(displayName), content, args: _*))
 
-    def formatUserMention(userMention: String): String = if (userMention.startsWith("@")) userMention else "@" + userMention
-
-    override def formatMessageText(userMention: String, message: String): String = "/me " + super.formatMessageText(userMention, message)
+    override def formatMessageText(userMention: Option[String], message: String): String = {
+        val defaultFormt: String = if (userMention.isDefined)
+            if(!userMention.get.startsWith("@"))
+                super.formatMessageText(Some("@" + userMention.get) , message)
+            else
+                super.formatMessageText(userMention, message)
+        else
+            super.formatMessageText(None, message)
+        "/me " + defaultFormt
+    }
 
     override def cleanMessage(localizedMessage: String): String = super.cleanMessage(localizedMessage).replaceAll("\\R", " | ").trim
 

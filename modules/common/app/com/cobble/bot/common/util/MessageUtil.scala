@@ -16,13 +16,14 @@ abstract class MessageUtil(messagesApi: MessagesApi) extends DefaultLang {
             localizedMessage.trim()
     }
 
-    def formatMessageText(userMention: String, message: String): String = s"$userMention $arrowChar $message"
+    def formatMessageText(userMention: Option[String], message: String): String =
+        if (userMention.isDefined)
+            s"${userMention.get} $arrowChar $message"
+        else
+            message
 
     def formatMessage(userMention: Option[String], message: String, args: Any*): String =
-        if(userMention.isDefined)
-            cleanMessage(formatMessageText(userMention.get, messagesApi(message, args: _*)))
-        else
-            cleanMessage(messagesApi(message, args: _*))
+        cleanMessage(formatMessageText(userMention, messagesApi(message, args: _*)))
 
     def isDefined(key: String): Boolean = messagesApi.isDefinedAt(key)
 }

@@ -16,9 +16,9 @@ class TwitchBitsCommand @Inject()(implicit val messageUtil: TwitchMessageUtil, d
 
     override def execute(implicit executionEvent: TwitchCommandExecutionEvent): Unit = {
         val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(mtrConfigRef.guildId)
-        if (bitTrackingSettingsOpt.isDefined) {
-            messageUtil.reply(getFormattedResponse(bitTrackingSettingsOpt.get, bitTrackingUtil))
-        } else
+        if (bitTrackingSettingsOpt.isDefined)
+            messageUtil.sendMessageToChannel(executionEvent.getChannel, getFormattedResponse(bitTrackingSettingsOpt.get, bitTrackingUtil))
+        else
             messageUtil.reply("bot.bitTracking.settingsNotFound")
     }
 
