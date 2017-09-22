@@ -56,7 +56,7 @@ class AuthUtil @Inject()(@NamedCache("auth") authCache: SyncCacheApi) {
         setAccessToken(userId, accessToken, expiresDuration)
         setTokenType(userId, tokenType, expiresDuration)
         setExpiresIn(userId, expiresIn, expiresDuration)
-        setRefreshToken(userId, refreshToken, expiresDuration * 2)
+        setRefreshToken(userId, refreshToken, expiresDuration)
         setScope(userId, scope, expiresDuration)
     }
 
