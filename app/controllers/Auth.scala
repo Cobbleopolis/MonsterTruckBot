@@ -8,7 +8,9 @@ import com.cobble.bot.common.ref.MtrConfigRef
 import com.cobble.bot.common.util.DiscordApiUtil
 import discord.DiscordBot
 import org.webjars.play.WebJarsUtil
+import play.api.Logger
 import play.api.db.Database
+import play.api.libs.json.Json
 import play.api.libs.json.Reads._
 import play.api.libs.ws.WSClient
 import play.api.mvc._
@@ -36,24 +38,24 @@ class Auth @Inject()(implicit cc: ControllerComponents, messagesAction: Messages
                     val discriminator: Option[String] = (userResponse.json \ "discriminator").asOpt[String]
                     if (userId.isDefined && username.isDefined && discriminator.isDefined) {
                         val fullUsername: String = username.get + "#" + discriminator.get
-                        authUtil.setUserData(userId.get, accessToken.get, tokenType.get, expiresIn.get, refreshToken.get, scope.get, fullUsername)
-                        Redirect(routes.Dashboard.dashboard()).withSession(request.session +
-                            "userId" -> userId.get +
+                        authUtil.setTokenData(userId.get, accessToken.get, tokenType.get, expiresIn.get, refreshToken.get, scope.get)
+                        Ok(views.html.auth.setAuth(routes.Dashboard.dashboard().absoluteURL())).withSession(Session(request.session.data ++ Map(
+                            "userId" -> userId.get,
                             "username" -> fullUsername
-                        )
+                        )))
                     } else
-                        InternalServerError(request.messages("error.auth.login.error", userResponse.json))
+                        InternalServerError(views.html.auth.setAuth(routes.Dashboard.dashboard().absoluteURL(), Some(Json.prettyPrint(tokenResponse.json))))
                 }
             } else
-                Future.successful(InternalServerError(request.messages("error.auth.login.error", tokenResponse.json)))
+                Future.successful(InternalServerError(views.html.auth.setAuth(routes.Dashboard.dashboard().absoluteURL(), Some(Json.prettyPrint(tokenResponse.json)))))
         }
     }
 
     def logout: Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
-        Redirect(routes.Application.index()).withSession(request.session -
-            "userId" -
-            "username"
-        )
+        val userIdOpt: Option[String] = request.session.get("userId")
+        if (userIdOpt.isDefined)
+            authUtil.deleteUserData(userIdOpt.get)
+        Redirect(routes.Application.index()).withNewSession
     }
 
     def twitchToken: Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>

@@ -26,7 +26,7 @@ GET         /twitch/token                                 controllers.Auth.twitc
 
 GET         /login                                        controllers.Auth.login()
 GET         /auth                                         controllers.Auth.auth()
-GET         /logout                                         controllers.Auth.logout()
+GET         /logout                                       controllers.Auth.logout()
 
 ->          /discord                                      discord.Routes
 

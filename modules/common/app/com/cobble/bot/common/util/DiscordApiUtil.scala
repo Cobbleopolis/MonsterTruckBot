@@ -38,6 +38,17 @@ class DiscordApiUtil @Inject()(implicit ws: WSClient, mtrConfigRef: MtrConfigRef
         ws.url(mtrConfigRef.oauthTokenUrl).post(params)
     }
 
+    def getOauthAccessTokenFromRefreshToken(refreshToken: String, redirectUri: String): Future[WSResponse] = {
+        val params: Map[String, String] = Map(
+            "client_id" -> mtrConfigRef.discordClientId,
+            "client_secret" -> mtrConfigRef.discordSecret,
+            "grant_type" -> "refresh_token",
+            "refresh_token" -> refreshToken,
+            "redirect_uri" -> redirectUri
+        )
+        ws.url(mtrConfigRef.oauthTokenUrl).post(params)
+    }
+
     def getUser(tokenType: String, accessToken: String): Future[WSResponse] = {
         ws.url(CURRENT_USER).withHttpHeaders("Authorization" -> s"$tokenType $accessToken").get()
     }

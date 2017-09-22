@@ -2,7 +2,7 @@
 @import sx.blah.discord.handle.obj.IGuild
 @import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
-@(guild: IGuild, currentPage: String)(head: Html)(content: Html)(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
+@(currentPage: String)(head: Html)(content: Html)(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 
 @main("dashboard"){
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/dashboard.css")">
@@ -14,8 +14,8 @@
                 <ul class="nav nav-pills flex-column w-100">
                     <li class="nav-item">
                         <span class="nav-link navbar-brand px-3 mr-0 w-100">
-                        @if(guild != null) {
-                            @guild.getName
+                        @if(discordBot.guild.isDefined) {
+                            @discordBot.guild.get.getName
                         } else {
                             @request.messages("error.unknownGuild")
                         }

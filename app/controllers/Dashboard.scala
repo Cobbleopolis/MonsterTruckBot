@@ -2,6 +2,7 @@ package controllers
 
 import javax.inject.Inject
 
+import actions.SecureAction
 import com.cobble.bot.common.models.{BitTrackingSettings, CustomCommand, FilterSettings}
 import com.cobble.bot.common.ref.MtrConfigRef
 import com.cobble.bot.common.util.BitTrackingUtil
@@ -12,12 +13,14 @@ import play.api.cache.SyncCacheApi
 import play.api.db.Database
 import play.api.libs.ws.WSClient
 import play.api.mvc._
-import sx.blah.discord.handle.obj.IGuild
+
+import scala.concurrent.ExecutionContext
 
 
 class Dashboard @Inject()(
                              implicit cc: ControllerComponents,
                              messagesAction: MessagesActionBuilder,
+                             secureAction: SecureAction,
                              db: Database, cache: SyncCacheApi,
                              webJarsUtil: WebJarsUtil,
                              ws: WSClient,
@@ -25,61 +28,57 @@ class Dashboard @Inject()(
                              discordBot: DiscordBot,
                              mtrConfigRef: MtrConfigRef,
                              bitTrackingUtil: BitTrackingUtil,
+                             ec: ExecutionContext
                          ) extends AbstractController(cc) {
 
-    def dashboard(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
-        val guild: IGuild = discordBot.client.getGuildByID(mtrConfigRef.guildId)
-        Ok(views.html.dashboard.coreSettings(guild))
+    def dashboard(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
+        Ok(views.html.dashboard.coreSettings())
     }
 
-    def filterSettings(): Action[AnyContent] = messagesAction { implicit request =>
+    def filterSettings(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request =>
         val filterSettingsOpt: Option[FilterSettings] = FilterSettings.get(mtrConfigRef.guildId)
-        val guild: IGuild = discordBot.client.getGuildByID(mtrConfigRef.guildId)
         if (filterSettingsOpt.isDefined)
-            Ok(views.html.dashboard.filterSettings(guild, dashboardSettingsForms.filterForm.fill(filterSettingsOpt.get)))
+            Ok(views.html.dashboard.filterSettings(dashboardSettingsForms.filterForm.fill(filterSettingsOpt.get)))
         else
-            InternalServerError(views.html.dashboard.settingsMissing(guild, "filterSettings"))
+            InternalServerError(views.html.dashboard.settingsMissing("filterSettings"))
     }
 
-    def submitFilterSettings(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
-        val guild: IGuild = discordBot.client.getGuildByID(mtrConfigRef.guildId)
+    def submitFilterSettings(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
         dashboardSettingsForms.filterForm.bindFromRequest().fold(
             formWithErrors => {
-                BadRequest(views.html.dashboard.filterSettings(guild, formWithErrors))
+                BadRequest(views.html.dashboard.filterSettings(formWithErrors))
             },
             filterSettings => {
                 val numUpdated: Int = FilterSettings.update(filterSettings.guildId, filterSettings)
-                if(numUpdated != 0)
+                if (numUpdated != 0)
                     Redirect(routes.Dashboard.filterSettings()).flashing("success" -> request.messages("dashboard.settingsSaved", request.messages("dashboard.filter")))
                 else {
                     val filterSettings: Option[FilterSettings] = FilterSettings.get(mtrConfigRef.guildId)
-                    InternalServerError(views.html.dashboard.filterSettings(guild, dashboardSettingsForms.filterForm.fill(filterSettings.get)))
+                    InternalServerError(views.html.dashboard.filterSettings(dashboardSettingsForms.filterForm.fill(filterSettings.get)))
                 }
             }
         )
     }
 
-    def customCommands(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
-        val guild: IGuild = discordBot.client.getGuildByID(mtrConfigRef.guildId)
+    def customCommands(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
         val commandForms = CustomCommand.getByGuildId(mtrConfigRef.guildId).map(dashboardSettingsForms.commandForm.fill)
-        Ok(views.html.dashboard.customCommands(guild, dashboardSettingsForms.commandForm, commandForms))
+        Ok(views.html.dashboard.customCommands(dashboardSettingsForms.commandForm, commandForms))
     }
 
-    def customCommandRedirect(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
+    def customCommandRedirect(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
         Redirect(routes.Dashboard.customCommands())
     }
 
-    def submitNewCommand(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
-        val guild: IGuild = discordBot.client.getGuildByID(mtrConfigRef.guildId)
+    def submitNewCommand(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
         val commandForms = CustomCommand.getByGuildId(mtrConfigRef.guildId).map(dashboardSettingsForms.commandForm.fill)
         dashboardSettingsForms.commandForm.bindFromRequest().fold(
             formWithErrors => {
-                BadRequest(views.html.dashboard.customCommands(guild, formWithErrors, commandForms))
+                BadRequest(views.html.dashboard.customCommands(formWithErrors, commandForms))
             },
             newCustomCommandRaw => {
                 val newCustomCommand: CustomCommand = newCustomCommandRaw.copy(commandName = newCustomCommandRaw.commandName.toLowerCase())
                 if (CustomCommand.get(mtrConfigRef.guildId, newCustomCommand.commandName).isDefined)
-                    BadRequest(views.html.dashboard.customCommands(guild, dashboardSettingsForms.commandForm.fill(newCustomCommand).withError(dashboardSettingsForms.existingCommandFormError), commandForms))
+                    BadRequest(views.html.dashboard.customCommands(dashboardSettingsForms.commandForm.fill(newCustomCommand).withError(dashboardSettingsForms.existingCommandFormError), commandForms))
                 else {
                     CustomCommand.insert(newCustomCommand)
                     Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.forms.customCommands.newCommand.saved"))
@@ -88,12 +87,11 @@ class Dashboard @Inject()(
         )
     }
 
-    def submitEditCommand(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
-        val guild: IGuild = discordBot.client.getGuildByID(mtrConfigRef.guildId)
+    def submitEditCommand(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
         val commandForms = CustomCommand.getByGuildId(mtrConfigRef.guildId).map(dashboardSettingsForms.commandForm.fill)
         dashboardSettingsForms.commandForm.bindFromRequest().fold(
             formWithErrors => {
-                BadRequest(views.html.dashboard.customCommands(guild, dashboardSettingsForms.commandForm, commandForms.map(form => if (form("commandName").value == formWithErrors("commandName").value) formWithErrors else form)))
+                BadRequest(views.html.dashboard.customCommands(dashboardSettingsForms.commandForm, commandForms.map(form => if (form("commandName").value == formWithErrors("commandName").value) formWithErrors else form)))
             },
             editCustomCommand => {
                 CustomCommand.update(editCustomCommand)
@@ -102,25 +100,23 @@ class Dashboard @Inject()(
         )
     }
 
-    def submitDeleteCommand(commandName: String): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
+    def submitDeleteCommand(commandName: String): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
         CustomCommand.delete(mtrConfigRef.guildId, commandName)
         Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.forms.customCommands.deleteCommand.commandDeleted", mtrConfigRef.commandPrefix, commandName))
     }
 
-    def bitTracking(): Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
-        val guild: IGuild = discordBot.client.getGuildByID(mtrConfigRef.guildId)
+    def bitTracking(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
         val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(mtrConfigRef.guildId)
         if (bitTrackingSettingsOpt.isDefined)
-            Ok(views.html.dashboard.bitTracking(guild, dashboardSettingsForms.bitTrackingForm.fill(bitTrackingUtil.getBitTrackingFormData), bitTrackingUtil))
+            Ok(views.html.dashboard.bitTracking(dashboardSettingsForms.bitTrackingForm.fill(bitTrackingUtil.getBitTrackingFormData), bitTrackingUtil))
         else
-            InternalServerError(views.html.dashboard.settingsMissing(guild, "bitTracking"))
+            InternalServerError(views.html.dashboard.settingsMissing("bitTracking"))
     }
 
-    def submitBitTracking = messagesAction { implicit request: MessagesRequest[AnyContent] =>
-        val guild: IGuild = discordBot.client.getGuildByID(mtrConfigRef.guildId)
+    def submitBitTracking: Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
         dashboardSettingsForms.bitTrackingForm.bindFromRequest().fold(
             formWithErrors => {
-                BadRequest(views.html.dashboard.bitTracking(guild, formWithErrors, bitTrackingUtil))
+                BadRequest(views.html.dashboard.bitTracking(formWithErrors, bitTrackingUtil))
             },
             bitTrackingFormData => {
                 bitTrackingUtil.setBitTrackingFormData(bitTrackingFormData)

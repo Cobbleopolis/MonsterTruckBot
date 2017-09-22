@@ -19,8 +19,6 @@ class AuthUtil @Inject()(@NamedCache("auth") authCache: SyncCacheApi) {
 
     val SCOPE_SUFFIX: String = "scope"
 
-    val USERNAME_SUFFIX: String = "username"
-
     private def getLocation(userId: String, suffix: String): String = userId + "." + suffix
 
     def setAccessToken(userId: String, accessToken: String, expiresIn: Duration): Unit =
@@ -53,19 +51,21 @@ class AuthUtil @Inject()(@NamedCache("auth") authCache: SyncCacheApi) {
     def getScope(userId: String): Option[String] =
         authCache.get[String](getLocation(userId, SCOPE_SUFFIX))
 
-    def setUsername(userId: String, username: String, expiresIn: Duration): Unit =
-        authCache.set(getLocation(userId, USERNAME_SUFFIX), username, expiresIn)
-
-    def getUsername(userId: String): Option[String] =
-        authCache.get[String](getLocation(userId, USERNAME_SUFFIX))
-
-    def setUserData(userId: String, accessToken: String, tokenType: String, expiresIn: Long, refreshToken: String, scope: String, username: String): Unit = {
+    def setTokenData(userId: String, accessToken: String, tokenType: String, expiresIn: Long, refreshToken: String, scope: String): Unit = {
         val expiresDuration: Duration = expiresIn.seconds
         setAccessToken(userId, accessToken, expiresDuration)
         setTokenType(userId, tokenType, expiresDuration)
         setExpiresIn(userId, expiresIn, expiresDuration)
         setRefreshToken(userId, refreshToken, expiresDuration * 2)
         setScope(userId, scope, expiresDuration)
-        setUsername(userId, username, expiresDuration)
+    }
+
+    def deleteUserData(userId: String, deleteRefreshToken: Boolean = false): Unit = {
+        authCache.remove(getLocation(userId, ACCESS_TOKEN_SUFFIX))
+        authCache.remove(getLocation(userId, TOKEN_TYPE_SUFFIX))
+        authCache.remove(getLocation(userId, EXPIRES_IN_SUFFIX))
+        if (deleteRefreshToken)
+            authCache.remove(getLocation(userId, REFRESH_TOKEN_SUFFIX))
+        authCache.remove(getLocation(userId, SCOPE_SUFFIX))
     }
 }
