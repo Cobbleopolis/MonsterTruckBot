@@ -22,7 +22,10 @@ class SecureAction @Inject()(ec: ExecutionContext, webJarsUtil: WebJarsUtil, dis
             val userIdLong: Long = java.lang.Long.parseUnsignedLong(requestUserIdOpt.get)
             val userPermissions = discordBot.client.getUserByID(userIdLong)
                 .getPermissionsForGuild(discordBot.guild.get)
-            if (userPermissions.contains(Permissions.MANAGE_SERVER) || userPermissions.contains(Permissions.ADMINISTRATOR) || discordBot.guild.get.getOwnerLongID == userIdLong)
+            if ((mtrConfigRef.maintainerUserId.isDefined && mtrConfigRef.maintainerUserId.get == userIdLong) ||
+                discordBot.guild.get.getOwnerLongID == userIdLong ||
+                userPermissions.contains(Permissions.MANAGE_SERVER) ||
+                userPermissions.contains(Permissions.ADMINISTRATOR))
                 Future.successful(None)
             else
                 Future.successful(Some(Forbidden(views.html.auth.forbidden()(webJarsUtil, discordBot, request.asInstanceOf[MessagesRequest[AnyContent]]))))
