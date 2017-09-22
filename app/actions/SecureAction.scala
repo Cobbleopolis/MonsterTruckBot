@@ -16,7 +16,15 @@ class SecureAction @Inject()(ec: ExecutionContext, webJarsUtil: WebJarsUtil, dis
 
     override def filter[A](request: MessagesRequest[A]): Future[Option[Result]] = {
         val requestUserIdOpt: Option[String] = request.session.get("userId")
-        if (requestUserIdOpt.isEmpty || discordBot.guild.isEmpty || authUtil.getAccessToken(requestUserIdOpt.get).isEmpty) {
+        if (
+            requestUserIdOpt.isEmpty ||
+                discordBot.guild.isEmpty ||
+                (
+                    mtrConfigRef.maintainerUserId.isDefined &&
+                        requestUserIdOpt.get == java.lang.Long.toUnsignedString(mtrConfigRef.maintainerUserId.get
+                        )) ||
+                authUtil.getAccessToken(requestUserIdOpt.get).isEmpty
+        ) {
             Future.successful(Some(Unauthorized(views.html.auth.unauthorized()(webJarsUtil, discordBot, request.asInstanceOf[MessagesRequest[AnyContent]]))))
         } else {
             val userIdLong: Long = java.lang.Long.parseUnsignedLong(requestUserIdOpt.get)
