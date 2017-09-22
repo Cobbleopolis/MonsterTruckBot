@@ -25,6 +25,8 @@ class MtrConfigRef @Inject()(implicit conf: Configuration) {
 
     val discordClientId: String = conf.get[String]("mtrBot.discord.clientId")
 
+    val discordSecret: String = conf.get[String]("mtrBot.discord.secret")
+
     val discordToken: String = conf.get[String]("mtrBot.discord.token")
 
     val twitchUsername: String = conf.get[String]("mtrBot.twitch.username")
@@ -32,8 +34,6 @@ class MtrConfigRef @Inject()(implicit conf: Configuration) {
     val twitchOauth: String = conf.get[String]("mtrBot.twitch.oauth")
 
     val twitchClientId: String = conf.get[String]("mtrBot.twitch.clientId")
-
-    val twitchSecret: String = conf.get[String]("mtrBot.twitch.secret")
 
     val twitchNeededOauthScopes: Seq[String] = conf.get[Seq[String]]("mtrBot.twitch.neededOauthScopes")
 
@@ -44,5 +44,11 @@ class MtrConfigRef @Inject()(implicit conf: Configuration) {
             channel.getOptional[String]("oauth"),
         )
     ).toMap
+
+    val oauthAuthUrl: String = conf.get[String]("oauth.authUrl")
+
+    val oauthTokenUrl: String = conf.get[String]("oauth.tokenUrl")
+
+    val oauthScopes: Seq[String] = conf.get[Seq[String]]("oauth.scopes")
 
 }

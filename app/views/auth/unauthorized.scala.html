@@ -1,0 +1,16 @@
+@import org.webjars.play.WebJarsUtil
+@import discord.DiscordBot
+@()(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent])
+
+@main(request.messages("error.auth.unauthorized.page")){
+
+} {
+    <div class="container">
+        <div class="card border-danger mb-3">
+            <div class="card-header text-white bg-danger">@request.messages("error.auth.unauthorized.page")</div>
+            <div class="card-body text-danger">
+                <p class="card-text">@request.messages("error.auth.unauthorized.message", request.path)</p>
+            </div>
+        </div>
+    </div>
+}

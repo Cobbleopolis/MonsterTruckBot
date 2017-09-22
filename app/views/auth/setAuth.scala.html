@@ -1,0 +1,29 @@
+@import org.webjars.play.WebJarsUtil
+@import discord.DiscordBot
+@(redirectUrl: String, errorMessage: Option[String] = None)(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent])
+
+@main("") {
+    @if(errorMessage.isEmpty) {
+        <meta http-equiv="refresh" content="0; url=@redirectUrl" />
+    }
+} {
+    <div class="container">
+        @if(errorMessage.isDefined) {
+            <div class="card border-danger mb-3">
+                <div class="card-header text-white bg-danger">@request.messages("error.auth.setAuth.header")</div>
+                <div class="card-body text-danger">
+                    <h4 class="card-title">@request.messages("error.auth.setAuth.title")</h4>
+                    <p class="card-text">@request.messages("error.auth.setAuth.text")<pre>@errorMessage.get</pre></p>
+                </div>
+            </div>
+        } else {
+            <div class="card bg-default mb-3">
+                <div class="card-header">@request.messages("auth.setAuth.header")</div>
+                <div class="card-body">
+                    <h4 class="card-title">@request.messages("auth.setAuth.title")</h4>
+                    <p class="card-text">@Html(request.messages("auth.setAuth.text", redirectUrl))</p>
+                </div>
+            </div>
+        }
+    </div>
+}

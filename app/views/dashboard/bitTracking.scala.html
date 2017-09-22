@@ -3,11 +3,10 @@
 @import com.cobble.bot.common.ref.MtrConfigRef
 @import com.cobble.bot.common.util.BitTrackingUtil
 @import org.webjars.play.WebJarsUtil
-@import sx.blah.discord.handle.obj.IGuild
 @import com.cobble.bot.common.api.bitTracking.BitTrackingMode.BitTrackingMode
 @import com.cobble.bot.common.api.bitTracking.GameCheerMode
 @import discord.DiscordBot
-@(guild: IGuild, bitTrackingForm: Form[BitTrackingFormData], bitTrackingUtil: BitTrackingUtil)(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
+@(bitTrackingForm: Form[BitTrackingFormData], bitTrackingUtil: BitTrackingUtil)(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 
 @fieldLabelColWidth = @{2}
 @fieldInputColWidth = @{10}
@@ -58,7 +57,7 @@
     )(implicitFieldConstructor, request)
 }
 
-@dashboardPage(guild, "bitTracking") {
+@dashboardPage("bitTracking") {
 
 } {
     @if(bitTrackingForm("common.paused").value.get.toBoolean) {

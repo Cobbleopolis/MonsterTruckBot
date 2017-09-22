@@ -25,6 +25,7 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
     @EventSubscriber
     def onReadyEvent(event: ReadyEvent): Unit = {
         DiscordLogger.info("Monster Truck Bot ready")
+        discordBot.get().guild = Some(discordBot.get.client.getGuildByID(config.guildId))
         discordBot.get().client.changeUsername(config.discordUsername)
         discordBot.get().client.changePlayingText(config.discordGame)
     }

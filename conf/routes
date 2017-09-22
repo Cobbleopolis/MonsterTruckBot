@@ -24,6 +24,10 @@ POST        /dashboard/bitTracking                        controllers.Dashboard.
 
 GET         /twitch/token                                 controllers.Auth.twitchToken()
 
+GET         /login                                        controllers.Auth.login()
+GET         /auth                                         controllers.Auth.auth()
+GET         /logout                                       controllers.Auth.logout()
+
 ->          /discord                                      discord.Routes
 
 ->          /webjars                                      webjars.Routes

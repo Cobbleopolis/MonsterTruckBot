@@ -1,17 +1,16 @@
 @import com.cobble.bot.common.api.PermissionLevel
 @import com.cobble.bot.common.models.CustomCommand
 @import com.cobble.bot.common.ref.MtrConfigRef
-@import sx.blah.discord.handle.obj.IGuild
 @import views.html.component.formErrors
 @import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
-@(guild: IGuild, newCommandForm: Form[CustomCommand], commandForms: List[Form[CustomCommand]])(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
+@(newCommandForm: Form[CustomCommand], commandForms: List[Form[CustomCommand]])(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 
 @implicitFieldConstructor = @{
     b4.horizontal.fieldConstructor("col-md-2", "col-md-10")
 }
 
-@dashboardPage(guild, "customCommands"){
+@dashboardPage("customCommands"){
 
 } {
 

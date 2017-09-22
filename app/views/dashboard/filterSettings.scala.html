@@ -1,14 +1,13 @@
 @import com.cobble.bot.common.models.FilterSettings
-@import sx.blah.discord.handle.obj.IGuild
 @import com.cobble.bot.common.ref.MtrConfigRef
 @import com.cobble.bot.common.api.PermissionLevel
 @import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
-@(guild: IGuild, filterSettingsForm: Form[FilterSettings])(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
+@(filterSettingsForm: Form[FilterSettings])(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 
 @implicitFieldConstructor = @{ b4.horizontal.fieldConstructor("col-md-2", "col-md-10") }
 
-@dashboardPage(guild, "filterSettings"){
+@dashboardPage("filterSettings"){
 
 } {
     @b4.form(routes.Dashboard.submitFilterSettings()) {
