@@ -19,6 +19,8 @@ class MtrConfigRef @Inject()(implicit conf: Configuration) {
 
     val commandPrefix: String = conf.get[String]("mtrBot.commandPrefix")
 
+    val helpLink: String = conf.get[String]("mtrBot.helpLink")
+
     val cacheTimeout: Duration = conf.getMillis("mtrBot.cacheTimeout").milliseconds
 
     val discordUsername: String = conf.get[String]("mtrBot.discord.username")
