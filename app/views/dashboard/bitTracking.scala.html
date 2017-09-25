@@ -90,6 +90,11 @@
                 @renderTrackingModeNavLink(BitTrackingMode.SING_IT_OR_SLAM_IT, currentBitTrackingMode)
             </nav>
             <div class="tab-content" id="bit-tracking-content">
+                @if(currentBitTrackingMode == BitTrackingMode.NONE) {
+                    @renderTrackingModeFieldset(BitTrackingMode.NONE, currentBitTrackingMode) {
+                        <p>@request.messages("dashboard.forms.bitTracking.none.text")</p>
+                    }
+                }
                 @renderTrackingModeFieldset(BitTrackingMode.NIP_DIP, currentBitTrackingMode) {
                     @renderCollectiveGameMode("nipDip", bitTrackingUtil.nipDipMode)
                 }
