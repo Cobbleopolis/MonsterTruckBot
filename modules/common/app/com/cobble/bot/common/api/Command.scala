@@ -10,4 +10,6 @@ trait Command {
     /** Dictates if the command can only be called by mods. */
     val permissionLevel: PermissionLevel
 
+    lazy val description: String = s"bot.help.descriptions.$name"
+
 }

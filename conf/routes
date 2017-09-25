@@ -28,6 +28,8 @@ GET         /login                                        controllers.Auth.login
 GET         /auth                                         controllers.Auth.auth()
 GET         /logout                                       controllers.Auth.logout()
 
+GET         /bot/commands                                 controllers.Bot.botCommands()
+
 ->          /discord                                      discord.Routes
 
 ->          /webjars                                      webjars.Routes

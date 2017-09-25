@@ -9,6 +9,7 @@
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarText">
             <ul class="navbar-nav">
+                <li class="nav-item"><a href="@routes.Bot.botCommands()" class="nav-link">@request.messages("global.pageNames.botCommands")</a></li>
                 @if(request.session.get("userId").isDefined && request.session.get("username").isDefined) {
                     <li class="nav-item dropdown">
                         <a href="#" id="navbarPagesDropdownLabel" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">@request.session.get("username").get</a>
