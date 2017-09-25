@@ -7,14 +7,16 @@ import twitch.commands._
 
 @Singleton
 class TwitchCommandRegistry @Inject()(
-                                        val pingCommand: TwitchPingCommand,
-                                        val versionCommand: TwitchVersionCommand,
-                                        val subCountCommand: TwitchSubCountCommand,
-                                        val uptimeCommand: TwitchUptimeCommand,
-                                        val bitsCommand: TwitchBitsCommand
+                                         val helpCommand: TwitchHelpCommand,
+                                         val pingCommand: TwitchPingCommand,
+                                         val versionCommand: TwitchVersionCommand,
+                                         val subCountCommand: TwitchSubCountCommand,
+                                         val uptimeCommand: TwitchUptimeCommand,
+                                         val bitsCommand: TwitchBitsCommand
                                      ) {
 
     val commands: Map[String, TwitchCommand] = Map(
+        helpCommand.name -> helpCommand,
         pingCommand.name -> pingCommand,
         versionCommand.name -> versionCommand,
         subCountCommand.name -> subCountCommand,
