@@ -53,7 +53,8 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
         packageDescription := s"A server that runs the $displayName website, Discord bot and, Twitch bot",
         debianPackageDependencies in Debian ++= Seq("default-jre | java8-runtime"),
         javaOptions in Universal ++= Seq(
-            "-DapplyEvolutions.default=true"
+            "-DapplyEvolutions.default=true",
+            "-Dplay.http.session.secure=true"
         ),
         javaOptions in Linux ++= Seq(
             s"-Dpidfile.path=/var/run/${packageName.value}/play.pid",
