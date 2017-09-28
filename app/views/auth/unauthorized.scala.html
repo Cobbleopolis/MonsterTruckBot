@@ -6,10 +6,14 @@
 
 } {
     <div class="container">
-        <div class="card border-danger mb-3">
-            <div class="card-header text-white bg-danger">@request.messages("error.auth.unauthorized.page")</div>
-            <div class="card-body text-danger">
-                <p class="card-text">@request.messages("error.auth.unauthorized.message", request.path)</p>
+        <div class="row">
+            <div class="col mt-3">
+                <div class="card border-danger mb-3">
+                    <div class="card-header text-white bg-danger">@request.messages("error.auth.unauthorized.page")</div>
+                    <div class="card-body text-danger">
+                        <p class="card-text">@request.messages("error.auth.unauthorized.message", request.path)</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
