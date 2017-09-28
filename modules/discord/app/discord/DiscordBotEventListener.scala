@@ -33,9 +33,8 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
     @EventSubscriber
     def onMessageReceivedEvent(event: MessageReceivedEvent): Unit = {
         implicit val message: IMessage = event.getMessage
-        if (!message.getAuthor.isBot) {
-            val checkForCommand: Boolean = if (!message.getChannel.isPrivate && message.getGuild.getLongID == config.guildId) filterMessage(message) else false
-            if (!checkForCommand && message.getContent.startsWith(config.commandPrefix)) {
+        if (!message.getAuthor.isBot && (message.getChannel.isPrivate || message.getGuild.getLongID == config.guildId)) {
+            if (!filterMessage(message) && message.getContent.startsWith(config.commandPrefix)) {
                 val contentSplit: Array[String] = message.getContent.split("\\s")
                 discordBot.get().client.getDispatcher.dispatch(new DiscordCommandExecutionEvent(
                     message,
@@ -49,8 +48,8 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
 
     def filterMessage(message: IMessage): Boolean = {
         var hasBeenFiltered: Boolean = false
-        val filterSettings: Option[FilterSettings] = FilterSettings.get(message.getGuild.getLongID)
-        if (filterSettings.isDefined) {
+        val filterSettings: Option[FilterSettings] = FilterSettings.get(config.guildId)
+        if (filterSettings.isDefined && !message.getChannel.isPrivate) {
             val userPermissionLevel: PermissionLevel = getUserPermissionLevel(message.getAuthor)
             if (filterSettings.get.capsFilterEnabled && userPermissionLevel < filterSettings.get.getCapsFilterExemptionLevel)
                 hasBeenFiltered = hasBeenFiltered || capsFilter.filterMessage(message, filterSettings.get)
@@ -80,7 +79,7 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
         val guild: IGuild = discordBot.get().client.getGuildByID(config.guildId)
         val userRoleIds = user.getRolesForGuild(guild).asScala.map(_.getLongID)
         if (user.getLongID == guild.getOwnerLongID)
-            PermissionLevel.OWNER
+            PermissionLevel.MODERATORS
         else if (userRoleIds.contains(config.moderatorRoleId))
             PermissionLevel.MODERATORS
         else if (userRoleIds.contains(config.subscriberRoleId))
