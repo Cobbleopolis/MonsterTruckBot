@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import actions.SecureAction
-import com.cobble.bot.common.models.{BitTrackingSettings, CustomCommand, FilterSettings}
+import com.cobble.bot.common.models.{BitTrackingSettings, CustomCommand, FilterSettings, TwitchRegular}
 import com.cobble.bot.common.ref.MtrConfigRef
 import com.cobble.bot.common.util.BitTrackingUtil
 import discord.DiscordBot
@@ -125,12 +125,51 @@ class Dashboard @Inject()(
             }
         )
     }
+
+    def twitchRegulars: Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
+        val twitchRegulars: List[TwitchRegular] = TwitchRegular.getByGuildId(mtrConfigRef.guildId)
+        Ok(views.html.dashboard.twitchRegulars(dashboardSettingsForms.twitchRegularForm, twitchRegulars))
+    }
+
+    def submitNewTwitchRegular: Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
+        val twitchRegulars: List[TwitchRegular] = TwitchRegular.getByGuildId(mtrConfigRef.guildId)
+        dashboardSettingsForms.twitchRegularForm.bindFromRequest().fold(
+            formWithErrors => {
+                BadRequest(views.html.dashboard.twitchRegulars(formWithErrors, twitchRegulars))
+            },
+            twitchRegular => {
+                if (twitchRegulars.exists(_.twitchUsername.equalsIgnoreCase(twitchRegular.twitchUsername))) {
+                    BadRequest(views.html.dashboard.twitchRegulars(
+                        dashboardSettingsForms.twitchRegularForm
+                            .fill(twitchRegular)
+                            .withError(dashboardSettingsForms.existingTwitchRegularFormError),
+                        twitchRegulars
+                    ))
+                } else {
+                    TwitchRegular.insert(twitchRegular)
+                    Redirect(routes.Dashboard.twitchRegulars()).flashing("success" ->
+                        request.messages("dashboard.forms.twitchRegulars.newTwitchRegular.saved", twitchRegular.twitchUsername)
+                    )
+                }
+            }
+        )
+    }
+
+    def submitDeleteTwitchRegular(twitchUsername: String): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
+        val deleteCount: Int = TwitchRegular.delete(mtrConfigRef.guildId, twitchUsername)
+        val result: Result = Redirect(routes.Dashboard.twitchRegulars())
+        if (deleteCount == 0)
+            result.flashing("danger" -> request.messages("dashboard.forms.twitchRegulars.deleteTwitchRegular.errorDeleting", twitchUsername))
+        else
+            result.flashing("success" -> request.messages("dashboard.forms.twitchRegulars.deleteTwitchRegular.twitchRegularDeleted", twitchUsername))
+    }
 }
 
 object Dashboard {
     val dashboardPages: Map[String, String] = Map(
         "filterSettings" -> "dashboard.pageNames.filterSettings",
         "customCommands" -> "dashboard.pageNames.customCommands",
-        "bitTracking" -> "dashboard.pageNames.bitTracking"
+        "bitTracking" -> "dashboard.pageNames.bitTracking",
+        "twitchRegulars" -> "dashboard.pageNames.twitchRegulars"
     )
 }

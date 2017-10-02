@@ -3,6 +3,7 @@ package com.cobble.bot.common.models
 import anorm._
 import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
 import com.cobble.bot.common.api.{Model, ModelAccessor, PermissionLevel}
+import com.cobble.bot.common.models.TwitchRegular.idSymbol
 import com.cobble.bot.common.ref.MtrConfigRef
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
@@ -54,11 +55,12 @@ object CustomCommand extends ModelAccessor[CustomCommand, Long] {
     }
 
     def update(guildId: Long, name: String, params: NamedParameter*)(implicit db: Database): Int = {
-        if (params.nonEmpty) {
+        val updatableParams: Seq[NamedParameter] = params.filterNot(p => p.name == idSymbol.name && p.name == "command_name")
+        if (updatableParams.nonEmpty) {
             val idParam: NamedParameter = idSymbol -> guildId
             val nameParam: NamedParameter = 'command_name -> name
             db.withConnection(implicit conn => {
-                SQL(s"UPDATE $tableName SET ${params.filterNot(p => p.name == idSymbol.name && p.name == "command_name").map(p => s"${p.name} = {${p.name}}").mkString(", ")} WHERE ${idSymbol.name} = {${idSymbol.name}} AND ${nameParam.name} = {${nameParam.name}}").on(params :+ idParam :+ nameParam: _*).executeUpdate()
+                SQL(s"UPDATE $tableName SET ${updatableParams.map(p => s"${p.name} = {${p.name}}").mkString(", ")} WHERE ${idSymbol.name} = {${idSymbol.name}} AND ${nameParam.name} = {${nameParam.name}}").on(params :+ idParam :+ nameParam: _*).executeUpdate()
             })
         } else
             0
