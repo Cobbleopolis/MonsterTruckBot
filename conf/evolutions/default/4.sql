@@ -10,7 +10,7 @@ CREATE TABLE bit_tracking_settings
   jackshots_template          TEXT DEFAULT '',
   push_up_template            TEXT DEFAULT '',
   sing_it_or_slam_it_template TEXT DEFAULT '',
-  CONSTRAINT custom_commands_bot_instances_guild_id_fk FOREIGN KEY (guild_id) REFERENCES bot_instances (guild_id) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT bit_tracking_settings_bot_instances_guild_id_fk FOREIGN KEY (guild_id) REFERENCES bot_instances (guild_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 # -- !Downs
