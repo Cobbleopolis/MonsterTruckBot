@@ -5,7 +5,7 @@ import javax.inject.{Inject, Provider}
 
 import com.cobble.bot.common.api.PermissionLevel
 import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
-import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
+import com.cobble.bot.common.models.{CustomCommand, FilterSettings, TwitchRegular}
 import com.cobble.bot.common.ref.MtrConfigRef
 import net.engio.mbassy.listener.Handler
 import org.kitteh.irc.client.library.element.MessageTag
@@ -106,7 +106,7 @@ class TwitchBotEventListener @Inject()(
     def twitchSubEvent(twitchSubEvent: TwitchSubEvent): Unit = {
         TwitchLogger.debug(s"Subscription! ${twitchSubEvent.displayName} just subscribed!")
         var messageVariant: String = twitchSubEvent.channelName.toLowerCase
-        val displayName: String = if(twitchSubEvent.displayName.startsWith("@"))
+        val displayName: String = if (twitchSubEvent.displayName.startsWith("@"))
             twitchSubEvent.displayName
         else
             "@" + twitchSubEvent.displayName
@@ -137,6 +137,8 @@ class TwitchBotEventListener @Inject()(
             PermissionLevel.OWNER
         else if (twitchEvent.isMod)
             PermissionLevel.MODERATORS
+        else if (TwitchRegular.getByGuildId(mtrConfigRef.guildId).exists(_.twitchUsername.equalsIgnoreCase(twitchEvent.displayName)))
+            PermissionLevel.REGULARS
         else if (twitchEvent.isSub)
             PermissionLevel.SUBSCRIBERS
         else

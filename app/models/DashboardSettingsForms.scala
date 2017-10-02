@@ -3,7 +3,7 @@ package models
 import javax.inject.{Inject, Singleton}
 
 import com.cobble.bot.common.models.bitTrackingFormData._
-import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
+import com.cobble.bot.common.models.{CustomCommand, FilterSettings, TwitchRegular}
 import com.cobble.bot.common.ref.{MessageRef, MtrConfigRef}
 import play.api.data.Forms._
 import play.api.data.{Form, FormError}
@@ -34,12 +34,6 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
             "permissionLevel" -> number,
             "commandContent" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE)
         )(CustomCommand.apply)(CustomCommand.unapply)
-    )
-
-    val deleteCommandForm = Form(
-        single(
-            "commandName" -> nonEmptyText
-        )
     )
 
     val bitTrackingForm: Form[BitTrackingFormData] = Form(
@@ -89,5 +83,14 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
     )
 
     val existingCommandFormError: FormError = FormError("commandName", "dashboard.forms.customCommands.newCommand.errors.commandExists")
+
+    val twitchRegularForm: Form[TwitchRegular] = Form(
+        mapping(
+            "guildId" -> ignored(mtrConfigRef.guildId),
+            "twitchUsername" -> nonEmptyText(minLength = 4, maxLength = 25)
+        )(TwitchRegular.apply)(TwitchRegular.unapply)
+    )
+
+    val existingTwitchRegularFormError: FormError = FormError("twitchUsername", "dashboard.forms.twitchRegulars.newTwitchRegular.errors.regularExists")
 
 }

@@ -3,38 +3,41 @@
 # ~~~~
 
 # Home page
-GET         /                                             controllers.Application.index
+GET         /                                                       controllers.Application.index
 
-GET         /robots.txt                                   controllers.Assets.at(path = "/public", file = "robots.txt")
+GET         /robots.txt                                             controllers.Assets.at(path = "/public", file = "robots.txt")
 
-GET         /messages                                     controllers.Application.jsMessages(page = "")
-GET         /messages/:page                               controllers.Application.jsMessages(page)
+GET         /messages                                               controllers.Application.jsMessages(page = "")
+GET         /messages/:page                                         controllers.Application.jsMessages(page)
 
-GET         /dashboard                                    controllers.Dashboard.dashboard()
-GET         /dashboard/filterSettings                     controllers.Dashboard.filterSettings()
-POST        /dashboard/filterSettings                     controllers.Dashboard.submitFilterSettings()
-GET         /dashboard/customCommands                     controllers.Dashboard.customCommands()
-POST        /dashboard/customCommands/new                 controllers.Dashboard.submitNewCommand()
-GET         /dashboard/customCommands/new                 controllers.Dashboard.customCommandRedirect()
-POST        /dashboard/customCommands/edit                controllers.Dashboard.submitEditCommand()
-GET         /dashboard/customCommands/edit                controllers.Dashboard.customCommandRedirect()
-GET         /dashboard/customCommands/delete/:name        controllers.Dashboard.submitDeleteCommand(name: String)
-GET         /dashboard/bitTracking                        controllers.Dashboard.bitTracking()
-POST        /dashboard/bitTracking                        controllers.Dashboard.submitBitTracking()
+GET         /dashboard                                              controllers.Dashboard.dashboard()
+GET         /dashboard/filterSettings                               controllers.Dashboard.filterSettings()
+POST        /dashboard/filterSettings                               controllers.Dashboard.submitFilterSettings()
+GET         /dashboard/customCommands                               controllers.Dashboard.customCommands()
+POST        /dashboard/customCommands/new                           controllers.Dashboard.submitNewCommand()
+GET         /dashboard/customCommands/new                           controllers.Dashboard.customCommandRedirect()
+POST        /dashboard/customCommands/edit                          controllers.Dashboard.submitEditCommand()
+GET         /dashboard/customCommands/edit                          controllers.Dashboard.customCommandRedirect()
+GET         /dashboard/customCommands/delete/:name                  controllers.Dashboard.submitDeleteCommand(name: String)
+GET         /dashboard/bitTracking                                  controllers.Dashboard.bitTracking()
+POST        /dashboard/bitTracking                                  controllers.Dashboard.submitBitTracking()
+GET         /dashboard/twitchRegulars                               controllers.Dashboard.twitchRegulars()
+POST        /dashboard/twitchRegulars                               controllers.Dashboard.submitNewTwitchRegular()
+GET         /dashboard/twitchRegulars/delete/:twitchUsername        controllers.Dashboard.submitDeleteTwitchRegular(twitchUsername: String)
 
-GET         /twitch/token                                 controllers.Auth.twitchToken()
+GET         /twitch/token                                           controllers.Auth.twitchToken()
 
-GET         /login                                        controllers.Auth.login()
-GET         /auth                                         controllers.Auth.auth()
-GET         /logout                                       controllers.Auth.logout()
+GET         /login                                                  controllers.Auth.login()
+GET         /auth                                                   controllers.Auth.auth()
+GET         /logout                                                 controllers.Auth.logout()
 
-GET         /bot/commands                                 controllers.Bot.botCommands()
+GET         /bot/commands                                           controllers.Bot.botCommands()
 
-->          /discord                                      discord.Routes
+->          /discord                                                discord.Routes
 
-->          /webjars                                      webjars.Routes
+->          /webjars                                                webjars.Routes
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                                 controllers.Assets.at(path="/public", file)
+GET         /assets/*file                                           controllers.Assets.at(path="/public", file)
 
     

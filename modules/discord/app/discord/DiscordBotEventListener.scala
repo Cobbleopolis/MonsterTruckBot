@@ -79,9 +79,11 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
         val guild: IGuild = discordBot.get().client.getGuildByID(config.guildId)
         val userRoleIds = user.getRolesForGuild(guild).asScala.map(_.getLongID)
         if (user.getLongID == guild.getOwnerLongID)
-            PermissionLevel.MODERATORS
+            PermissionLevel.OWNER
         else if (userRoleIds.contains(config.moderatorRoleId))
             PermissionLevel.MODERATORS
+        else if (userRoleIds.contains(config.regularRoleId))
+            PermissionLevel.REGULARS
         else if (userRoleIds.contains(config.subscriberRoleId))
             PermissionLevel.SUBSCRIBERS
         else
