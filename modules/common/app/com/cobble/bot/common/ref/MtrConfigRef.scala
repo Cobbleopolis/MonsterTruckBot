@@ -13,6 +13,8 @@ class MtrConfigRef @Inject()(implicit conf: Configuration) {
 
     val moderatorRoleId: Long = java.lang.Long.parseUnsignedLong(conf.get[String]("mtrBot.moderatorRoleId"))
 
+    val regularRoleId: Long = java.lang.Long.parseUnsignedLong(conf.get[String]("mtrBot.regularRoleId"))
+
     val subscriberRoleId: Long = java.lang.Long.parseUnsignedLong(conf.get[String]("mtrBot.subscriberRoleId"))
 
     val maintainerUserId: Option[Long] = conf.getOptional[String]("mtrBot.maintainerUserId").map(java.lang.Long.parseUnsignedLong)
