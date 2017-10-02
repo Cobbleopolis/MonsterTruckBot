@@ -92,7 +92,7 @@ class TwitchBotEventListener @Inject()(
         else {
             val customCommandOpt: Option[CustomCommand] = CustomCommand.get(mtrConfigRef.guildId, commandEvent.getCommand)
             if (customCommandOpt.isDefined && getUserPermissionLevel(commandEvent) >= customCommandOpt.get.getPermissionLevel)
-                twitchMessageUtil.reply(customCommandOpt.get.commandContent, commandEvent.getArgs: _*)(commandEvent)
+                twitchMessageUtil.sendMessageToChannel(commandEvent.getChannel, customCommandOpt.get.commandContent, commandEvent.getArgs: _*)
         }
     }
 
