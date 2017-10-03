@@ -14,7 +14,7 @@ object BitTrackingMode extends Enumeration {
     val SING_IT_OR_SLAM_IT: BitTrackingMode = Value(5)
 
     val map: SortedMap[String, String] = SortedMap(values.map(p =>
-        p.id.toString -> s"dashboard.forms.bitTracking.modes.${p.toString.toLowerCase()}"
+        p.id.toString -> s"dashboard.bitTracking.modes.${p.toString.toLowerCase()}"
     ).toSeq: _*)
 
 }

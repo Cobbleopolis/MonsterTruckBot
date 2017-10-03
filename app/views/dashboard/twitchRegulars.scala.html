@@ -17,11 +17,11 @@
     @b4.form(routes.Dashboard.submitNewTwitchRegular()) {
         @helper.CSRF.formField
         <fieldset>
-            <legend>@request.messages("dashboard.forms.twitchRegulars.newTwitchRegular.title")</legend>
+            <legend>@request.messages("dashboard.twitchRegulars.newTwitchRegular.title")</legend>
             @b4.inputWrapped("text", twitchRegularForm("twitchUsername"),
-                '_label -> "dashboard.forms.twitchRegulars.newTwitchRegular.twitchUsername.label",
-                'placeholder -> request.messages("dashboard.forms.twitchRegulars.newTwitchRegular.twitchUsername.placeholder"),
-                '_help -> request.messages("dashboard.forms.twitchRegulars.newTwitchRegular.twitchUsername.help")
+                '_label -> "dashboard.twitchRegulars.newTwitchRegular.twitchUsername.label",
+                'placeholder -> request.messages("dashboard.twitchRegulars.newTwitchRegular.twitchUsername.placeholder"),
+                '_help -> request.messages("dashboard.twitchRegulars.newTwitchRegular.twitchUsername.help")
             ) { input =>
                 <div class="input-group">
                     <span class="input-group-addon">@@</span>
@@ -34,12 +34,12 @@
         </fieldset>
     }
     <fieldset>
-        <legend>@request.messages("dashboard.forms.twitchRegulars.twitchRegularsList.title")</legend>
+        <legend>@request.messages("dashboard.twitchRegulars.twitchRegularsList.title")</legend>
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th>@request.messages("dashboard.forms.twitchRegulars.twitchRegularsList.twitchUsername.label")</th>
-                    <th>@request.messages("dashboard.forms.twitchRegulars.twitchRegularsList.actions.label")</th>
+                    <th>@request.messages("dashboard.twitchRegulars.twitchRegularsList.twitchUsername.label")</th>
+                    <th>@request.messages("dashboard.twitchRegulars.twitchRegularsList.actions.label")</th>
                 </tr>
             </thead>
             <tbody>
