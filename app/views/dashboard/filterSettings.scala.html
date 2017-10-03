@@ -13,56 +13,56 @@
     @b4.form(routes.Dashboard.submitFilterSettings()) {
         @helper.CSRF.formField
         <fieldset>
-            <legend>@request.messages("dashboard.forms.filters.capsFilter.title")</legend>
+            <legend>@request.messages("dashboard.filters.capsFilter.title")</legend>
             @b4.checkbox(filterSettingsForm("capsFilterEnabled"),
-                '_label -> "dashboard.forms.filters.capsFilter.enabled.label",
-                '_text -> "dashboard.forms.filters.capsFilter.enabled.text",
+                '_label -> "dashboard.filters.capsFilter.enabled.label",
+                '_text -> "dashboard.filters.capsFilter.enabled.text",
                 '_custom -> true
             )
             @b4.select(filterSettingsForm("capsFilterExemptionLevel"),
                 options = PermissionLevel.map.toSeq,
-                '_label -> "dashboard.forms.filters.capsFilter.exemptionLevel.label",
-                '_help -> "dashboard.forms.filters.capsFilter.exemptionLevel.help",
+                '_label -> "dashboard.filters.capsFilter.exemptionLevel.label",
+                '_help -> "dashboard.filters.capsFilter.exemptionLevel.help",
                 '_custom -> true,
                 'class -> "w-100"
             )
             @b4.number(filterSettingsForm("capsFilterThreshold"),
-                '_label -> "dashboard.forms.filters.capsFilter.threshold.label",
-                '_help -> "dashboard.forms.filters.capsFilter.threshold.help"
+                '_label -> "dashboard.filters.capsFilter.threshold.label",
+                '_help -> "dashboard.filters.capsFilter.threshold.help"
             )
         </fieldset>
         <fieldset>
-            <legend>@request.messages("dashboard.forms.filters.linksFilter.title")</legend>
+            <legend>@request.messages("dashboard.filters.linksFilter.title")</legend>
             @b4.checkbox(filterSettingsForm("linksFilterEnabled"),
-                '_label -> "dashboard.forms.filters.linksFilter.enabled.label",
-                '_text -> "dashboard.forms.filters.linksFilter.enabled.text",
+                '_label -> "dashboard.filters.linksFilter.enabled.label",
+                '_text -> "dashboard.filters.linksFilter.enabled.text",
                 '_custom -> true
             )
             @b4.select(filterSettingsForm("linksFilterExemptionLevel"),
                 options = PermissionLevel.map.toSeq,
-                '_label -> "dashboard.forms.filters.linksFilter.exemptionLevel.label",
-                '_help -> "dashboard.forms.filters.linksFilter.exemptionLevel.help",
+                '_label -> "dashboard.filters.linksFilter.exemptionLevel.label",
+                '_help -> "dashboard.filters.linksFilter.exemptionLevel.help",
                 '_custom -> true,
                 'class -> "w-100"
             )
         </fieldset>
         <fieldset>
-            <legend>@request.messages("dashboard.forms.filters.blacklistFilter.title")</legend>
+            <legend>@request.messages("dashboard.filters.blacklistFilter.title")</legend>
             @b4.checkbox(filterSettingsForm("blacklistFilterEnabled"),
-                '_label -> "dashboard.forms.filters.blacklistFilter.enabled.label",
-                '_text -> "dashboard.forms.filters.blacklistFilter.enabled.text",
+                '_label -> "dashboard.filters.blacklistFilter.enabled.label",
+                '_text -> "dashboard.filters.blacklistFilter.enabled.text",
                 '_custom -> true
             )
             @b4.select(filterSettingsForm("blacklistFilterExemptionLevel"),
                 options = PermissionLevel.map.toSeq,
-                '_label -> "dashboard.forms.filters.blacklistFilter.exemptionLevel.label",
-                '_help -> "dashboard.forms.filters.blacklistFilter.exemptionLevel.help",
+                '_label -> "dashboard.filters.blacklistFilter.exemptionLevel.label",
+                '_help -> "dashboard.filters.blacklistFilter.exemptionLevel.help",
                 '_custom -> true,
                 'class -> "w-100"
             )
             @b4.textarea(filterSettingsForm("blacklistFilterWords"),
-                '_label -> "dashboard.forms.filters.blacklistFilter.words.label",
-                '_help -> "dashboard.forms.filters.blacklistFilter.words.help",
+                '_label -> "dashboard.filters.blacklistFilter.words.label",
+                '_help -> "dashboard.filters.blacklistFilter.words.help",
                 'rows -> 4
             )
         </fieldset>

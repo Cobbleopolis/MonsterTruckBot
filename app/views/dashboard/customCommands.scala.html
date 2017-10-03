@@ -19,10 +19,10 @@
     @b4.form(routes.Dashboard.submitNewCommand()) {
         @helper.CSRF.formField
         <fieldset>
-            <legend>@request.messages("dashboard.forms.customCommands.newCommand.title")</legend>
+            <legend>@request.messages("dashboard.customCommands.newCommand.title")</legend>
             @b4.inputWrapped("text", newCommandForm("commandName"),
-                '_label -> "dashboard.forms.customCommands.newCommand.commandName.label",
-                'placeholder -> request.messages("dashboard.forms.customCommands.newCommand.commandName.placeholder")
+                '_label -> "dashboard.customCommands.newCommand.commandName.label",
+                'placeholder -> request.messages("dashboard.customCommands.newCommand.commandName.placeholder")
             ) { input =>
                 <div class="input-group">
                     <span class="input-group-addon">@mtrConfigRef.commandPrefix</span>
@@ -30,13 +30,13 @@
                 </div>
             }
             @b4.textarea(newCommandForm("commandContent"),
-                '_label -> "dashboard.forms.customCommands.newCommand.commandContent.label",
-                'placeholder -> request.messages("dashboard.forms.customCommands.newCommand.commandContent.placeholder")
+                '_label -> "dashboard.customCommands.newCommand.commandContent.label",
+                'placeholder -> request.messages("dashboard.customCommands.newCommand.commandContent.placeholder")
             )
             @b4.select(newCommandForm("permissionLevel"),
                 options = PermissionLevel.map.toSeq,
-                '_label -> "dashboard.forms.customCommands.newCommand.permissionLevel.label",
-                '_help -> "dashboard.forms.customCommands.newCommand.permissionLevel.help",
+                '_label -> "dashboard.customCommands.newCommand.permissionLevel.label",
+                '_help -> "dashboard.customCommands.newCommand.permissionLevel.help",
                 '_custom -> true,
                 'class -> "w-100"
             )
@@ -47,14 +47,14 @@
     }
 
     <fieldset>
-        <legend>@request.messages("dashboard.forms.customCommands.editCommand.title")</legend>
+        <legend>@request.messages("dashboard.customCommands.editCommand.title")</legend>
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th class="w-10">@request.messages("dashboard.forms.customCommands.editCommand.commandName.label")</th>
-                    <th class="w-60">@request.messages("dashboard.forms.customCommands.editCommand.commandContent.label")</th>
-                    <th class="w-15">@request.messages("dashboard.forms.customCommands.editCommand.permissionLevel.label")</th>
-                    <th class="w-15">@request.messages("dashboard.forms.customCommands.editCommand.actions.label")</th>
+                    <th class="w-10">@request.messages("dashboard.customCommands.editCommand.commandName.label")</th>
+                    <th class="w-60">@request.messages("dashboard.customCommands.editCommand.commandContent.label")</th>
+                    <th class="w-15">@request.messages("dashboard.customCommands.editCommand.permissionLevel.label")</th>
+                    <th class="w-15">@request.messages("dashboard.customCommands.editCommand.actions.label")</th>
                 </tr>
             </thead>
             <tbody>

@@ -10,7 +10,7 @@ object GameCheerMode extends Enumeration {
     val SINGLE_CHEER: GameCheerMode = Value("singleCheer")
 
     val map: SortedMap[String, String] = SortedMap(values.map(p =>
-        p.toString -> s"dashboard.forms.bitTracking.cheerModes.$p"
+        p.toString -> s"dashboard.bitTracking.cheerModes.$p"
     ).toSeq: _*)
 
 }

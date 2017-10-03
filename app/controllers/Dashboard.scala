@@ -81,7 +81,7 @@ class Dashboard @Inject()(
                     BadRequest(views.html.dashboard.customCommands(dashboardSettingsForms.commandForm.fill(newCustomCommand).withError(dashboardSettingsForms.existingCommandFormError), commandForms))
                 else {
                     CustomCommand.insert(newCustomCommand)
-                    Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.forms.customCommands.newCommand.saved"))
+                    Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.customCommands.newCommand.saved"))
                 }
             }
         )
@@ -95,14 +95,14 @@ class Dashboard @Inject()(
             },
             editCustomCommand => {
                 CustomCommand.update(editCustomCommand)
-                Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.forms.customCommands.editCommand.saved", mtrConfigRef.commandPrefix, editCustomCommand.commandName))
+                Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.customCommands.editCommand.saved", mtrConfigRef.commandPrefix, editCustomCommand.commandName))
             }
         )
     }
 
     def submitDeleteCommand(commandName: String): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
         CustomCommand.delete(mtrConfigRef.guildId, commandName)
-        Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.forms.customCommands.deleteCommand.commandDeleted", mtrConfigRef.commandPrefix, commandName))
+        Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.customCommands.deleteCommand.commandDeleted", mtrConfigRef.commandPrefix, commandName))
     }
 
     def bitTracking(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
@@ -121,7 +121,7 @@ class Dashboard @Inject()(
             bitTrackingFormData => {
                 bitTrackingUtil.setBitTrackingFormData(bitTrackingFormData)
                 BitTrackingSettings.update(mtrConfigRef.guildId, bitTrackingFormData.getBitTrackingSettings)
-                Redirect(routes.Dashboard.bitTracking()).flashing("success" -> request.messages("dashboard.forms.bitTracking.saved"))
+                Redirect(routes.Dashboard.bitTracking()).flashing("success" -> request.messages("dashboard.bitTracking.saved"))
             }
         )
     }
@@ -148,7 +148,7 @@ class Dashboard @Inject()(
                 } else {
                     TwitchRegular.insert(twitchRegular)
                     Redirect(routes.Dashboard.twitchRegulars()).flashing("success" ->
-                        request.messages("dashboard.forms.twitchRegulars.newTwitchRegular.saved", twitchRegular.twitchUsername)
+                        request.messages("dashboard.twitchRegulars.newTwitchRegular.saved", twitchRegular.twitchUsername)
                     )
                 }
             }
@@ -159,9 +159,9 @@ class Dashboard @Inject()(
         val deleteCount: Int = TwitchRegular.delete(mtrConfigRef.guildId, twitchUsername)
         val result: Result = Redirect(routes.Dashboard.twitchRegulars())
         if (deleteCount == 0)
-            result.flashing("danger" -> request.messages("dashboard.forms.twitchRegulars.deleteTwitchRegular.errorDeleting", twitchUsername))
+            result.flashing("danger" -> request.messages("dashboard.twitchRegulars.deleteTwitchRegular.errorDeleting", twitchUsername))
         else
-            result.flashing("success" -> request.messages("dashboard.forms.twitchRegulars.deleteTwitchRegular.twitchRegularDeleted", twitchUsername))
+            result.flashing("success" -> request.messages("dashboard.twitchRegulars.deleteTwitchRegular.twitchRegularDeleted", twitchUsername))
     }
 }
 

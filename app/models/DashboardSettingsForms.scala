@@ -82,7 +82,7 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
         )(BitTrackingFormData.apply)(BitTrackingFormData.unapply)
     )
 
-    val existingCommandFormError: FormError = FormError("commandName", "dashboard.forms.customCommands.newCommand.errors.commandExists")
+    val existingCommandFormError: FormError = FormError("commandName", "dashboard.customCommands.newCommand.errors.commandExists")
 
     val twitchRegularForm: Form[TwitchRegular] = Form(
         mapping(
@@ -91,6 +91,6 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
         )(TwitchRegular.apply)(TwitchRegular.unapply)
     )
 
-    val existingTwitchRegularFormError: FormError = FormError("twitchUsername", "dashboard.forms.twitchRegulars.newTwitchRegular.errors.regularExists")
+    val existingTwitchRegularFormError: FormError = FormError("twitchUsername", "dashboard.twitchRegulars.newTwitchRegular.errors.regularExists")
 
 }
