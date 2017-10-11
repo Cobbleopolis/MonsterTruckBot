@@ -13,7 +13,7 @@ lazy val commonDependencies = Seq(
     jdbc,
     guice,
     ws,
-    "com.typesafe.play" %% "play-json" % "2.6.2"
+    "com.typesafe.play" %% "play-json" % "2.6.6"
 )
 
 lazy val commonSettings = Seq(
@@ -29,7 +29,9 @@ lazy val commonSettings = Seq(
     resolvers ++= Seq(
         Resolver.jcenterRepo,
         "jitpack" at "https://jitpack.io"
-    )
+    ),
+    JsEngineKeys.engineType := JsEngineKeys.EngineType.Node,
+    evictionWarningOptions in update := EvictionWarningOptions.default.withWarnTransitiveEvictions(false).withWarnDirectEvictions(true).withWarnScalaVersionEviction(true)
 )
 
 lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, JavaServerAppPackaging, DebianPlugin, SystemdPlugin).settings(commonSettings: _*)
