@@ -9,7 +9,7 @@ import com.google.inject.Inject
 import play.api.inject.ApplicationLifecycle
 import sx.blah.discord.api.events.EventDispatcher
 import sx.blah.discord.api.{ClientBuilder, IDiscordClient}
-import sx.blah.discord.handle.obj.{IGuild, Permissions}
+import sx.blah.discord.handle.obj.{IGuild, IRole, Permissions}
 import sx.blah.discord.util.BotInviteBuilder
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -21,6 +21,9 @@ class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBo
     var client: IDiscordClient = _
 
     var guild: Option[IGuild] = None
+    var moderatorRole: Option[IRole] = None
+    var regularRole: Option[IRole] = None
+    var subscriberRole: Option[IRole] = None
 
     clientBuilder.withToken(conf.discordToken)
     client = clientBuilder.login()
