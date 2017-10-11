@@ -1,0 +1,7 @@
+@(isYes: Boolean, yesClass: String = "text-success", noClass: String = "text-danger")(implicit request: MessagesRequest[AnyContent])
+
+@if(isYes) {
+    <span class="@yesClass">@request.messages("global.yes")</span>
+} else {
+    <span class="@noClass">@request.messages("global.no")</span>
+}

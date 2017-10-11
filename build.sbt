@@ -31,7 +31,7 @@ lazy val commonSettings = Seq(
         "jitpack" at "https://jitpack.io"
     ),
     JsEngineKeys.engineType := JsEngineKeys.EngineType.Node,
-    evictionWarningOptions in update := EvictionWarningOptions.default.withWarnTransitiveEvictions(false).withWarnDirectEvictions(true).withWarnScalaVersionEviction(true)
+    evictionWarningOptions in update := EvictionWarningOptions.default.withWarnTransitiveEvictions(false).withWarnDirectEvictions(true).withWarnScalaVersionEviction(false)
 )
 
 lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, JavaServerAppPackaging, DebianPlugin, SystemdPlugin).settings(commonSettings: _*)

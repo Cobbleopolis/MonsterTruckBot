@@ -51,6 +51,8 @@ class MtrConfigRef @Inject()(implicit conf: Configuration) {
         )
     ).toMap
 
+    twitchChannels.values
+
     val oauthAuthUrl: String = conf.get[String]("oauth.authUrl")
 
     val oauthTokenUrl: String = conf.get[String]("oauth.tokenUrl")
