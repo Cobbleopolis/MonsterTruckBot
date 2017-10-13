@@ -10,12 +10,16 @@ import play.api.inject.ApplicationLifecycle
 import sx.blah.discord.api.events.EventDispatcher
 import sx.blah.discord.api.{ClientBuilder, IDiscordClient}
 import sx.blah.discord.handle.obj.{IGuild, IRole, Permissions}
+import sx.blah.discord.modules.Configuration
 import sx.blah.discord.util.BotInviteBuilder
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBotEventListener, lifecycle: ApplicationLifecycle, context: ExecutionContext) {
+
+    Configuration.AUTOMATICALLY_ENABLE_MODULES = false
+    Configuration.LOAD_EXTERNAL_MODULES = false
 
     private val clientBuilder: ClientBuilder = new ClientBuilder().setDaemon(true)
     var client: IDiscordClient = _

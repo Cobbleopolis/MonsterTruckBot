@@ -17,7 +17,6 @@ lazy val commonDependencies = Seq(
 )
 
 lazy val commonSettings = Seq(
-    name := projectName,
     organization := "com.cobble.bot",
     version := projectVersion,
     scalaVersion := "2.12.3",
@@ -31,11 +30,26 @@ lazy val commonSettings = Seq(
         "jitpack" at "https://jitpack.io"
     ),
     JsEngineKeys.engineType := JsEngineKeys.EngineType.Node,
-    evictionWarningOptions in update := EvictionWarningOptions.default.withWarnTransitiveEvictions(false).withWarnDirectEvictions(true).withWarnScalaVersionEviction(false)
+    evictionWarningOptions in update := EvictionWarningOptions.default.withWarnTransitiveEvictions(false).withWarnDirectEvictions(true).withWarnScalaVersionEviction(false),
+    maintainer in Linux := "Cobbleopolis <cobbleopolis@gmail.com>",
+    packageSummary in Linux := s"$displayName server",
+    packageDescription := s"A server that runs the $displayName website, Discord bot and, Twitch bot",
+    debianPackageDependencies in Debian ++= Seq("default-jre | java8-runtime"),
+    javaOptions in Universal ++= Seq(
+        "-DapplyEvolutions.default=true",
+        "-Dplay.http.session.secure=true",
+        s"-Dpidfile.path=/var/run/${packageName.value}/RUNNING_PID",
+        s"-Dconfig.file=/usr/share/${packageName.value}/conf/production.conf",
+        s"-Dlogger.file=/usr/share/${packageName.value}/conf/production-logback.xml"
+    ),
+    daemonUser := packageName.value,
+    daemonGroup := packageName.value,
+    exportJars := true
 )
 
-lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, JavaServerAppPackaging, DebianPlugin, SystemdPlugin).settings(commonSettings: _*)
+lazy val monstertruckbot = Project(id = "monstertruckbot", base = file(".")).enablePlugins(PlayScala, JavaServerAppPackaging, DebianPlugin, SystemdPlugin).settings(commonSettings: _*)
     .settings(
+        name := projectName,
         resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
         unmanagedResourceDirectories in Test += baseDirectory(_ / "target/web/public/test").value,
         libraryDependencies ++= Seq(jdbc, ehcache, specs2 % Test, evolutions),
@@ -50,21 +64,6 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
             "com.github.marcospereira" %% "play-hocon-i18n" % "1.0.1",
             "org.julienrf" %% "play-jsmessages" % "3.0.0"
         ),
-        maintainer in Linux := "Cobbleopolis <cobbleopolis@gmail.com>",
-        packageSummary in Linux := s"$displayName server",
-        packageDescription := s"A server that runs the $displayName website, Discord bot and, Twitch bot",
-        debianPackageDependencies in Debian ++= Seq("default-jre | java8-runtime"),
-        javaOptions in Universal ++= Seq(
-            "-DapplyEvolutions.default=true",
-            "-Dplay.http.session.secure=true"
-        ),
-        javaOptions in Linux ++= Seq(
-            s"-Dpidfile.path=/var/run/${packageName.value}/play.pid",
-            s"-Dconfig.file=/usr/share/${packageName.value}/conf/production.conf",
-            s"-Dlogger.file=/usr/share/${packageName.value}/conf/production-logback.xml"
-        ),
-        daemonUser := packageName.value,
-        daemonGroup := packageName.value,
         scalacOptions in Compile in doc ++= Seq(
             "-doc-version", version.value,
             "-doc-title", name.value,
@@ -72,32 +71,29 @@ lazy val `monstertruckbot` = (project in file(".")).enablePlugins(PlayScala, Jav
         ),
         routesGenerator := InjectedRoutesGenerator
     )
-    .dependsOn(`monstertruckbot-discord`, `monstertruckbot-twitch`, `monstertruckbot-common`)
-    .aggregate(`monstertruckbot-discord`, `monstertruckbot-twitch`, `monstertruckbot-common`)
+    .dependsOn(discord, twitch, common)
+    .aggregate(discord, twitch, common)
 
-lazy val `monstertruckbot-discord` = (project in file("modules/discord")).enablePlugins(PlayScala).settings(commonSettings: _*)
+lazy val discord = Project(id = "discord", base = file("modules/discord")).enablePlugins(PlayScala).settings(commonSettings: _*)
     .settings(
-        name += "-discord",
         libraryDependencies ++= Seq(
             "com.github.austinv11" % "Discord4j" % discord4JVersion
         )
     )
-    .dependsOn(`monstertruckbot-common`)
-    .aggregate(`monstertruckbot-common`)
+    .dependsOn(common)
+    .aggregate(common)
 
-lazy val `monstertruckbot-twitch` = (project in file("modules/twitch")).enablePlugins(PlayScala).settings(commonSettings: _*)
+lazy val twitch = Project(id = "twitch", base = file("modules/twitch")).enablePlugins(PlayScala).settings(commonSettings: _*)
     .settings(
-        name += "-twitch",
         libraryDependencies ++= Seq(
             "org.kitteh.irc" % "client-lib" % kittehIRCVersion
         )
     )
-    .dependsOn(`monstertruckbot-common`)
-    .aggregate(`monstertruckbot-common`)
+    .dependsOn(common)
+    .aggregate(common)
 
-lazy val `monstertruckbot-common` = (project in file("modules/common")).enablePlugins(PlayScala, BuildInfoPlugin).settings(commonSettings: _*)
+lazy val common = Project(id = "common", base = file("modules/common")).enablePlugins(PlayScala, BuildInfoPlugin).settings(commonSettings: _*)
     .settings(
-        name += "-common",
         libraryDependencies ++= Seq(cacheApi),
         buildInfoKeys := Seq[BuildInfoKey]("name" -> projectName, "displayName" -> displayName, version, scalaVersion, sbtVersion)
     )
