@@ -43,8 +43,7 @@ lazy val commonSettings = Seq(
         s"-Dlogger.file=/usr/share/${packageName.value}/conf/production-logback.xml"
     ),
     daemonUser := packageName.value,
-    daemonGroup := packageName.value,
-    exportJars := true
+    daemonGroup := packageName.value
 )
 
 lazy val monstertruckbot = Project(id = "monstertruckbot", base = file(".")).enablePlugins(PlayScala, JavaServerAppPackaging, DebianPlugin, SystemdPlugin).settings(commonSettings: _*)
