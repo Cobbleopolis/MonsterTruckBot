@@ -4,7 +4,7 @@ val displayName: String = "Monster Truck Bot"
 
 val projectVersion: String = "2.4.1-SNAPSHOT"
 
-val discord4JVersion: String = "2.9"
+val discord4JVersion: String = "2.9.1"
 
 val kittehIRCVersion: String = "3.2.0"
 
@@ -36,7 +36,7 @@ lazy val commonSettings = Seq(
     packageDescription := s"A server that runs the $displayName website, Discord bot and, Twitch bot",
     debianPackageDependencies in Debian ++= Seq("default-jre | java8-runtime"),
     javaOptions in Universal ++= Seq(
-        "-DapplyEvolutions.default=true",
+        "-Dplay.evolutions.db.default.autoApply=true",
         "-Dplay.http.session.secure=true",
         s"-Dpidfile.path=/var/run/${packageName.value}/RUNNING_PID",
         s"-Dconfig.file=/usr/share/${packageName.value}/conf/production.conf",
