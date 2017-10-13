@@ -51,7 +51,7 @@ class Dashboard @Inject()(
             filterSettings => {
                 val numUpdated: Int = FilterSettings.update(filterSettings.guildId, filterSettings)
                 if (numUpdated != 0)
-                    Redirect(routes.Dashboard.filterSettings()).flashing("success" -> request.messages("dashboard.settingsSaved", request.messages("dashboard.filter")))
+                    Redirect(routes.Dashboard.filterSettings()).flashing("success" -> request.messages("dashboard.filters.saved"))
                 else {
                     val filterSettings: Option[FilterSettings] = FilterSettings.get(mtrConfigRef.guildId)
                     InternalServerError(views.html.dashboard.filterSettings(dashboardSettingsForms.filterForm.fill(filterSettings.get)))
