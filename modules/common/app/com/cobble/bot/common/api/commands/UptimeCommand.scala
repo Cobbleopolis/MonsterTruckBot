@@ -45,40 +45,22 @@ trait UptimeCommand extends Command with DefaultLang {
         var out: String = ""
 
         if (period.getYears > 0)
-            if (period.getYears == 1)
-                out += s"${period.getYears} ${messagesApi("global.timeUnits.year.singular")} "
-            else
-                out += s"${period.getYears} ${messagesApi("global.timeUnits.year.plural")} "
+            out += s"${period.getYears} ${messagesApi("global.timeUnits.year", period.getYears)} "
 
         if (period.getMonths > 0)
-            if (period.getMonths == 1)
-                out += s"${period.getMonths} ${messagesApi("global.timeUnits.month.singular")} "
-            else
-                out += s"${period.getMonths} ${messagesApi("global.timeUnits.month.plural")} "
+            out += s"${period.getMonths} ${messagesApi("global.timeUnits.month", period.getMonths)} "
 
         if (period.getDays > 0)
-            if (period.getDays == 1)
-                out += s"${period.getDays} ${messagesApi("global.timeUnits.day.singular")} "
-            else
-                out += s"${period.getDays} ${messagesApi("global.timeUnits.day.plural")} "
+            out += s"${period.getDays} ${messagesApi("global.timeUnits.day", period.getDays)} "
 
         if (period.getHours > 0)
-            if (period.getHours == 1)
-                out += s"${period.getHours} ${messagesApi("global.timeUnits.hour.singular")} "
-            else
-                out += s"${period.getHours} ${messagesApi("global.timeUnits.hour.plural")} "
+            out += s"${period.getHours} ${messagesApi("global.timeUnits.hour", period.getHours)} "
 
         if (period.getMinutes > 0)
-            if (period.getMinutes == 1)
-                out += s"${period.getMinutes} ${messagesApi("global.timeUnits.minute.singular")} "
-            else
-                out += s"${period.getMinutes} ${messagesApi("global.timeUnits.minute.plural")} "
+            out += s"${period.getMinutes} ${messagesApi("global.timeUnits.minute", period.getMinutes)} "
 
         if (period.getSeconds > 0)
-            if (period.getSeconds == 1)
-                out += s"${period.getSeconds} ${messagesApi("global.timeUnits.second.singular")}"
-            else
-                out += s"${period.getSeconds} ${messagesApi("global.timeUnits.second.plural")}"
+            out += s"${period.getSeconds} ${messagesApi("global.timeUnits.second", period.getSeconds)}"
 
         out.trim
     }

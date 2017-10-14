@@ -80,11 +80,11 @@
                                 <h6 class="card-subtitle mb-2 text-muted">@twitchChannel.ircChannelName</h6>
                                 <div class="container">
                                     <div class="row">
-                                        <div class="col-6 col-md-3 pl-0">@request.messages("dashboard.core.twitch.channels.channel.hasChannelId.label")</div>
+                                        <div class="col-6 col-md-3 pl-0">@request.messages("dashboard.core.twitch.channels.channel.hasOAuth.label")</div>
                                         <div class="col">@component.yesNo(twitchChannel.oauth.isDefined)</div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-6 col-md-3 pl-0">@request.messages("dashboard.core.twitch.channels.channel.hasOAuth.label")</div>
+                                        <div class="col-6 col-md-3 pl-0">@request.messages("dashboard.core.twitch.channels.channel.hasChannelId.label")</div>
                                         <div class="col">@component.yesNo(twitchChannel.channelId.isDefined)</div>
                                     </div>
                                 </div>
