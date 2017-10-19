@@ -81,14 +81,14 @@ class TwitchBotCheerEventHandler @Inject()(
             case GameCheerMode.COLLECTIVE =>
                 pushUpMode.addToToNextGoalAmount(cheerEvent.getCheerAmount)
                 if(pushUpMode.getToNextGoal >= pushUpMode.getGoalAmount) {
-                    val goalDelta: Int = cheerEvent.getCheerAmount / pushUpMode.getToNextGoal
+                    val goalDelta: Int = cheerEvent.getCheerAmount / pushUpMode.getGoalAmount
                     pushUpMode.addToGoalCount(pushUpMode.getPushSetUpAmount * goalDelta)
                     pushUpMode.setToNextGoal(pushUpMode.getToNextGoal % pushUpMode.getGoalAmount)
                     twitchMessageUtil.replyToMessage(cheerEvent.getMessageEvent, channelInfo.name, s"bot.bitTracking.event.pushUp", goalDelta, pushUpMode.getPushSetUpAmount)
                 }
             case GameCheerMode.SINGLE_CHEER =>
                 if(cheerEvent.getCheerAmount >= pushUpMode.getGoalAmount) {
-                    val goalDelta: Int = cheerEvent.getCheerAmount / pushUpMode.getToNextGoal
+                    val goalDelta: Int = cheerEvent.getCheerAmount / pushUpMode.getGoalAmount
                     pushUpMode.addToGoalCount(pushUpMode.getPushSetUpAmount * goalDelta)
                     twitchMessageUtil.replyToMessage(cheerEvent.getMessageEvent, channelInfo.name, s"bot.bitTracking.event.pushUp", goalDelta, pushUpMode.getPushSetUpAmount)
                 }
