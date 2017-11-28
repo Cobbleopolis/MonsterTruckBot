@@ -12,7 +12,8 @@ class TwitchCommandRegistry @Inject()(
                                          val versionCommand: TwitchVersionCommand,
                                          val subCountCommand: TwitchSubCountCommand,
                                          val uptimeCommand: TwitchUptimeCommand,
-                                         val bitsCommand: TwitchBitsCommand
+                                         val bitsCommand: TwitchBitsCommand,
+                                         val bitTestCommand: TwitchBitTestCommand
                                      ) {
 
     val commands: Map[String, TwitchCommand] = Map(
@@ -21,7 +22,8 @@ class TwitchCommandRegistry @Inject()(
         versionCommand.name -> versionCommand,
         subCountCommand.name -> subCountCommand,
         uptimeCommand.name -> uptimeCommand,
-        bitsCommand.name -> bitsCommand
+        bitsCommand.name -> bitsCommand,
+        bitTestCommand.name -> bitTestCommand
     )
 
 }
