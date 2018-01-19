@@ -54,6 +54,17 @@ class TwitchSubEvent(userNoticeEvent: UserNoticeEvent) extends TwitchEvent {
             ""
     }
 
+    val recipientDisplayName: String = {
+        val paramRecipientDisplayName: Optional[MessageTag] = getTag("msg-param-recipient-display-name")
+        val paramRecipientUserName: Optional[MessageTag] = getTag("msg-param-recipient-user-name")
+        if (paramRecipientDisplayName.isPresent && paramRecipientDisplayName.get().getValue.isPresent)
+            paramRecipientDisplayName.get.getValue.get()
+        else if (paramRecipientUserName.isPresent && paramRecipientUserName.get().getValue.isPresent)
+            paramRecipientUserName.get.getValue.get()
+        else
+            ""
+    }
+
     override def getClient: Client = userNoticeEvent.getClient
 
     override def getChannel: Channel = userNoticeEvent.getChannel
