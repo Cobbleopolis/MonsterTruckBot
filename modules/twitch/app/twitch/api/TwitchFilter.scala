@@ -1,6 +1,6 @@
 package twitch.api
 
-import com.cobble.bot.common.models.FilterSettings
+import common.models.FilterSettings
 import twitch.events.TwitchMessageEvent
 
 trait TwitchFilter {

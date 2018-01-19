@@ -2,10 +2,10 @@ package discord
 
 import javax.inject.{Inject, Provider}
 
-import com.cobble.bot.common.api.PermissionLevel
-import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
-import com.cobble.bot.common.models.{CustomCommand, FilterSettings}
-import com.cobble.bot.common.ref.{MessageRef, MtrConfigRef}
+import common.api.PermissionLevel
+import common.api.PermissionLevel.PermissionLevel
+import common.models.{CustomCommand, FilterSettings}
+import common.ref.{MessageRef, MtrConfigRef}
 import discord.api.DiscordCommand
 import discord.event.DiscordCommandExecutionEvent
 import discord.filters.{DiscordBlacklistFilter, DiscordCapsFilter, DiscordLinksFilter}

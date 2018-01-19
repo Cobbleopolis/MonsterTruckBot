@@ -2,9 +2,9 @@ package discord.commands
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.DefaultLang
-import com.cobble.bot.common.api.commands.HelpCommand
-import com.cobble.bot.common.ref.MtrConfigRef
+import common.DefaultLang
+import common.api.commands.HelpCommand
+import common.ref.MtrConfigRef
 import discord.api.DiscordCommand
 import discord.event.DiscordCommandExecutionEvent
 import discord.util.DiscordMessageUtil

@@ -2,10 +2,10 @@ package discord.commands
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.api.commands.BitsCommand
-import com.cobble.bot.common.models.BitTrackingSettings
-import com.cobble.bot.common.ref.MtrConfigRef
-import com.cobble.bot.common.util.BitTrackingUtil
+import common.api.commands.BitsCommand
+import common.models.BitTrackingSettings
+import common.ref.MtrConfigRef
+import common.util.BitTrackingUtil
 import discord.api.DiscordCommand
 import discord.event.DiscordCommandExecutionEvent
 import discord.util.DiscordMessageUtil

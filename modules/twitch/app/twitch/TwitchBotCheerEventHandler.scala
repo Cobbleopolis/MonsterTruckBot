@@ -2,13 +2,13 @@ package twitch
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.DefaultLang
-import com.cobble.bot.common.api.bitTracking.{BitTrackingMode, CollectiveBitGameMode, GameCheerMode, SingleCheerBitGameMode}
-import com.cobble.bot.common.api.TwitchChannelInfo
-import com.cobble.bot.common.bitTracking.{PushUpMode, RBGMode}
-import com.cobble.bot.common.models.BitTrackingSettings
-import com.cobble.bot.common.ref.MtrConfigRef
-import com.cobble.bot.common.util.BitTrackingUtil
+import common.DefaultLang
+import common.api.bitTracking.{BitTrackingMode, CollectiveBitGameMode, GameCheerMode, SingleCheerBitGameMode}
+import common.api.TwitchChannelInfo
+import common.bitTracking.{PushUpMode, RBGMode}
+import common.models.BitTrackingSettings
+import common.ref.MtrConfigRef
+import common.util.BitTrackingUtil
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
 import play.api.i18n.MessagesApi

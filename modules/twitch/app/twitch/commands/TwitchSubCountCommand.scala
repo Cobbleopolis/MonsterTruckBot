@@ -2,9 +2,9 @@ package twitch.commands
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.api.commands.SubCountCommand
-import com.cobble.bot.common.ref.MtrConfigRef
-import com.cobble.bot.common.util.TwitchApiUtil
+import common.api.commands.SubCountCommand
+import common.ref.MtrConfigRef
+import common.util.TwitchApiUtil
 import twitch.api.TwitchCommand
 import twitch.events.TwitchCommandExecutionEvent
 import twitch.util.TwitchMessageUtil

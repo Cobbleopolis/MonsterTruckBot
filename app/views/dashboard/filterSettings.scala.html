@@ -1,6 +1,6 @@
-@import com.cobble.bot.common.models.FilterSettings
-@import com.cobble.bot.common.ref.MtrConfigRef
-@import com.cobble.bot.common.api.PermissionLevel
+@import common.models.FilterSettings
+@import common.ref.MtrConfigRef
+@import common.api.PermissionLevel
 @import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
 @(filterSettingsForm: Form[FilterSettings])(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)

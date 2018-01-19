@@ -2,8 +2,8 @@ package data
 
 import javax.inject.{Inject, Singleton}
 
-import com.cobble.bot.common.models.{BitTrackingSettings, BotInstance, FilterSettings}
-import com.cobble.bot.common.ref.MtrConfigRef
+import common.models.{BitTrackingSettings, BotInstance, FilterSettings}
+import common.ref.MtrConfigRef
 import play.api.Configuration
 import play.api.cache.SyncCacheApi
 import play.api.db.Database

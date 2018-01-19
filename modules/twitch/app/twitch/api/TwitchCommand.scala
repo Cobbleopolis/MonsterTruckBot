@@ -1,6 +1,6 @@
 package twitch.api
 
-import com.cobble.bot.common.api.Command
+import common.api.Command
 import twitch.events.TwitchCommandExecutionEvent
 import twitch.util.TwitchMessageUtil
 
