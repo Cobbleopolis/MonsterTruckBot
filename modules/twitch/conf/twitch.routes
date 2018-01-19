@@ -1,0 +1,1 @@
+GET        /alive        controllers.Application.alive

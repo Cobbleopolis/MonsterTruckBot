@@ -10,7 +10,7 @@ import common.ref.MtrConfigRef
 import net.engio.mbassy.listener.Handler
 import org.kitteh.irc.client.library.element.MessageTag
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
-import org.kitteh.irc.client.library.event.client.{ClientConnectionEstablishedEvent, ClientNegotiationCompleteEvent}
+import org.kitteh.irc.client.library.event.client.{ClientConnectionEndedEvent, ClientConnectionEstablishedEvent, ClientNegotiationCompleteEvent}
 import org.kitteh.irc.client.library.feature.twitch.event.UserNoticeEvent
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
@@ -35,7 +35,14 @@ class TwitchBotEventListener @Inject()(
 
     @Handler
     def connected(event: ClientConnectionEstablishedEvent): Unit = {
+        twitchBot.get().isConnected = true
         TwitchLogger.info("Monster Truck Bot connected!")
+    }
+
+    @Handler
+    def connectionEnded(event: ClientConnectionEndedEvent): Unit = {
+        twitchBot.get().isConnected = false
+        TwitchLogger.info("Monster Truck Bot disconnected!")
     }
 
     @Handler

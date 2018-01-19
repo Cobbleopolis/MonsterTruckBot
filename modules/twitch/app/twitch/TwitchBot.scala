@@ -13,6 +13,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class TwitchBot @Inject()(implicit mtrConfigRef: MtrConfigRef, lifecycle: ApplicationLifecycle, ex: ExecutionContext, db: Database, twitchBotEventListener: TwitchBotEventListener) {
 
+    var isConnected: Boolean = false
+
     private val clientBuilder: Client.Builder = Client.builder()
         .serverHost("irc.chat.twitch.tv")
         .nick(mtrConfigRef.twitchUsername)
