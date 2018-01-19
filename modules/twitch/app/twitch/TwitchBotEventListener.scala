@@ -64,7 +64,9 @@ class TwitchBotEventListener @Inject()(
         val msgIdTag: Optional[MessageTag] = userNoticeEvent.getTag("msg-id")
         if (msgIdTag.isPresent && msgIdTag.get().getValue.isPresent) {
             val msgId: String = msgIdTag.get().getValue.get()
-            if (msgId == UserNoticeMessageId.SUBSCRIPTION.toString || msgId == UserNoticeMessageId.RESUBSCRIPTION.toString)
+            if (msgId == UserNoticeMessageId.SUBSCRIPTION.toString ||
+                msgId == UserNoticeMessageId.RESUBSCRIPTION.toString ||
+                msgId == UserNoticeMessageId.GIFTED_SUBSCRIPTION.toString)
                 twitchBot.get.client.getEventManager.callEvent(new TwitchSubEvent(userNoticeEvent))
         }
     }
@@ -106,26 +108,34 @@ class TwitchBotEventListener @Inject()(
     def twitchSubEvent(twitchSubEvent: TwitchSubEvent): Unit = {
         TwitchLogger.debug(s"Subscription! ${twitchSubEvent.displayName} just subscribed!")
         var messageVariant: String = twitchSubEvent.channelName.toLowerCase
+        if (!twitchMessageUtil.isDefined(s"bot.subMessages.subscription.$messageVariant"))
+            messageVariant = "default"
         val displayName: String = if (twitchSubEvent.displayName.startsWith("@"))
             twitchSubEvent.displayName
         else
             "@" + twitchSubEvent.displayName
         twitchSubEvent.msgId match {
             case UserNoticeMessageId.SUBSCRIPTION =>
-                if (!twitchMessageUtil.isDefined(s"bot.subMessages.subscription.$messageVariant"))
-                    messageVariant = "default"
                 twitchMessageUtil.replyToChannel(
                     twitchSubEvent.getChannel,
                     displayName,
                     s"bot.subMessages.subscription.$messageVariant", twitchSubEvent.resubMonthCount.getOrElse(1)
                 )
             case UserNoticeMessageId.RESUBSCRIPTION =>
-                if (!twitchMessageUtil.isDefined(s"bot.subMessages.resubscription.$messageVariant"))
-                    messageVariant = "default"
                 twitchMessageUtil.replyToChannel(
                     twitchSubEvent.getChannel,
                     displayName,
                     s"bot.subMessages.resubscription.$messageVariant", twitchSubEvent.resubMonthCount.getOrElse(1)
+                )
+            case UserNoticeMessageId.GIFTED_SUBSCRIPTION =>
+                val recipientDisplayName: String = if (twitchSubEvent.recipientDisplayName.startsWith("@"))
+                    twitchSubEvent.recipientDisplayName
+                else
+                    "@" + twitchSubEvent.recipientDisplayName
+                twitchMessageUtil.replyToChannel(
+                    twitchSubEvent.getChannel,
+                    recipientDisplayName,
+                    s"bot.subMessages.giftedSub.$messageVariant", displayName
                 )
             case UserNoticeMessageId.CHARITY =>
             case _ =>
