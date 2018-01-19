@@ -1,10 +1,8 @@
-package modules
-
 import com.google.inject.AbstractModule
 import data.DatabaseCreation
 import play.api.libs.concurrent.AkkaGuiceSupport
 
-class MonsterTruckBotModule extends AbstractModule with AkkaGuiceSupport {
+class Module extends AbstractModule with AkkaGuiceSupport {
 
     override def configure(): Unit = {
         bind(classOf[DatabaseCreation]).asEagerSingleton()
