@@ -10,7 +10,7 @@ import common.ref.MtrConfigRef
 import net.engio.mbassy.listener.Handler
 import org.kitteh.irc.client.library.element.MessageTag
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
-import org.kitteh.irc.client.library.event.client.ClientConnectedEvent
+import org.kitteh.irc.client.library.event.client.{ClientConnectionEstablishedEvent, ClientNegotiationCompleteEvent}
 import org.kitteh.irc.client.library.feature.twitch.event.UserNoticeEvent
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
@@ -34,7 +34,7 @@ class TwitchBotEventListener @Inject()(
                                       ) {
 
     @Handler
-    def connected(event: ClientConnectedEvent): Unit = {
+    def connected(event: ClientConnectionEstablishedEvent): Unit = {
         TwitchLogger.info("Monster Truck Bot connected!")
     }
 

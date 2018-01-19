@@ -6,7 +6,7 @@ val projectVersion: String = "2.6.0-SNAPSHOT"
 
 val discord4JVersion: String = "2.9.1"
 
-val kittehIRCVersion: String = "3.2.0"
+val kittehIRCVersion: String = "4.0.0"
 
 lazy val commonDependencies = Seq(
     "com.typesafe.play" %% "anorm" % "2.5.3",
