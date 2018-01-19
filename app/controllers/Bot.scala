@@ -2,9 +2,9 @@ package controllers
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.api.PermissionLevel
-import com.cobble.bot.common.models.CustomCommand
-import com.cobble.bot.common.ref.MtrConfigRef
+import common.api.PermissionLevel
+import common.models.CustomCommand
+import common.ref.MtrConfigRef
 import discord.{DiscordBot, DiscordCommandRegistry}
 import org.webjars.play.WebJarsUtil
 import play.api.cache.SyncCacheApi

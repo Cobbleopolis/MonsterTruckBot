@@ -1,6 +1,6 @@
 package discord.api
 
-import com.cobble.bot.common.api.Command
+import common.api.Command
 import discord.event.DiscordCommandExecutionEvent
 import discord.util.DiscordMessageUtil
 

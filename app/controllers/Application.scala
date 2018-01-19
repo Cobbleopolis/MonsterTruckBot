@@ -3,7 +3,7 @@ package controllers
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.ref.MtrConfigRef
+import common.ref.MtrConfigRef
 import discord.DiscordBot
 import jsmessages.JsMessagesFactory
 import org.webjars.play.WebJarsUtil

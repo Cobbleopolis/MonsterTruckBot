@@ -2,9 +2,9 @@ package models
 
 import javax.inject.{Inject, Singleton}
 
-import com.cobble.bot.common.models.bitTrackingFormData._
-import com.cobble.bot.common.models.{CustomCommand, FilterSettings, TwitchRegular}
-import com.cobble.bot.common.ref.{MessageRef, MtrConfigRef}
+import common.models.bitTrackingFormData._
+import common.models.{CustomCommand, FilterSettings, TwitchRegular}
+import common.ref.{MessageRef, MtrConfigRef}
 import play.api.data.Forms._
 import play.api.data.{Form, FormError}
 

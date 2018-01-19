@@ -1,8 +1,8 @@
-@import com.cobble.bot.common.ref.MtrConfigRef
+@import common.ref.MtrConfigRef
 @import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
 @import views.html.component.formErrors
-@import com.cobble.bot.common.models.TwitchRegular
+@import common.models.TwitchRegular
 @(twitchRegularForm: Form[TwitchRegular], twitchRegulars: List[TwitchRegular])(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 
 @implicitFieldConstructor = @{

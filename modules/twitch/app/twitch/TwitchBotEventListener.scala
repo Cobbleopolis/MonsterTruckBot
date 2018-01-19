@@ -3,10 +3,10 @@ package twitch
 import java.util.Optional
 import javax.inject.{Inject, Provider}
 
-import com.cobble.bot.common.api.PermissionLevel
-import com.cobble.bot.common.api.PermissionLevel.PermissionLevel
-import com.cobble.bot.common.models.{CustomCommand, FilterSettings, TwitchRegular}
-import com.cobble.bot.common.ref.MtrConfigRef
+import common.api.PermissionLevel
+import common.api.PermissionLevel.PermissionLevel
+import common.models.{CustomCommand, FilterSettings, TwitchRegular}
+import common.ref.MtrConfigRef
 import net.engio.mbassy.listener.Handler
 import org.kitteh.irc.client.library.element.MessageTag
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent

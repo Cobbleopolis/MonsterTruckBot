@@ -1,10 +1,10 @@
-@import com.cobble.bot.common.api.bitTracking.{BitTrackingMode, CollectiveBitGameMode}
-@import com.cobble.bot.common.models.bitTrackingFormData.BitTrackingFormData
-@import com.cobble.bot.common.ref.MtrConfigRef
-@import com.cobble.bot.common.util.BitTrackingUtil
+@import common.api.bitTracking.{BitTrackingMode, CollectiveBitGameMode}
+@import common.models.bitTrackingFormData.BitTrackingFormData
+@import common.ref.MtrConfigRef
+@import common.util.BitTrackingUtil
 @import org.webjars.play.WebJarsUtil
-@import com.cobble.bot.common.api.bitTracking.BitTrackingMode.BitTrackingMode
-@import com.cobble.bot.common.api.bitTracking.GameCheerMode
+@import common.api.bitTracking.BitTrackingMode.BitTrackingMode
+@import common.api.bitTracking.GameCheerMode
 @import discord.DiscordBot
 @(bitTrackingForm: Form[BitTrackingFormData], bitTrackingUtil: BitTrackingUtil)(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
 

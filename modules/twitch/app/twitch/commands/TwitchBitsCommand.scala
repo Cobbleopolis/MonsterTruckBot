@@ -2,10 +2,10 @@ package twitch.commands
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.api.commands.BitsCommand
-import com.cobble.bot.common.models.BitTrackingSettings
-import com.cobble.bot.common.ref.MtrConfigRef
-import com.cobble.bot.common.util.BitTrackingUtil
+import common.api.commands.BitsCommand
+import common.models.BitTrackingSettings
+import common.ref.MtrConfigRef
+import common.util.BitTrackingUtil
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
 import twitch.api.TwitchCommand

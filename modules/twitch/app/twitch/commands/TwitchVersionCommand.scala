@@ -3,7 +3,7 @@ package twitch.commands
 import javax.inject.Inject
 
 import buildinfo.BuildInfo
-import com.cobble.bot.common.api.commands.VersionCommand
+import common.api.commands.VersionCommand
 import twitch.api.TwitchCommand
 import twitch.events.TwitchCommandExecutionEvent
 import twitch.util.TwitchMessageUtil

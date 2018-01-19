@@ -2,7 +2,7 @@ package twitch.commands
 
 import javax.inject.{Inject, Provider}
 
-import com.cobble.bot.common.api.commands.BitTestCommand
+import common.api.commands.BitTestCommand
 import twitch.TwitchBot
 import twitch.api.TwitchCommand
 import twitch.events.{TwitchCheerEvent, TwitchCommandExecutionEvent}

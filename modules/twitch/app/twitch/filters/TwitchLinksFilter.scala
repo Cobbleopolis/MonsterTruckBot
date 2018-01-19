@@ -2,9 +2,9 @@ package twitch.filters
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.DefaultLang
-import com.cobble.bot.common.api.filters.LinksFilter
-import com.cobble.bot.common.models.FilterSettings
+import common.DefaultLang
+import common.api.filters.LinksFilter
+import common.models.FilterSettings
 import play.api.i18n.MessagesApi
 import twitch.api.TwitchFilter
 import twitch.events.TwitchMessageEvent

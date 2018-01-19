@@ -4,7 +4,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import javax.inject.Singleton
 
-import com.cobble.bot.common.ref.MtrConfigRef
+import common.ref.MtrConfigRef
 import com.google.inject.Inject
 import play.api.inject.ApplicationLifecycle
 import sx.blah.discord.api.events.EventDispatcher

@@ -1,9 +1,9 @@
 @import scala.collection.SortedMap
-@import com.cobble.bot.common.models.CustomCommand
+@import common.models.CustomCommand
 @import discord.DiscordBot
 @import org.webjars.play.WebJarsUtil
-@import com.cobble.bot.common.ref.MtrConfigRef
-@import com.cobble.bot.common.api.PermissionLevel
+@import common.ref.MtrConfigRef
+@import common.api.PermissionLevel
 @import discord.DiscordCommandRegistry
 @import twitch.TwitchCommandRegistry
 @(builtInCommands: SortedMap[String, (String, String)], discordCommandRegistry: DiscordCommandRegistry, twitchCommandRegistry: TwitchCommandRegistry, customCommands: List[CustomCommand])(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, mtrConfigRef: MtrConfigRef, request: MessagesRequest[AnyContent])

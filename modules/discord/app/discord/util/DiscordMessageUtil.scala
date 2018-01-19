@@ -2,8 +2,8 @@ package discord.util
 
 import javax.inject.{Inject, Singleton}
 
-import com.cobble.bot.common.ref.MessageRef
-import com.cobble.bot.common.util.MessageUtil
+import common.ref.MessageRef
+import common.util.MessageUtil
 import discord.event.DiscordCommandExecutionEvent
 import play.api.i18n.MessagesApi
 import sx.blah.discord.handle.obj.{IChannel, IMessage, IUser}

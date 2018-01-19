@@ -2,7 +2,7 @@ package twitch.commands
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.api.commands.PingCommand
+import common.api.commands.PingCommand
 import twitch.api.TwitchCommand
 import twitch.events.TwitchCommandExecutionEvent
 import twitch.util.TwitchMessageUtil

@@ -4,8 +4,8 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
-import com.cobble.bot.common.ref.MtrConfigRef
-import com.cobble.bot.common.util.DiscordApiUtil
+import common.ref.MtrConfigRef
+import common.util.DiscordApiUtil
 import discord.DiscordBot
 import org.webjars.play.WebJarsUtil
 import play.api.Logger

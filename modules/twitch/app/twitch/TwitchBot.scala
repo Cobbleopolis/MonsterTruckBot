@@ -2,7 +2,7 @@ package twitch
 
 import javax.inject.{Inject, Singleton}
 
-import com.cobble.bot.common.ref.MtrConfigRef
+import common.ref.MtrConfigRef
 import org.kitteh.irc.client.library.Client
 import org.kitteh.irc.client.library.feature.twitch.{TwitchDelaySender, TwitchListener}
 import play.api.db.Database

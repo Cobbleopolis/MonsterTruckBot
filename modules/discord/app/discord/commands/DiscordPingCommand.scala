@@ -2,7 +2,7 @@ package discord.commands
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.api.commands.PingCommand
+import common.api.commands.PingCommand
 import discord.api.DiscordCommand
 import discord.event.DiscordCommandExecutionEvent
 import discord.util.DiscordMessageUtil

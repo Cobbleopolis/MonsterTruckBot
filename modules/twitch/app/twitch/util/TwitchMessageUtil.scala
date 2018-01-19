@@ -2,8 +2,8 @@ package twitch.util
 
 import javax.inject.{Inject, Provider, Singleton}
 
-import com.cobble.bot.common.ref.MessageRef
-import com.cobble.bot.common.util.MessageUtil
+import common.ref.MessageRef
+import common.util.MessageUtil
 import org.kitteh.irc.client.library.element.Channel
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
 import play.api.i18n.MessagesApi

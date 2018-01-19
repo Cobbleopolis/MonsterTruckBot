@@ -3,9 +3,9 @@ package controllers
 import javax.inject.Inject
 
 import actions.SecureAction
-import com.cobble.bot.common.models.{BitTrackingSettings, CustomCommand, FilterSettings, TwitchRegular}
-import com.cobble.bot.common.ref.MtrConfigRef
-import com.cobble.bot.common.util.BitTrackingUtil
+import common.models.{BitTrackingSettings, CustomCommand, FilterSettings, TwitchRegular}
+import common.ref.MtrConfigRef
+import common.util.BitTrackingUtil
 import discord.DiscordBot
 import models.DashboardSettingsForms
 import org.webjars.play.WebJarsUtil

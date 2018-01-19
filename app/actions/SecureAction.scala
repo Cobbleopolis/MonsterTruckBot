@@ -2,7 +2,7 @@ package actions
 
 import javax.inject.Inject
 
-import com.cobble.bot.common.ref.MtrConfigRef
+import common.ref.MtrConfigRef
 import discord.DiscordBot
 import org.webjars.play.WebJarsUtil
 import play.api.mvc.Results._

@@ -3,7 +3,7 @@ package discord.commands
 import javax.inject.Inject
 
 import buildinfo.BuildInfo
-import com.cobble.bot.common.api.commands.VersionCommand
+import common.api.commands.VersionCommand
 import discord.api.DiscordCommand
 import discord.event.DiscordCommandExecutionEvent
 import discord.util.DiscordMessageUtil
