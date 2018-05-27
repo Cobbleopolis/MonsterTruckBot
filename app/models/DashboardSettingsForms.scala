@@ -45,7 +45,9 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
             "goalMessage" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
             "toNextGoal" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
             "goalAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-            "goalCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE)
+            "goalCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+            "incrementAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+            "goalIncrementAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE)
         )(BitTrackingFormData.apply)(BitTrackingFormData.unapply)
     )
 

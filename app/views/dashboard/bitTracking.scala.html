@@ -65,6 +65,14 @@
                 '_label -> s"dashboard.bitTracking.goalCount.label",
                 '_help -> s"dashboard.bitTracking.goalCount.help"
             )
+            @b4.number(bitTrackingForm("incrementAmount"),
+                '_label -> s"dashboard.bitTracking.incrementAmount.label",
+                '_help -> s"dashboard.bitTracking.incrementAmount.help"
+            )
+            @b4.number(bitTrackingForm("goalIncrementAmount"),
+                '_label -> s"dashboard.bitTracking.goalIncrementAmount.label",
+                '_help -> s"dashboard.bitTracking.goalIncrementAmount.help"
+            )
             @b4.submit('class -> "btn btn-success") {
                 @request.messages("global.forms.save")
             }
