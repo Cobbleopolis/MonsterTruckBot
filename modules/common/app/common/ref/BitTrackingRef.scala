@@ -1,23 +1,38 @@
 package common.ref
 
+import common.api.bitTracking.BitTrackingMode
+import common.api.bitTracking.BitTrackingMode.BitTrackingMode
+
 object BitTrackingRef {
 
     val BASE_CACHE_LOCATION: String = "bitTracking"
 
+    val BIT_TRACKING_MODE_SUFFIX: String = "bitTrackingMode"
+    val DEFAULT_BIT_TRACKING_MODE: BitTrackingMode = BitTrackingMode.SINGLE_CHEER
+
+    val IS_PAUSED_SUFFIX: String = "isPaused"
+    val DEFAULT_IS_PAUSED: Boolean = false
+
     val GOAL_AMOUNT_SUFFIX: String = "goalAmount"
     val DEFAULT_GOAL_AMOUNT: Int = BitCheerLevels.RED_BIT
+
     val TO_NEXT_GOAL_SUFFIX: String = "toNextGoal"
     val DEFAULT_TO_NEXT_GOAL: Int = 0
+
     val GOAL_COUNT_SUFFIX: String = "goalCount"
     val DEFAULT_GOAL_COUNT: Int = 0
 
-    def getGoalAmountLocation(domain: String): String = getBitTrackingLocation(domain, GOAL_AMOUNT_SUFFIX)
+    def getBitTrackingLocation(suffix: String): String = s"$BASE_CACHE_LOCATION.$suffix"
 
-    def getBitTrackingLocation(domain: String, suffix: String): String = s"$BASE_CACHE_LOCATION.$domain.$suffix"
+    val BIT_TRACKING_MODE_LOCATION: String = getBitTrackingLocation(BIT_TRACKING_MODE_SUFFIX)
 
-    def getToNextGoalLocation(domain: String): String = getBitTrackingLocation(domain, TO_NEXT_GOAL_SUFFIX)
+    val IS_PAUSED_LOCATION: String = getBitTrackingLocation(IS_PAUSED_SUFFIX)
 
-    def getGoalCountLocation(domain: String): String = getBitTrackingLocation(domain, GOAL_COUNT_SUFFIX)
+    val GOAL_AMOUNT_LOCATION: String = getBitTrackingLocation(GOAL_AMOUNT_SUFFIX)
+
+    val TO_NEXT_GOAL_LOCATION: String = getBitTrackingLocation(TO_NEXT_GOAL_SUFFIX)
+
+    val GOAL_COUNT_LOCATION: String = getBitTrackingLocation(GOAL_COUNT_SUFFIX)
 
     def getCommonBitTrackingLocation(suffix: String): String = s"$BASE_CACHE_LOCATION.$suffix"
 

@@ -1,8 +1,8 @@
 package common.models
 
 import anorm.{Macro, NamedParameter, RowParser, SqlParser}
-import common.api.bitTracking.BitTrackingMode
-import common.api.bitTracking.BitTrackingMode.BitTrackingMode
+import common.api.bitTracking.BitTrackingGame
+import common.api.bitTracking.BitTrackingGame.BitTrackingGame
 import common.api.{Model, ModelAccessor}
 
 case class BitTrackingSettings(guildId: Long, currentMode: Int = 0, nipDipTemplate: String = "", rbgTemplate: String = "", jackshotsTemplate: String = "", pushUpTemplate: String = "", singItOrSlamItTemplate: String = "") extends Model {
@@ -17,7 +17,7 @@ case class BitTrackingSettings(guildId: Long, currentMode: Int = 0, nipDipTempla
         'sing_it_or_slam_it_template -> singItOrSlamItTemplate
     )
 
-    def getCurrentMode: BitTrackingMode = BitTrackingMode(currentMode)
+    def getCurrentMode: BitTrackingGame = BitTrackingGame(currentMode)
 
 }
 

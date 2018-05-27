@@ -1,8 +1,8 @@
 package controllers
 
 import javax.inject.Inject
-
 import actions.SecureAction
+import common.api.bitTracking.BitTrackingState
 import common.models.{BitTrackingSettings, CustomCommand, FilterSettings, TwitchRegular}
 import common.ref.MtrConfigRef
 import common.util.BitTrackingUtil
@@ -27,7 +27,7 @@ class Dashboard @Inject()(
                              dashboardSettingsForms: DashboardSettingsForms,
                              discordBot: DiscordBot,
                              mtrConfigRef: MtrConfigRef,
-                             bitTrackingUtil: BitTrackingUtil,
+                             bitTrackingState: BitTrackingState,
                              ec: ExecutionContext
                          ) extends AbstractController(cc) {
 
@@ -108,7 +108,7 @@ class Dashboard @Inject()(
     def bitTracking(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
         val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(mtrConfigRef.guildId)
         if (bitTrackingSettingsOpt.isDefined)
-            Ok(views.html.dashboard.bitTracking(dashboardSettingsForms.bitTrackingForm.fill(bitTrackingUtil.getBitTrackingFormData), bitTrackingUtil))
+            Ok(views.html.dashboard.bitTracking(dashboardSettingsForms.bitTrackingForm.fill(bitTrackingState.getBitTrackingFormData), bitTrackingState))
         else
             InternalServerError(views.html.dashboard.settingsMissing("bitTracking"))
     }
@@ -116,11 +116,10 @@ class Dashboard @Inject()(
     def submitBitTracking: Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
         dashboardSettingsForms.bitTrackingForm.bindFromRequest().fold(
             formWithErrors => {
-                BadRequest(views.html.dashboard.bitTracking(formWithErrors, bitTrackingUtil))
+                BadRequest(views.html.dashboard.bitTracking(formWithErrors, bitTrackingState))
             },
             bitTrackingFormData => {
-                bitTrackingUtil.setBitTrackingFormData(bitTrackingFormData)
-                BitTrackingSettings.update(mtrConfigRef.guildId, bitTrackingFormData.getBitTrackingSettings)
+                bitTrackingState.setBitTrackingFormData(bitTrackingFormData)
                 Redirect(routes.Dashboard.bitTracking()).flashing("success" -> request.messages("dashboard.bitTracking.saved"))
             }
         )

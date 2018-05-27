@@ -38,47 +38,13 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
 
     val bitTrackingForm: Form[BitTrackingFormData] = Form(
         mapping(
-            "guildId" -> ignored(mtrConfigRef.guildId),
-            "currentMode" -> number,
-            "common" -> mapping(
-                "paused" -> boolean
-            )(CommonBitTrackingFormData.apply)(CommonBitTrackingFormData.unapply),
-            "nipDip" -> mapping(
-                "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
-                "goalAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "toNextGoal" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "goalCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE)
-            )(CollectiveModeFormData.apply)(CollectiveModeFormData.unapply),
-            "rbg" -> mapping(
-                "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
-                "greenShotAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "greenShotCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "blueShotAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "blueShotCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "redShotAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "redShotCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE)
-            )(RBGModeFormData.apply)(RBGModeFormData.unapply),
-            "jackshots" -> mapping(
-                "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
-                "goalAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "toNextGoal" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "goalCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE)
-            )(CollectiveModeFormData.apply)(CollectiveModeFormData.unapply),
-            "pushUp" -> mapping(
-                "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
-                "cheerMode" -> nonEmptyText,
-                "goalAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "toNextGoal" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "pushUpSetAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "goalCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE)
-            )(PushUpModeFormData.apply)(PushUpModeFormData.unapply),
-            "singItOrSlamIt" -> mapping(
-                "template" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
-                "goalAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "goalCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "roundsWon" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
-                "roundsLost" -> number(min = 0, max = MAX_INT_INPUT_VALUE)
-            )(SingItOrSlamItModeFormData.apply)(SingItOrSlamItModeFormData.unapply)
+            "bitTrackingMode" -> nonEmptyText,
+            "isPaused" -> boolean,
+            "gameMessage" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
+            "bitsMessage" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
+            "toNextGoal" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+            "goalAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
+            "goalCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE)
         )(BitTrackingFormData.apply)(BitTrackingFormData.unapply)
     )
 

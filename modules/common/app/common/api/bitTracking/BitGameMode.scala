@@ -1,6 +1,6 @@
 package common.api.bitTracking
 
-import BitTrackingMode.BitTrackingMode
+import BitTrackingGame.BitTrackingGame
 import play.api.cache.SyncCacheApi
 
 import scala.collection.mutable
@@ -11,7 +11,7 @@ abstract class BitGameMode {
 
     val cache: SyncCacheApi
 
-    val mode: BitTrackingMode
+    val mode: BitTrackingGame
 
     val numberFormatString: String = "%,d"
 
