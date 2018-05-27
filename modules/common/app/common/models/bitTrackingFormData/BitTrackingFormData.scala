@@ -8,6 +8,7 @@ case class BitTrackingFormData(
                                   isPaused: Boolean = false,
                                   gameMessage: String = "",
                                   bitsMessage: String = "",
+                                  goalMessage: String = "",
                                   toNextGoal: Int = 0,
                                   goalAmount: Int = 10000,
                                   goalCount: Int = 0

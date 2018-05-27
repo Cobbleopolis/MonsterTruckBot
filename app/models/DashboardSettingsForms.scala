@@ -42,6 +42,7 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
             "isPaused" -> boolean,
             "gameMessage" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
             "bitsMessage" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
+            "goalMessage" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
             "toNextGoal" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
             "goalAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
             "goalCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE)

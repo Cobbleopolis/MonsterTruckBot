@@ -14,17 +14,6 @@
         b4.horizontal.fieldConstructor("col-md-" + fieldLabelColWidth, "col-md-" + fieldInputColWidth)
     }
 
-    @renderRBGShotType(shotType: String) = {
-    @b4.number(bitTrackingForm(s"rbg.${shotType}ShotAmount"),
-        '_label -> request.messages("dashboard.bitTracking.rbg.shotAmount.label", request.messages(s"bot.bitTracking.rbg.shotTypes.$shotType")),
-        '_help -> request.messages("dashboard.bitTracking.rbg.shotAmount.help", request.messages(s"bot.bitTracking.rbg.shotTypes.$shotType").toLowerCase)
-    )(implicitFieldConstructor, request)
-    @b4.number(bitTrackingForm(s"rbg.${shotType}ShotCount"),
-        '_label -> request.messages("dashboard.bitTracking.rbg.shotCount.label", request.messages(s"bot.bitTracking.rbg.shotTypes.$shotType")),
-        '_help -> request.messages("dashboard.bitTracking.rbg.shotCount.help", request.messages(s"bot.bitTracking.rbg.shotTypes.$shotType").toLowerCase)
-    )(implicitFieldConstructor, request)
-    }
-
     @dashboardPage("bitTracking") {
 
     } {
@@ -57,6 +46,11 @@
             @b4.textarea(bitTrackingForm("bitsMessage"),
                 '_label -> s"dashboard.bitTracking.bitsMessage.label",
                 '_help -> request.messages("dashboard.bitTracking.variables", bitTrackingState.getFormattingVariablesString),
+                'rows -> 5
+            )
+            @b4.textarea(bitTrackingForm("goalMessage"),
+                '_label -> s"dashboard.bitTracking.goalMessage.label",
+                '_help -> request.messages("dashboard.bitTracking.variables", bitTrackingState.getGoalFormattingVariablesString),
                 'rows -> 5
             )
             @b4.number(bitTrackingForm("toNextGoal"),

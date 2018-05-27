@@ -50,6 +50,15 @@ class BitTrackingState @Inject()(cache: SyncCacheApi) {
     def setBitsMessage(bitsMessage: String): Unit = cache.set(BITS_MESSAGE_LOCATION, bitsMessage)
 
 
+    private val GOAL_MESSAGE_SUFFIX: String = "goalMessage"
+
+    private val GOAL_MESSAGE_LOCATION: String = getBitTrackingLocation(GOAL_MESSAGE_SUFFIX)
+
+    def getGoalMessage: String = cache.getOrElseUpdate(GOAL_MESSAGE_LOCATION)("")
+
+    def setGoalMessage(goalMessage: String): Unit = cache.set(GOAL_MESSAGE_LOCATION, goalMessage)
+
+
     private val TO_NEXT_GOAL_SUFFIX: String = "toNextGoal"
 
     private val TO_NEXT_GOAL_LOCATION: String = getBitTrackingLocation(TO_NEXT_GOAL_SUFFIX)
@@ -86,6 +95,7 @@ class BitTrackingState @Inject()(cache: SyncCacheApi) {
         getIsPaused,
         getGameMessage,
         getBitsMessage,
+        getGoalMessage,
         getToNextGoal,
         getGoalAmount,
         getGoalCount
@@ -96,17 +106,24 @@ class BitTrackingState @Inject()(cache: SyncCacheApi) {
         setIsPaused(bitTrackingFormData.isPaused)
         setGameMessage(bitTrackingFormData.gameMessage)
         setBitsMessage(bitTrackingFormData.bitsMessage)
+        setGoalMessage(bitTrackingFormData.goalMessage)
         setToNextGoal(bitTrackingFormData.toNextGoal)
         setGoalAmount(bitTrackingFormData.goalAmount)
         setGoalCount(bitTrackingFormData.goalCount)
     }
 
-    def getFormattingVariables: mutable.LinkedHashMap[String, String] = mutable.LinkedHashMap(
-        GOAL_AMOUNT_SUFFIX -> numberFormatString.format(getGoalAmount),
-        TO_NEXT_GOAL_SUFFIX -> numberFormatString.format(getToNextGoal),
-        GOAL_COUNT_SUFFIX -> numberFormatString.format(getGoalCount)
+    def getFormattingVariables: mutable.LinkedHashMap[String, Object] = mutable.LinkedHashMap(
+        GOAL_AMOUNT_SUFFIX -> getGoalAmount.asInstanceOf[Object],
+        TO_NEXT_GOAL_SUFFIX -> getToNextGoal.asInstanceOf[Object],
+        GOAL_COUNT_SUFFIX -> getGoalCount.asInstanceOf[Object]
     )
 
-    def getFormattingVariablesString: String = getFormattingVariables.keys.mkString("{", "}, {", "}")
+    def getGoalMessageVariables(delta: Int = 0): mutable.LinkedHashMap[String, Object] = getFormattingVariables += ("delta" -> delta.asInstanceOf[Object])
+
+    private def variableMapStr(map: mutable.LinkedHashMap[String, Object]): String = map.keys.mkString("{", "}, {", "}")
+
+    def getFormattingVariablesString: String = variableMapStr(getFormattingVariables)
+
+    def getGoalFormattingVariablesString: String = variableMapStr(getGoalMessageVariables())
 
 }
