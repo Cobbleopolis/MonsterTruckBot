@@ -48,7 +48,7 @@ class TwitchBotCheerEventHandler @Inject()(
                     bitTrackingState.getGoalMessageVariables(goalDelta)
                 )
             )
-            bitTrackingState.addToGoalAmount(bitTrackingState.getGoalIncrementAmount)
+            bitTrackingState.addToGoalAmount(bitTrackingState.getGoalIncrementAmount * goalDelta)
         }
     }
 
@@ -67,7 +67,7 @@ class TwitchBotCheerEventHandler @Inject()(
                     bitTrackingState.getGoalMessageVariables(goalDelta)
                 )
             )
-            bitTrackingState.addToGoalAmount(bitTrackingState.getGoalIncrementAmount)
+            bitTrackingState.addToGoalAmount(bitTrackingState.getGoalIncrementAmount * goalDelta)
         }
     }
 
