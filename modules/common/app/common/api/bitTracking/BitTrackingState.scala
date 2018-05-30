@@ -1,13 +1,17 @@
 package common.api.bitTracking
 
 import common.api.bitTracking.BitTrackingMode.BitTrackingMode
+import common.models.BitTrackingSettings
 import common.models.bitTrackingFormData.BitTrackingFormData
+import common.ref.MtrConfigRef
 import javax.inject.Inject
+import play.api.Logger
 import play.api.cache.SyncCacheApi
+import play.api.db.Database
 
 import scala.collection.mutable
 
-class BitTrackingState @Inject()(cache: SyncCacheApi) {
+class BitTrackingState @Inject()(implicit db: Database, cache: SyncCacheApi, config: MtrConfigRef) {
 
     private val numberFormatString: String = "%,d"
 
@@ -16,11 +20,13 @@ class BitTrackingState @Inject()(cache: SyncCacheApi) {
 
     private val BIT_TRACKING_MODE_SUFFIX: String = "bitTrackingMode"
 
-    private val BIT_TRACKING_MODE_LOCATION: String = getBitTrackingLocation(BIT_TRACKING_MODE_SUFFIX)
-
-    def getCurrentBitTrackingMode: BitTrackingMode = cache.getOrElseUpdate(BIT_TRACKING_MODE_LOCATION)(BitTrackingMode.COLLECTIVE)
-
-    def setCurrentBitTrackingMode(bitTrackingMode: BitTrackingMode): Unit = cache.set(BIT_TRACKING_MODE_LOCATION, bitTrackingMode)
+    def getCurrentBitTrackingMode: BitTrackingMode = {
+        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(config.guildId)
+        if (bitTrackingSettingsOpt.isDefined)
+            BitTrackingMode(bitTrackingSettingsOpt.get.currentMode)
+        else
+            BitTrackingMode(0)
+    }
 
 
     private val PAUSED_SUFFIX: String = "paused"
@@ -31,32 +37,29 @@ class BitTrackingState @Inject()(cache: SyncCacheApi) {
 
     def setIsPaused(isPaused: Boolean): Unit = cache.set(PAUSED_LOCATION, isPaused)
 
+    def getGameMessage: String = {
+        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(config.guildId)
+        if (bitTrackingSettingsOpt.isDefined)
+            bitTrackingSettingsOpt.get.bitGameMessage
+        else
+            "bot.bitTracking.settingsNotFound"
+    }
 
-    private val GAME_MESSAGE_SUFFIX: String = "gameMessage"
+    def getBitsMessage: String = {
+        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(config.guildId)
+        if (bitTrackingSettingsOpt.isDefined)
+            bitTrackingSettingsOpt.get.bitsMessage
+        else
+            "bot.bitTracking.settingsNotFound"
+    }
 
-    private val GAME_MESSAGE_LOCATION: String = getBitTrackingLocation(GAME_MESSAGE_SUFFIX)
-
-    def getGameMessage: String = cache.getOrElseUpdate(GAME_MESSAGE_LOCATION)("")
-
-    def setGameMessage(gameMessage: String): Unit = cache.set(GAME_MESSAGE_LOCATION, gameMessage)
-
-
-    private val BITS_MESSAGE_SUFFIX: String = "bitsMessage"
-
-    private val BITS_MESSAGE_LOCATION: String = getBitTrackingLocation(BITS_MESSAGE_SUFFIX)
-
-    def getBitsMessage: String = cache.getOrElseUpdate(BITS_MESSAGE_LOCATION)("")
-
-    def setBitsMessage(bitsMessage: String): Unit = cache.set(BITS_MESSAGE_LOCATION, bitsMessage)
-
-
-    private val GOAL_MESSAGE_SUFFIX: String = "goalMessage"
-
-    private val GOAL_MESSAGE_LOCATION: String = getBitTrackingLocation(GOAL_MESSAGE_SUFFIX)
-
-    def getGoalMessage: String = cache.getOrElseUpdate(GOAL_MESSAGE_LOCATION)("")
-
-    def setGoalMessage(goalMessage: String): Unit = cache.set(GOAL_MESSAGE_LOCATION, goalMessage)
+    def getGoalMessage: String = {
+        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(config.guildId)
+        if (bitTrackingSettingsOpt.isDefined)
+            bitTrackingSettingsOpt.get.goalMessage
+        else
+            "bot.bitTracking.settingsNotFound"
+    }
 
 
     private val TO_NEXT_GOAL_SUFFIX: String = "toNextGoal"
@@ -109,7 +112,8 @@ class BitTrackingState @Inject()(cache: SyncCacheApi) {
 
 
     def getBitTrackingFormData: BitTrackingFormData = BitTrackingFormData(
-        getCurrentBitTrackingMode.toString,
+        config.guildId,
+        getCurrentBitTrackingMode.id,
         getIsPaused,
         getGameMessage,
         getBitsMessage,
@@ -122,11 +126,7 @@ class BitTrackingState @Inject()(cache: SyncCacheApi) {
     )
 
     def setBitTrackingFormData(bitTrackingFormData: BitTrackingFormData): Unit = {
-        setCurrentBitTrackingMode(bitTrackingFormData.getBitTrackingMode)
         setIsPaused(bitTrackingFormData.isPaused)
-        setGameMessage(bitTrackingFormData.gameMessage)
-        setBitsMessage(bitTrackingFormData.bitsMessage)
-        setGoalMessage(bitTrackingFormData.goalMessage)
         setToNextGoal(bitTrackingFormData.toNextGoal)
         setGoalAmount(bitTrackingFormData.goalAmount)
         setGoalCount(bitTrackingFormData.goalCount)

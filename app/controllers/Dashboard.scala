@@ -9,6 +9,7 @@ import common.util.BitTrackingUtil
 import discord.DiscordBot
 import models.DashboardSettingsForms
 import org.webjars.play.WebJarsUtil
+import play.api.Logger
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
 import play.api.libs.ws.WSClient
@@ -119,6 +120,8 @@ class Dashboard @Inject()(
                 BadRequest(views.html.dashboard.bitTracking(formWithErrors, bitTrackingState))
             },
             bitTrackingFormData => {
+                Logger.info("Update")
+                BitTrackingSettings.update(mtrConfigRef.guildId, bitTrackingFormData.getBitTrackingSettings)
                 bitTrackingState.setBitTrackingFormData(bitTrackingFormData)
                 Redirect(routes.Dashboard.bitTracking()).flashing("success" -> request.messages("dashboard.bitTracking.saved"))
             }

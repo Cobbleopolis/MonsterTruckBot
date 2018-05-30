@@ -2,11 +2,13 @@ package common.models.bitTrackingFormData
 
 import common.api.bitTracking.BitTrackingMode
 import common.api.bitTracking.BitTrackingMode.BitTrackingMode
+import common.models.BitTrackingSettings
 
 case class BitTrackingFormData(
-                                  bitTrackingMode: String = BitTrackingMode.COLLECTIVE.toString,
+                                  guildId: Long,
+                                  bitTrackingMode: Int = BitTrackingMode.COLLECTIVE.id,
                                   isPaused: Boolean = false,
-                                  gameMessage: String = "",
+                                  bitGameMessage: String = "",
                                   bitsMessage: String = "",
                                   goalMessage: String = "",
                                   toNextGoal: Int = 0,
@@ -16,15 +18,13 @@ case class BitTrackingFormData(
                                   goalIncrementAmount: Int = 0
                               ) {
 
-    def getBitTrackingMode: BitTrackingMode = BitTrackingMode.withName(bitTrackingMode)
+    def getBitTrackingMode: BitTrackingMode = BitTrackingMode(bitTrackingMode)
 
-    //    def getBitTrackingSettings: BitTrackingSettings = BitTrackingSettings(
-    //        guildId = guildId,
-    //        currentMode = currentMode,
-    //        nipDipTemplate = nipDipFormData.template,
-    //        rbgTemplate = rbgFormData.template,
-    //        jackshotsTemplate = jackshotsFormData.template,
-    //        pushUpTemplate = pushUpModeFormData.template,
-    //        singItOrSlamItTemplate = singItOrSlamItModeFormData.template
-    //    )
+    def getBitTrackingSettings: BitTrackingSettings = BitTrackingSettings(
+        guildId = guildId,
+        currentMode = bitTrackingMode,
+        bitGameMessage = bitGameMessage,
+        bitsMessage = bitsMessage,
+        goalMessage = goalMessage
+    )
 }

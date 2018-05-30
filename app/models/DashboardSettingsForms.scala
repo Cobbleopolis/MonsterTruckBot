@@ -38,11 +38,12 @@ class DashboardSettingsForms @Inject()(mtrConfigRef: MtrConfigRef) {
 
     val bitTrackingForm: Form[BitTrackingFormData] = Form(
         mapping(
-            "bitTrackingMode" -> nonEmptyText,
+            "guildId" -> ignored(mtrConfigRef.guildId),
+            "bitTrackingMode" -> number,
             "isPaused" -> boolean,
-            "gameMessage" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
-            "bitsMessage" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
-            "goalMessage" -> nonEmptyText(maxLength = MessageRef.TWITCH_MAX_MESSAGE_LENGTH_USABLE),
+            "gameMessage" -> nonEmptyText,
+            "bitsMessage" -> nonEmptyText,
+            "goalMessage" -> nonEmptyText,
             "toNextGoal" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
             "goalAmount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
             "goalCount" -> number(min = 0, max = MAX_INT_INPUT_VALUE),
