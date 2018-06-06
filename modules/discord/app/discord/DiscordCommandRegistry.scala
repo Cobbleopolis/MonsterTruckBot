@@ -13,7 +13,8 @@ class DiscordCommandRegistry @Inject()(
                                           val sosCommand: DiscordSoSCommand,
                                           val subCountCommand: DiscordSubCountCommand,
                                           val uptimeCommand: DiscordUptimeCommand,
-                                          val bitsCommand: DiscordBitsCommand
+                                          val bitsCommand: DiscordBitsCommand,
+                                          val bitGameCommand: DiscordBitGameCommand
                                       ) {
 
     val commands: Map[String, DiscordCommand] = Map(
@@ -23,7 +24,8 @@ class DiscordCommandRegistry @Inject()(
         sosCommand.name -> sosCommand,
         subCountCommand.name -> subCountCommand,
         uptimeCommand.name -> uptimeCommand,
-        bitsCommand.name -> bitsCommand
+        bitsCommand.name -> bitsCommand,
+        bitGameCommand.name -> bitGameCommand
     )
 
 }

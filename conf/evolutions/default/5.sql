@@ -11,4 +11,4 @@ CREATE UNIQUE INDEX twitch_regulars_twitch_username_uindex ON twitch_regulars (t
 
 # -- !Downs
 
-DROP TABLE bit_tracking_settings
+DROP TABLE twitch_regulars;

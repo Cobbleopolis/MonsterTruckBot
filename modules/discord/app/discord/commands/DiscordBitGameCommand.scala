@@ -1,7 +1,7 @@
 package discord.commands
 
 import common.api.bitTracking.BitTrackingState
-import common.api.commands.BitsCommand
+import common.api.commands.{BitGameCommand, BitsCommand}
 import common.ref.MtrConfigRef
 import discord.api.DiscordCommand
 import discord.event.DiscordCommandExecutionEvent
@@ -10,7 +10,7 @@ import javax.inject.Inject
 import play.api.cache.SyncCacheApi
 import play.api.db.Database
 
-class DiscordBitsCommand @Inject()(implicit val messageUtil: DiscordMessageUtil, db: Database, cache: SyncCacheApi, mtrConfigRef: MtrConfigRef, bitTrackingState: BitTrackingState) extends DiscordCommand with BitsCommand {
+class DiscordBitGameCommand @Inject()(implicit val messageUtil: DiscordMessageUtil, db: Database, cache: SyncCacheApi, mtrConfigRef: MtrConfigRef, bitTrackingState: BitTrackingState) extends DiscordCommand with BitGameCommand {
 
     override def execute(implicit executionEvent: DiscordCommandExecutionEvent): Unit = {
         messageUtil.replyNoAt(getFormattedResponse(bitTrackingState))

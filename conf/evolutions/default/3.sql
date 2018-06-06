@@ -14,4 +14,4 @@ CREATE TABLE custom_commands
 
 # -- !Downs
 
-DROP TABLE custom_commands
+DROP TABLE custom_commands;
