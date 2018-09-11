@@ -65,6 +65,37 @@ class TwitchSubEvent(userNoticeEvent: UserNoticeEvent) extends TwitchEvent {
             ""
     }
 
+    val isMysteryGiftedSub: Boolean = msgId == UserNoticeMessageId.MYSTERY_GIFTED_SUBSCRIPTION
+
+    val mysteryGiftedSubCount: Option[Int] = {
+        val paramGiftCountTagOpt: Optional[MessageTag] = getTag("msg-param-mass-gift-count")
+        if (paramGiftCountTagOpt.isPresent && paramGiftCountTagOpt.get().getValue.isPresent)
+            Some(paramGiftCountTagOpt.get.getValue.get().toInt)
+        else
+            None
+    }
+
+    val mysteryGiftedSubSenderCount: Option[Int] = {
+        val paramSenderCountTagOpt: Optional[MessageTag] = getTag("msg-param-sender-count")
+        if (paramSenderCountTagOpt.isPresent && paramSenderCountTagOpt.get().getValue.isPresent)
+            Some(paramSenderCountTagOpt.get.getValue.get().toInt)
+        else
+            None
+    }
+
+    val isGiftPaidUpgrade: Boolean = msgId == UserNoticeMessageId.GIFT_PAID_UPGRADE
+
+    val senderName: String = {
+        val paramSenderNameOpt: Optional[MessageTag] = getTag("msg-param-sender-name")
+        val paramSenderLoginOpt: Optional[MessageTag] = getTag("msg-param-sender-login")
+        if (paramSenderNameOpt.isPresent && paramSenderNameOpt.get().getValue.isPresent)
+            paramSenderNameOpt.get.getValue.get()
+        else if (paramSenderLoginOpt.isPresent && paramSenderLoginOpt.get().getValue.isPresent)
+            paramSenderLoginOpt.get.getValue.get()
+        else
+            ""
+    }
+
     override def getClient: Client = userNoticeEvent.getClient
 
     override def getChannel: Channel = userNoticeEvent.getChannel

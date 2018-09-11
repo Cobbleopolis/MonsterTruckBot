@@ -53,6 +53,8 @@ class MtrConfigRef @Inject()(implicit conf: Configuration) {
 
     twitchChannels.values
 
+    val mysteryGiftedSubsCacheTimeout: Duration = conf.getMillis("mtrBot.twitch.mysteryGiftedSubsCacheTimeout").milliseconds
+
     val oauthAuthUrl: String = conf.get[String]("oauth.authUrl")
 
     val oauthTokenUrl: String = conf.get[String]("oauth.tokenUrl")
