@@ -1,8 +1,8 @@
 package twitch
 
 import java.util.Optional
-import javax.inject.{Inject, Provider}
 
+import javax.inject.{Inject, Provider}
 import common.api.PermissionLevel
 import common.api.PermissionLevel.PermissionLevel
 import common.models.{CustomCommand, FilterSettings, TwitchRegular}
@@ -16,6 +16,7 @@ import play.api.cache.SyncCacheApi
 import play.api.db.Database
 import twitch.api.TwitchChatMessageEvent
 import twitch.api.usernotice.UserNoticeMessageId
+import twitch.api.usernotice.UserNoticeMessageId.UserNoticeMessageId
 import twitch.events.{TwitchCheerEvent, TwitchCommandExecutionEvent, TwitchMessageEvent, TwitchSubEvent}
 import twitch.filters.{TwitchBlacklistFilter, TwitchCapsFilter, TwitchLinksFilter}
 import twitch.util.TwitchMessageUtil
@@ -73,7 +74,9 @@ class TwitchBotEventListener @Inject()(
             val msgId: String = msgIdTag.get().getValue.get()
             if (msgId == UserNoticeMessageId.SUBSCRIPTION.toString ||
                 msgId == UserNoticeMessageId.RESUBSCRIPTION.toString ||
-                msgId == UserNoticeMessageId.GIFTED_SUBSCRIPTION.toString)
+                msgId == UserNoticeMessageId.GIFTED_SUBSCRIPTION.toString ||
+                msgId == UserNoticeMessageId.MYSTERY_GIFTED_SUBSCRIPTION.toString ||
+                msgId == UserNoticeMessageId.GIFT_PAID_UPGRADE.toString)
                 twitchBot.get.client.getEventManager.callEvent(new TwitchSubEvent(userNoticeEvent))
         }
     }
@@ -114,9 +117,7 @@ class TwitchBotEventListener @Inject()(
     @Handler
     def twitchSubEvent(twitchSubEvent: TwitchSubEvent): Unit = {
         TwitchLogger.debug(s"Subscription! ${twitchSubEvent.displayName} just subscribed!")
-        var messageVariant: String = twitchSubEvent.channelName.toLowerCase
-        if (!twitchMessageUtil.isDefined(s"bot.subMessages.subscription.$messageVariant"))
-            messageVariant = "default"
+        val messageVariant: String = getMessageVariant(twitchSubEvent.msgId, twitchSubEvent.channelName.toLowerCase)
         val displayName: String = if (twitchSubEvent.displayName.startsWith("@"))
             twitchSubEvent.displayName
         else
@@ -135,14 +136,45 @@ class TwitchBotEventListener @Inject()(
                     s"bot.subMessages.resubscription.$messageVariant", twitchSubEvent.resubMonthCount.getOrElse(1)
                 )
             case UserNoticeMessageId.GIFTED_SUBSCRIPTION =>
-                val recipientDisplayName: String = if (twitchSubEvent.recipientDisplayName.startsWith("@"))
-                    twitchSubEvent.recipientDisplayName
+                val massGiftedSubCountOpt: Option[Int] = cache.get(s"twitch.massGiftedSub.${twitchSubEvent.displayName}.subCount").flatten
+                if(massGiftedSubCountOpt.isEmpty) {
+                    val recipientDisplayName: String = if (twitchSubEvent.recipientDisplayName.startsWith("@"))
+                        twitchSubEvent.recipientDisplayName
+                    else
+                        "@" + twitchSubEvent.recipientDisplayName
+                    twitchMessageUtil.replyToChannel(
+                        twitchSubEvent.getChannel,
+                        recipientDisplayName,
+                        s"bot.subMessages.giftedSub.$messageVariant", displayName
+                    )
+                } else {
+                    val currentCount: Int = cache.getOrElseUpdate(s"twitch.massGiftedSub.${twitchSubEvent.displayName}.currentSubCount", mtrConfigRef.mysteryGiftedSubsCacheTimeout)(0) + 1
+                    if (currentCount < massGiftedSubCountOpt.get)
+                        cache.set(s"twitch.massGiftedSub.${twitchSubEvent.displayName}.currentSubCount", currentCount, mtrConfigRef.mysteryGiftedSubsCacheTimeout)
+                    else {
+                        val senderCount: Int = cache.get(s"twitch.massGiftedSub.${twitchSubEvent.displayName}.senderCount").flatten.getOrElse(-1)
+                        cache.remove(s"twitch.massGiftedSub.${twitchSubEvent.displayName}.subCount")
+                        cache.remove(s"twitch.massGiftedSub.${twitchSubEvent.displayName}.currentSubCount")
+                        cache.remove(s"twitch.massGiftedSub.${twitchSubEvent.displayName}.senderCount")
+                        twitchMessageUtil.replyToChannel(
+                            twitchSubEvent.getChannel,
+                            displayName,
+                            s"bot.subMessages.mysteryGiftedSub.$messageVariant", massGiftedSubCountOpt.get, senderCount
+                        )
+                    }
+                }
+            case UserNoticeMessageId.MYSTERY_GIFTED_SUBSCRIPTION =>
+                cache.set(s"twitch.massGiftedSub.${twitchSubEvent.displayName}.subCount", twitchSubEvent.mysteryGiftedSubCount, mtrConfigRef.mysteryGiftedSubsCacheTimeout)
+                cache.set(s"twitch.massGiftedSub.${twitchSubEvent.displayName}.senderCount", twitchSubEvent.mysteryGiftedSubSenderCount, mtrConfigRef.mysteryGiftedSubsCacheTimeout)
+            case UserNoticeMessageId.GIFT_PAID_UPGRADE =>
+                val senderName = if(twitchSubEvent.senderName.startsWith("@"))
+                    twitchSubEvent.senderName
                 else
-                    "@" + twitchSubEvent.recipientDisplayName
+                    "@" + twitchSubEvent.senderName
                 twitchMessageUtil.replyToChannel(
                     twitchSubEvent.getChannel,
-                    recipientDisplayName,
-                    s"bot.subMessages.giftedSub.$messageVariant", displayName
+                    displayName,
+                    s"bot.subMessages.giftPaidUpgrade.$messageVariant", senderName
                 )
             case UserNoticeMessageId.CHARITY =>
             case _ =>
@@ -160,6 +192,25 @@ class TwitchBotEventListener @Inject()(
             PermissionLevel.SUBSCRIBERS
         else
             PermissionLevel.EVERYONE
+    }
+
+    private def getMessageVariant(userNoticeMessageId: UserNoticeMessageId, channelName: String): String = {
+        val subEventMessagePrefix = userNoticeMessageId match {
+            case UserNoticeMessageId.SUBSCRIPTION => "subscription"
+            case UserNoticeMessageId.RESUBSCRIPTION => "resubscription"
+            case UserNoticeMessageId.GIFTED_SUBSCRIPTION => "giftedSub"
+            case UserNoticeMessageId.MYSTERY_GIFTED_SUBSCRIPTION => "mysteryGiftedSub"
+            case UserNoticeMessageId.GIFT_PAID_UPGRADE => "giftPaidUpgrade"
+            case _ => "default"
+        }
+        getMessageVariant(subEventMessagePrefix, channelName)
+    }
+
+    private def getMessageVariant(subEventMessagePrefix: String, channelName: String): String = {
+        if (twitchMessageUtil.isDefined(s"bot.subMessages.$subEventMessagePrefix.${channelName.toLowerCase}"))
+            channelName.toLowerCase
+        else
+            "default"
     }
 
 }
