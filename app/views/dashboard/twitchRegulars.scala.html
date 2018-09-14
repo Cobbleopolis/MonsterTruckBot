@@ -3,7 +3,9 @@
 @import discord.DiscordBot
 @import views.html.component.formErrors
 @import common.models.TwitchRegular
-@(twitchRegularForm: Form[TwitchRegular], twitchRegulars: List[TwitchRegular])(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
+
+@this(dashboardPage: views.html.dashboardPage)
+@(twitchRegularForm: Form[TwitchRegular], twitchRegulars: List[TwitchRegular])(implicit messages: Messages, session: Session, requestHeader: RequestHeader, flash: Flash)
 
 @implicitFieldConstructor = @{
     b4.horizontal.fieldConstructor("col-md-2", "col-md-10")
@@ -17,11 +19,11 @@
     @b4.form(routes.Dashboard.submitNewTwitchRegular()) {
         @helper.CSRF.formField
         <fieldset>
-            <legend>@request.messages("dashboard.twitchRegulars.newTwitchRegular.title")</legend>
+            <legend>@messages("dashboard.twitchRegulars.newTwitchRegular.title")</legend>
             @b4.inputWrapped("text", twitchRegularForm("twitchUsername"),
                 '_label -> "dashboard.twitchRegulars.newTwitchRegular.twitchUsername.label",
-                'placeholder -> request.messages("dashboard.twitchRegulars.newTwitchRegular.twitchUsername.placeholder"),
-                '_help -> request.messages("dashboard.twitchRegulars.newTwitchRegular.twitchUsername.help")
+                'placeholder -> messages("dashboard.twitchRegulars.newTwitchRegular.twitchUsername.placeholder"),
+                '_help -> messages("dashboard.twitchRegulars.newTwitchRegular.twitchUsername.help")
             ) { input =>
                 <div class="input-group">
                     <span class="input-group-addon">@@</span>
@@ -29,24 +31,24 @@
                 </div>
             }
             @b4.submit('class -> "btn btn-success") {
-                @request.messages("global.forms.save")
+                @messages("global.forms.save")
             }
         </fieldset>
     }
     <fieldset>
-        <legend>@request.messages("dashboard.twitchRegulars.twitchRegularsList.title")</legend>
+        <legend>@messages("dashboard.twitchRegulars.twitchRegularsList.title")</legend>
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th>@request.messages("dashboard.twitchRegulars.twitchRegularsList.twitchUsername.label")</th>
-                    <th>@request.messages("dashboard.twitchRegulars.twitchRegularsList.actions.label")</th>
+                    <th>@messages("dashboard.twitchRegulars.twitchRegularsList.twitchUsername.label")</th>
+                    <th>@messages("dashboard.twitchRegulars.twitchRegularsList.actions.label")</th>
                 </tr>
             </thead>
             <tbody>
                 @for(twitchRegular <- twitchRegulars) {
                     <tr>
                         <td>@twitchRegular.twitchUsername</td>
-                        <td><a class="btn btn-danger" href="@routes.Dashboard.submitDeleteTwitchRegular(twitchRegular.twitchUsername)" role="button">@request.messages("global.forms.delete")</a></td>
+                        <td><a class="btn btn-danger" href="@routes.Dashboard.submitDeleteTwitchRegular(twitchRegular.twitchUsername)" role="button">@messages("global.forms.delete")</a></td>
                     </tr>
                 }
             </tbody>

@@ -1,9 +1,8 @@
 package twitch.commands
 
-import javax.inject.Inject
-
 import buildinfo.BuildInfo
 import common.api.commands.VersionCommand
+import javax.inject.Inject
 import twitch.api.TwitchCommand
 import twitch.events.TwitchCommandExecutionEvent
 import twitch.util.TwitchMessageUtil

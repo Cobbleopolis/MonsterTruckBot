@@ -1,11 +1,9 @@
 package discord.filters
 
-import javax.inject.Inject
-
 import common.api.filters.CapsFilter
-import common.models.FilterSettings
 import discord.api.DiscordFilter
 import discord.util.DiscordMessageUtil
+import javax.inject.Inject
 import sx.blah.discord.handle.obj.IMessage
 
 class DiscordCapsFilter @Inject()(discordMessageUtil: DiscordMessageUtil) extends DiscordFilter with CapsFilter {

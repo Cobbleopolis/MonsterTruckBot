@@ -1,17 +1,16 @@
 package controllers
 
-import javax.inject.Inject
 import actions.SecureAction
 import common.api.bitTracking.BitTrackingState
+import common.components.DaoComponents
 import common.models.{BitTrackingSettings, CustomCommand, FilterSettings, TwitchRegular}
 import common.ref.MtrConfigRef
-import common.util.BitTrackingUtil
+import components.DashboardTemplateComponents
 import discord.DiscordBot
+import javax.inject.Inject
 import models.DashboardSettingsForms
-import org.webjars.play.WebJarsUtil
 import play.api.Logger
-import play.api.cache.SyncCacheApi
-import play.api.db.Database
+import play.api.i18n.I18nSupport
 import play.api.libs.ws.WSClient
 import play.api.mvc._
 
@@ -22,10 +21,10 @@ class Dashboard @Inject()(
                              implicit cc: ControllerComponents,
                              messagesAction: MessagesActionBuilder,
                              secureAction: SecureAction,
-                             db: Database, cache: SyncCacheApi,
-                             webJarsUtil: WebJarsUtil,
                              ws: WSClient,
+                             daoComponent: DaoComponents,
                              dashboardSettingsForms: DashboardSettingsForms,
+                             dtc: DashboardTemplateComponents,
                              discordBot: DiscordBot,
                              mtrConfigRef: MtrConfigRef,
                              bitTrackingState: BitTrackingState,
@@ -33,37 +32,37 @@ class Dashboard @Inject()(
                          ) extends AbstractController(cc) {
 
     def dashboard(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
-        Ok(views.html.dashboard.coreSettings())
+        Ok(dtc.coreSettingsTemplate())
     }
 
     def filterSettings(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request =>
-        val filterSettingsOpt: Option[FilterSettings] = FilterSettings.get(mtrConfigRef.guildId)
+        val filterSettingsOpt: Option[FilterSettings] = daoComponent.filterSettingsDAO.get(mtrConfigRef.guildId)
         if (filterSettingsOpt.isDefined)
-            Ok(views.html.dashboard.filterSettings(dashboardSettingsForms.filterForm.fill(filterSettingsOpt.get)))
+            Ok(dtc.filterSettingsTemplate(dashboardSettingsForms.filterForm.fill(filterSettingsOpt.get)))
         else
-            InternalServerError(views.html.dashboard.settingsMissing("filterSettings"))
+            InternalServerError(dtc.settingsMissingTemplate("filterSettings"))
     }
 
     def submitFilterSettings(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
         dashboardSettingsForms.filterForm.bindFromRequest().fold(
             formWithErrors => {
-                BadRequest(views.html.dashboard.filterSettings(formWithErrors))
+                BadRequest(dtc.filterSettingsTemplate(formWithErrors))
             },
             filterSettings => {
-                val numUpdated: Int = FilterSettings.update(filterSettings.guildId, filterSettings)
+                val numUpdated: Int = daoComponent.filterSettingsDAO.update(filterSettings.guildId, filterSettings)
                 if (numUpdated != 0)
                     Redirect(routes.Dashboard.filterSettings()).flashing("success" -> request.messages("dashboard.filters.saved"))
                 else {
-                    val filterSettings: Option[FilterSettings] = FilterSettings.get(mtrConfigRef.guildId)
-                    InternalServerError(views.html.dashboard.filterSettings(dashboardSettingsForms.filterForm.fill(filterSettings.get)))
+                    val filterSettings: Option[FilterSettings] = daoComponent.filterSettingsDAO.get(mtrConfigRef.guildId)
+                    InternalServerError(dtc.filterSettingsTemplate(dashboardSettingsForms.filterForm.fill(filterSettings.get)))
                 }
             }
         )
     }
 
     def customCommands(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
-        val commandForms = CustomCommand.getByGuildId(mtrConfigRef.guildId).map(dashboardSettingsForms.commandForm.fill)
-        Ok(views.html.dashboard.customCommands(dashboardSettingsForms.commandForm, commandForms))
+        val commandForms = daoComponent.customCommandDAO.getByGuildId(mtrConfigRef.guildId).map(dashboardSettingsForms.commandForm.fill)
+        Ok(dtc.customCommandTemplate(dashboardSettingsForms.commandForm, commandForms))
     }
 
     def customCommandRedirect(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
@@ -71,17 +70,17 @@ class Dashboard @Inject()(
     }
 
     def submitNewCommand(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
-        val commandForms = CustomCommand.getByGuildId(mtrConfigRef.guildId).map(dashboardSettingsForms.commandForm.fill)
+        val commandForms = daoComponent.customCommandDAO.getByGuildId(mtrConfigRef.guildId).map(dashboardSettingsForms.commandForm.fill)
         dashboardSettingsForms.commandForm.bindFromRequest().fold(
             formWithErrors => {
-                BadRequest(views.html.dashboard.customCommands(formWithErrors, commandForms))
+                BadRequest(dtc.customCommandTemplate(formWithErrors, commandForms))
             },
             newCustomCommandRaw => {
                 val newCustomCommand: CustomCommand = newCustomCommandRaw.copy(commandName = newCustomCommandRaw.commandName.toLowerCase())
-                if (CustomCommand.get(mtrConfigRef.guildId, newCustomCommand.commandName).isDefined)
-                    BadRequest(views.html.dashboard.customCommands(dashboardSettingsForms.commandForm.fill(newCustomCommand).withError(dashboardSettingsForms.existingCommandFormError), commandForms))
+                if (daoComponent.customCommandDAO.get(mtrConfigRef.guildId, newCustomCommand.commandName).isDefined)
+                    BadRequest(dtc.customCommandTemplate(dashboardSettingsForms.commandForm.fill(newCustomCommand).withError(dashboardSettingsForms.existingCommandFormError), commandForms))
                 else {
-                    CustomCommand.insert(newCustomCommand)
+                    daoComponent.customCommandDAO.insert(newCustomCommand)
                     Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.customCommands.newCommand.saved"))
                 }
             }
@@ -89,39 +88,39 @@ class Dashboard @Inject()(
     }
 
     def submitEditCommand(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
-        val commandForms = CustomCommand.getByGuildId(mtrConfigRef.guildId).map(dashboardSettingsForms.commandForm.fill)
+        val commandForms = daoComponent.customCommandDAO.getByGuildId(mtrConfigRef.guildId).map(dashboardSettingsForms.commandForm.fill)
         dashboardSettingsForms.commandForm.bindFromRequest().fold(
             formWithErrors => {
-                BadRequest(views.html.dashboard.customCommands(dashboardSettingsForms.commandForm, commandForms.map(form => if (form("commandName").value == formWithErrors("commandName").value) formWithErrors else form)))
+                BadRequest(dtc.customCommandTemplate(dashboardSettingsForms.commandForm, commandForms.map(form => if (form("commandName").value == formWithErrors("commandName").value) formWithErrors else form)))
             },
             editCustomCommand => {
-                CustomCommand.update(editCustomCommand)
+                daoComponent.customCommandDAO.update(editCustomCommand)
                 Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.customCommands.editCommand.saved", mtrConfigRef.commandPrefix, editCustomCommand.commandName))
             }
         )
     }
 
     def submitDeleteCommand(commandName: String): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
-        CustomCommand.delete(mtrConfigRef.guildId, commandName)
+        daoComponent.customCommandDAO.delete(mtrConfigRef.guildId, commandName)
         Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.customCommands.deleteCommand.commandDeleted", mtrConfigRef.commandPrefix, commandName))
     }
 
     def bitTracking(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
-        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(mtrConfigRef.guildId)
+        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = daoComponent.bitTrackingSettingsDAO.get(mtrConfigRef.guildId)
         if (bitTrackingSettingsOpt.isDefined)
-            Ok(views.html.dashboard.bitTracking(dashboardSettingsForms.bitTrackingForm.fill(bitTrackingState.getBitTrackingFormData), bitTrackingState))
+            Ok(dtc.bitTrackingTemplate(dashboardSettingsForms.bitTrackingForm.fill(bitTrackingState.getBitTrackingFormData), bitTrackingState))
         else
-            InternalServerError(views.html.dashboard.settingsMissing("bitTracking"))
+            InternalServerError(dtc.settingsMissingTemplate("bitTracking"))
     }
 
     def submitBitTracking: Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
         dashboardSettingsForms.bitTrackingForm.bindFromRequest().fold(
             formWithErrors => {
-                BadRequest(views.html.dashboard.bitTracking(formWithErrors, bitTrackingState))
+                BadRequest(dtc.bitTrackingTemplate(formWithErrors, bitTrackingState))
             },
             bitTrackingFormData => {
                 Logger.info("Update")
-                BitTrackingSettings.update(mtrConfigRef.guildId, bitTrackingFormData.getBitTrackingSettings)
+                daoComponent.bitTrackingSettingsDAO.update(mtrConfigRef.guildId, bitTrackingFormData.getBitTrackingSettings)
                 bitTrackingState.setBitTrackingFormData(bitTrackingFormData)
                 Redirect(routes.Dashboard.bitTracking()).flashing("success" -> request.messages("dashboard.bitTracking.saved"))
             }
@@ -129,26 +128,26 @@ class Dashboard @Inject()(
     }
 
     def twitchRegulars: Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
-        val twitchRegulars: List[TwitchRegular] = TwitchRegular.getByGuildId(mtrConfigRef.guildId)
-        Ok(views.html.dashboard.twitchRegulars(dashboardSettingsForms.twitchRegularForm, twitchRegulars))
+        val twitchRegulars: List[TwitchRegular] = daoComponent.twitchRegularDAO.getByGuildId(mtrConfigRef.guildId)
+        Ok(dtc.twitchRegularTemplate(dashboardSettingsForms.twitchRegularForm, twitchRegulars))
     }
 
     def submitNewTwitchRegular: Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
-        val twitchRegulars: List[TwitchRegular] = TwitchRegular.getByGuildId(mtrConfigRef.guildId)
+        val twitchRegulars: List[TwitchRegular] = daoComponent.twitchRegularDAO.getByGuildId(mtrConfigRef.guildId)
         dashboardSettingsForms.twitchRegularForm.bindFromRequest().fold(
             formWithErrors => {
-                BadRequest(views.html.dashboard.twitchRegulars(formWithErrors, twitchRegulars))
+                BadRequest(dtc.twitchRegularTemplate(formWithErrors, twitchRegulars))
             },
             twitchRegular => {
                 if (twitchRegulars.exists(_.twitchUsername.equalsIgnoreCase(twitchRegular.twitchUsername))) {
-                    BadRequest(views.html.dashboard.twitchRegulars(
+                    BadRequest(dtc.twitchRegularTemplate(
                         dashboardSettingsForms.twitchRegularForm
                             .fill(twitchRegular)
                             .withError(dashboardSettingsForms.existingTwitchRegularFormError),
                         twitchRegulars
                     ))
                 } else {
-                    TwitchRegular.insert(twitchRegular)
+                    daoComponent.twitchRegularDAO.insert(twitchRegular)
                     Redirect(routes.Dashboard.twitchRegulars()).flashing("success" ->
                         request.messages("dashboard.twitchRegulars.newTwitchRegular.saved", twitchRegular.twitchUsername)
                     )
@@ -158,7 +157,7 @@ class Dashboard @Inject()(
     }
 
     def submitDeleteTwitchRegular(twitchUsername: String): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
-        val deleteCount: Int = TwitchRegular.delete(mtrConfigRef.guildId, twitchUsername)
+        val deleteCount: Int = daoComponent.twitchRegularDAO.delete(mtrConfigRef.guildId, twitchUsername)
         val result: Result = Redirect(routes.Dashboard.twitchRegulars())
         if (deleteCount == 0)
             result.flashing("danger" -> request.messages("dashboard.twitchRegulars.deleteTwitchRegular.errorDeleting", twitchUsername))

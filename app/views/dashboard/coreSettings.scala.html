@@ -1,20 +1,22 @@
 @import common.ref.MtrConfigRef
 @import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
-@()(implicit webJarsUtil: WebJarsUtil, messagesProv: MessagesProvider, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
+
+@this(dashboardPage: views.html.dashboardPage, discordBot: DiscordBot)
+@()(implicit messagesProvider: MessagesProvider, messages: Messages, session: Session, requestHeader: RequestHeader, flash: Flash, configRef: MtrConfigRef)
 
 @implicitFieldConstructor = @{
     b4.horizontal.fieldConstructor("col-md-2", "col-md-10")
 }
 
 @renderField(fieldLocalization: String)(body: Html) = {
-    @if(request.messages.isDefinedAt(s"dashboard.core.$fieldLocalization.help")) {
+    @if(messages.messages.isDefinedAt(s"dashboard.core.$fieldLocalization.help")) {
         @b4.static(s"dashboard.core.$fieldLocalization.label",
             '_help -> s"dashboard.core.$fieldLocalization.help"
-        ){ @body }(implicitFieldConstructor, request)
+        ){ @body }(implicitFieldConstructor, messagesProvider)
     } else {
         @b4.static(s"dashboard.core.$fieldLocalization.label"
-        ){ @body }(implicitFieldConstructor, request)
+        ){ @body }(implicitFieldConstructor, messagesProvider)
     }
 }
 
@@ -22,56 +24,56 @@
 
 } {
     @renderField("commandPrefix") {
-        @mtrConfigRef.commandPrefix
+        @configRef.commandPrefix
     }
     @renderField("helpLink") {
-        <a href="@mtrConfigRef.helpLink">@mtrConfigRef.helpLink</a>
+        <a href="@configRef.helpLink">@configRef.helpLink</a>
     }
     <fieldset>
-        <legend>@request.messages("dashboard.core.discord.title")</legend>
+        <legend>@messages("dashboard.core.discord.title")</legend>
         @renderField("discord.username"){
-            @mtrConfigRef.discordUsername
+            @configRef.discordUsername
         }
         @renderField("discord.game"){
-            @mtrConfigRef.discordGame
+            @configRef.discordGame
         }
         @renderField("discord.guild"){
             @if(discordBot.guild.isDefined) {
                 @discordBot.guild.get.getName (@java.lang.Long.toUnsignedString(discordBot.guild.get.getLongID))
             } else {
-                @request.messages("error.unknownGuild")
+                @messages("error.unknownGuild")
             }
         }
         @renderField("discord.moderatorRole"){
             @if(discordBot.moderatorRole.isDefined) {
                 @discordBot.moderatorRole.get.getName (@java.lang.Long.toUnsignedString(discordBot.moderatorRole.get.getLongID))
             } else {
-                @request.messages("error.unknownRole")
+                @messages("error.unknownRole")
             }
         }
         @renderField("discord.regularRole"){
             @if(discordBot.regularRole.isDefined) {
                 @discordBot.regularRole.get.getName (@java.lang.Long.toUnsignedString(discordBot.regularRole.get.getLongID))
             } else {
-                @request.messages("error.unknownRole")
+                @messages("error.unknownRole")
             }
         }
         @renderField("discord.subscriberRole"){
             @if(discordBot.subscriberRole.isDefined) {
                 @discordBot.subscriberRole.get.getName (@java.lang.Long.toUnsignedString(discordBot.subscriberRole.get.getLongID))
             } else {
-                @request.messages("error.unknownRole")
+                @messages("error.unknownRole")
             }
         }
     </fieldset>
     <fieldset>
-        <legend>@request.messages("dashboard.core.twitch.title")</legend>
+        <legend>@messages("dashboard.core.twitch.title")</legend>
         @renderField("twitch.username"){
-            @mtrConfigRef.twitchUsername
+            @configRef.twitchUsername
         }
         <fieldset>
-            <legend>@request.messages("dashboard.core.twitch.channels.label")</legend>
-            @for(twitchChannel <- mtrConfigRef.twitchChannels.values) {
+            <legend>@messages("dashboard.core.twitch.channels.label")</legend>
+            @for(twitchChannel <- configRef.twitchChannels.values) {
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="card">
@@ -80,11 +82,11 @@
                                 <h6 class="card-subtitle mb-2 text-muted">@twitchChannel.ircChannelName</h6>
                                 <div class="container">
                                     <div class="row">
-                                        <div class="col-6 col-md-3 pl-0">@request.messages("dashboard.core.twitch.channels.channel.hasOAuth.label")</div>
+                                        <div class="col-6 col-md-3 pl-0">@messages("dashboard.core.twitch.channels.channel.hasOAuth.label")</div>
                                         <div class="col">@component.yesNo(twitchChannel.oauth.isDefined)</div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-6 col-md-3 pl-0">@request.messages("dashboard.core.twitch.channels.channel.hasChannelId.label")</div>
+                                        <div class="col-6 col-md-3 pl-0">@messages("dashboard.core.twitch.channels.channel.hasChannelId.label")</div>
                                         <div class="col">@component.yesNo(twitchChannel.channelId.isDefined)</div>
                                     </div>
                                 </div>

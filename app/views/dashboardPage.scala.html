@@ -2,7 +2,9 @@
 @import sx.blah.discord.handle.obj.IGuild
 @import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
-@(currentPage: String)(head: Html)(content: Html)(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
+
+@this(main: views.html.main, discordBot: DiscordBot)
+@(currentPage: String)(head: Html)(content: Html)(implicit messages: Messages, session: Session, requestHeader: RequestHeader, flash: Flash)
 
 @main("dashboard"){
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/dashboard.css")">
@@ -17,13 +19,13 @@
                         @if(discordBot.guild.isDefined) {
                             @discordBot.guild.get.getName
                         } else {
-                            @request.messages("error.unknownGuild")
+                            @messages("error.unknownGuild")
                         }
                         </span>
                     </li>
-                    <li role="presentation" class="nav-item"><a href="/dashboard" @if(currentPage == "coreSettings") {class="active nav-link px-3"} else {class="nav-link px-3"}>@request.messages("dashboard.pageNames.coreSettings")</a></li>
+                    <li role="presentation" class="nav-item"><a href="/dashboard" @if(currentPage == "coreSettings") {class="active nav-link px-3"} else {class="nav-link px-3"}>@messages("dashboard.pageNames.coreSettings")</a></li>
                     @for(page <- Dashboard.dashboardPages) {
-                        <li role="presentation" class="nav-item"><a href="/dashboard/@page._1" @if(currentPage == page._1) {class="active nav-link px-3"} else {class="nav-link px-3"}>@request.messages(page._2)</a></li>
+                        <li role="presentation" class="nav-item"><a href="/dashboard/@page._1" @if(currentPage == page._1) {class="active nav-link px-3"} else {class="nav-link px-3"}>@messages(page._2)</a></li>
                     }
                 </ul>
             </nav>
@@ -31,9 +33,9 @@
                 <div class="container-fluid">
                     <h2>
                     @if(currentPage == "coreSettings") {
-                        @request.messages("dashboard.pageNames.coreSettings")
+                        @messages("dashboard.pageNames.coreSettings")
                     } else {
-                        @request.messages(Dashboard.dashboardPages.getOrElse(currentPage, "dashboard.pageNames.unknown"))
+                        @messages(Dashboard.dashboardPages.getOrElse(currentPage, "dashboard.pageNames.unknown"))
                     }
                     </h2>
                     @for(flashType <- flash.data) {

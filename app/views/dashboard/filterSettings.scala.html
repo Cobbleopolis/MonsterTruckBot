@@ -3,7 +3,9 @@
 @import common.api.PermissionLevel
 @import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
-@(filterSettingsForm: Form[FilterSettings])(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
+
+@this(dashboardPage: views.html.dashboardPage)
+@(filterSettingsForm: Form[FilterSettings])(implicit messages: Messages, session: Session, requestHeader: RequestHeader, flash: Flash)
 
 @implicitFieldConstructor = @{ b4.horizontal.fieldConstructor("col-md-2", "col-md-10") }
 
@@ -13,7 +15,7 @@
     @b4.form(routes.Dashboard.submitFilterSettings()) {
         @helper.CSRF.formField
         <fieldset>
-            <legend>@request.messages("dashboard.filters.capsFilter.title")</legend>
+            <legend>@messages("dashboard.filters.capsFilter.title")</legend>
             @b4.checkbox(filterSettingsForm("capsFilterEnabled"),
                 '_label -> "dashboard.filters.capsFilter.enabled.label",
                 '_text -> "dashboard.filters.capsFilter.enabled.text",
@@ -32,7 +34,7 @@
             )
         </fieldset>
         <fieldset>
-            <legend>@request.messages("dashboard.filters.linksFilter.title")</legend>
+            <legend>@messages("dashboard.filters.linksFilter.title")</legend>
             @b4.checkbox(filterSettingsForm("linksFilterEnabled"),
                 '_label -> "dashboard.filters.linksFilter.enabled.label",
                 '_text -> "dashboard.filters.linksFilter.enabled.text",
@@ -47,7 +49,7 @@
             )
         </fieldset>
         <fieldset>
-            <legend>@request.messages("dashboard.filters.blacklistFilter.title")</legend>
+            <legend>@messages("dashboard.filters.blacklistFilter.title")</legend>
             @b4.checkbox(filterSettingsForm("blacklistFilterEnabled"),
                 '_label -> "dashboard.filters.blacklistFilter.enabled.label",
                 '_text -> "dashboard.filters.blacklistFilter.enabled.text",
@@ -66,6 +68,6 @@
                 'rows -> 4
             )
         </fieldset>
-        @b4.submit('class -> "btn btn-success") {@request.messages("global.forms.save")}
+        @b4.submit('class -> "btn btn-success") {@messages("global.forms.save")}
     }
 }

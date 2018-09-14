@@ -1,12 +1,13 @@
 @import scala.collection.SortedMap
 @import common.models.CustomCommand
-@import discord.DiscordBot
 @import org.webjars.play.WebJarsUtil
 @import common.ref.MtrConfigRef
 @import common.api.PermissionLevel
 @import discord.DiscordCommandRegistry
 @import twitch.TwitchCommandRegistry
-@(builtInCommands: SortedMap[String, (String, String)], discordCommandRegistry: DiscordCommandRegistry, twitchCommandRegistry: TwitchCommandRegistry, customCommands: List[CustomCommand])(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, mtrConfigRef: MtrConfigRef, request: MessagesRequest[AnyContent])
+
+@this(main: views.html.main, discordCommandRegistry: DiscordCommandRegistry, twitchCommandRegistry: TwitchCommandRegistry, configRef: MtrConfigRef)
+@(builtInCommands: SortedMap[String, (String, String)], customCommands: List[CustomCommand])(implicit messages: Messages, session: Session, requestHeader: RequestHeader)
 
 @main("botCommands") {
 
@@ -14,29 +15,29 @@
     <div class="container">
         <div class="row">
             <div class="col mt-3">
-                <h2>@request.messages("botCommands.builtInCommands.title")</h2>
+                <h2>@messages("botCommands.builtInCommands.title")</h2>
                 <table class="table table-striped table-hover table-bordered">
                     <thead>
                         <tr>
-                            <th class="w-15">@request.messages("botCommands.builtInCommands.commandName")</th>
-                            <th class="w-45">@request.messages("botCommands.builtInCommands.commandContent")</th>
-                            <th class="w-15">@request.messages("botCommands.builtInCommands.permissionLevel")</th>
-                            <th class="w-10">@request.messages("botCommands.builtInCommands.discordAvailable")</th>
-                            <th class="w-10">@request.messages("botCommands.builtInCommands.twitchAvailable")</th>
+                            <th class="w-15">@messages("botCommands.builtInCommands.commandName")</th>
+                            <th class="w-45">@messages("botCommands.builtInCommands.commandContent")</th>
+                            <th class="w-15">@messages("botCommands.builtInCommands.permissionLevel")</th>
+                            <th class="w-10">@messages("botCommands.builtInCommands.discordAvailable")</th>
+                            <th class="w-10">@messages("botCommands.builtInCommands.twitchAvailable")</th>
                         </tr>
                     </thead>
                     <tbody>
                     @for(command <- builtInCommands) {
                         <tr>
-                            <th scope="row">@{mtrConfigRef.commandPrefix + command._1}</th>
+                            <th scope="row">@{configRef.commandPrefix + command._1}</th>
                             <td>
-                                @if(request.messages.isDefinedAt(command._2._1)) {
-                                    @request.messages(command._2._1)
+                                @if(messages.messages.isDefinedAt(command._2._1)) {
+                                    @messages(command._2._1)
                                 } else {
-                                    @request.messages("global.notAvailable")
+                                    @messages("global.notAvailable")
                                 }
                             </td>
-                            <td>@request.messages(command._2._2)</td>
+                            <td>@messages(command._2._2)</td>
                             <td class="text-center">
                                 @if(discordCommandRegistry.commands.contains(command._1)) {
                                     <i class="fa fa-check text-success"></i>
@@ -59,21 +60,21 @@
         </div>
         <div class="row">
             <div class="col">
-                <h2>@request.messages("botCommands.customCommands.title")</h2>
+                <h2>@messages("botCommands.customCommands.title")</h2>
                 <table class="table table-striped table-hover table-bordered">
                     <thead>
                         <tr>
-                            <th class="w-15">@request.messages("botCommands.customCommands.commandName")</th>
-                            <th class="w-70">@request.messages("botCommands.customCommands.commandContent")</th>
-                            <th class="w-15">@request.messages("botCommands.customCommands.permissionLevel")</th>
+                            <th class="w-15">@messages("botCommands.customCommands.commandName")</th>
+                            <th class="w-70">@messages("botCommands.customCommands.commandContent")</th>
+                            <th class="w-15">@messages("botCommands.customCommands.permissionLevel")</th>
                         </tr>
                     </thead>
                     <tbody>
                     @for(customCommand <- customCommands) {
                         <tr>
-                            <th scope="row">@{mtrConfigRef.commandPrefix + customCommand.commandName}</th>
+                            <th scope="row">@{configRef.commandPrefix + customCommand.commandName}</th>
                             <td>@customCommand.commandContent.replaceAll("\\R+", " | ")</td>
-                            <td>@request.messages(PermissionLevel.map.getOrElse(customCommand.permissionLevel.toString, "global.notAvailable"))</td>
+                            <td>@messages(PermissionLevel.map.getOrElse(customCommand.permissionLevel.toString, "global.notAvailable"))</td>
                         </tr>
                     }
                     </tbody>

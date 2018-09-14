@@ -11,12 +11,12 @@ import play.api.db.Database
 import play.api.libs.ws.WSClient
 import play.api.mvc._
 
-class Application @Inject()(implicit cc: ControllerComponents, messagesAction: MessagesActionBuilder, db: Database, webJarsUtil: WebJarsUtil, ws: WSClient, discordBot: DiscordBot, config: MtrConfigRef) extends AbstractController(cc) {
+class Application @Inject()(implicit cc: ControllerComponents, messagesAction: MessagesActionBuilder, indexTemplate: views.html.index, db: Database, webJarsUtil: WebJarsUtil, ws: WSClient, discordBot: DiscordBot, config: MtrConfigRef) extends AbstractController(cc) {
 
     val jsMessagesFactory = new JsMessagesFactory(messagesApi)
 
     def index: Action[AnyContent] = messagesAction { implicit request: MessagesRequest[AnyContent] =>
-        Ok(views.html.index())
+        Ok(indexTemplate())
     }
 
     def jsMessages(page: String): Action[AnyContent] = Action { implicit request =>

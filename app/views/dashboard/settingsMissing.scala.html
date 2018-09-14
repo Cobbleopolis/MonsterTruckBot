@@ -1,17 +1,19 @@
 @import common.ref.MtrConfigRef
 @import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
-@(missingSetting: String)(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
+
+@this(dashboardPage: views.html.dashboardPage, discordBot: DiscordBot)
+@(missingSetting: String)(implicit messages: Messages, session: Session, requestHeader: RequestHeader, flash: Flash)
 
 @dashboardPage(missingSetting) {
 
 } {
     <div class="panel panel-danger">
         <div class="panel-heading">
-            <h3 class="panel-title">@request.messages("error.settingsMissing.title")</h3>
+            <h3 class="panel-title">@messages("error.settingsMissing.title")</h3>
         </div>
         <div class="panel-body">
-            <strong>@request.messages("error.ohSnap")</strong> @request.messages("error.settingsMissing.message", request.messages(s"error.settingsMissing.settingsTypes.$missingSetting"), if(discordBot.guild.isDefined) discordBot.guild.get.getStringID else request.messages("error.unknownGuild"))
+            <strong>@messages("error.ohSnap")</strong> @messages("error.settingsMissing.message", messages(s"error.settingsMissing.settingsTypes.$missingSetting"), if(discordBot.guild.isDefined) discordBot.guild.get.getStringID else messages("error.unknownGuild"))
         </div>
     </div>
 }

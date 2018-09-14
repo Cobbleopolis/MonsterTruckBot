@@ -1,11 +1,10 @@
 package discord.commands
 
-import javax.inject.Inject
-
 import common.api.commands.PingCommand
 import discord.api.DiscordCommand
 import discord.event.DiscordCommandExecutionEvent
 import discord.util.DiscordMessageUtil
+import javax.inject.Inject
 
 class DiscordPingCommand @Inject()(val messageUtil: DiscordMessageUtil) extends DiscordCommand with PingCommand {
 

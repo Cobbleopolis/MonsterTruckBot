@@ -2,34 +2,32 @@ package twitch
 
 import java.util.Optional
 
-import javax.inject.{Inject, Provider}
 import common.api.PermissionLevel
 import common.api.PermissionLevel.PermissionLevel
-import common.models.{CustomCommand, FilterSettings, TwitchRegular}
+import common.components.DaoComponents
+import common.models.{CustomCommand, FilterSettings}
 import common.ref.MtrConfigRef
+import javax.inject.{Inject, Provider}
 import net.engio.mbassy.listener.Handler
 import org.kitteh.irc.client.library.element.MessageTag
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
-import org.kitteh.irc.client.library.event.client.{ClientConnectionEndedEvent, ClientConnectionEstablishedEvent, ClientNegotiationCompleteEvent}
+import org.kitteh.irc.client.library.event.client.{ClientConnectionEndedEvent, ClientConnectionEstablishedEvent}
 import org.kitteh.irc.client.library.feature.twitch.event.UserNoticeEvent
 import play.api.cache.SyncCacheApi
-import play.api.db.Database
 import twitch.api.TwitchChatMessageEvent
 import twitch.api.usernotice.UserNoticeMessageId
 import twitch.api.usernotice.UserNoticeMessageId.UserNoticeMessageId
+import twitch.components.TwitchFilterComponents
 import twitch.events.{TwitchCheerEvent, TwitchCommandExecutionEvent, TwitchMessageEvent, TwitchSubEvent}
-import twitch.filters.{TwitchBlacklistFilter, TwitchCapsFilter, TwitchLinksFilter}
 import twitch.util.TwitchMessageUtil
 
 class TwitchBotEventListener @Inject()(
                                           implicit twitchBot: Provider[TwitchBot],
                                           mtrConfigRef: MtrConfigRef,
                                           twitchCommandRegistry: TwitchCommandRegistry,
-                                          db: Database,
+                                          daoComponents: DaoComponents,
                                           cache: SyncCacheApi,
-                                          capsFilter: TwitchCapsFilter,
-                                          linksFilter: TwitchLinksFilter,
-                                          blacklistFilter: TwitchBlacklistFilter,
+                                          filterComponents: TwitchFilterComponents,
                                           twitchMessageUtil: TwitchMessageUtil,
                                           twitchBotCheerEventHandler: TwitchBotCheerEventHandler
                                       ) {
@@ -83,15 +81,15 @@ class TwitchBotEventListener @Inject()(
 
     def filterMessage(message: TwitchMessageEvent): Boolean = {
         var hasBeenFiltered: Boolean = false
-        val filterSettings: Option[FilterSettings] = FilterSettings.get(mtrConfigRef.guildId)
+        val filterSettings: Option[FilterSettings] = daoComponents.filterSettingsDAO.get(mtrConfigRef.guildId)
         if (filterSettings.isDefined) {
             val userPermissionLevel: PermissionLevel = getUserPermissionLevel(message)
             if (filterSettings.get.capsFilterEnabled && userPermissionLevel < filterSettings.get.getCapsFilterExemptionLevel)
-                hasBeenFiltered = hasBeenFiltered || capsFilter.filterMessage(message, filterSettings.get)
+                hasBeenFiltered = hasBeenFiltered || filterComponents.capsFilter.filterMessage(message, filterSettings.get)
             if (filterSettings.get.linksFilterEnabled && userPermissionLevel < filterSettings.get.getLinksFilterExemptionLevel)
-                hasBeenFiltered = hasBeenFiltered || linksFilter.filterMessage(message, filterSettings.get)
+                hasBeenFiltered = hasBeenFiltered || filterComponents.linksFilter.filterMessage(message, filterSettings.get)
             if (filterSettings.get.blacklistFilterEnabled && userPermissionLevel < filterSettings.get.getBlackListFilterExemptionLevel)
-                hasBeenFiltered = hasBeenFiltered || blacklistFilter.filterMessage(message, filterSettings.get)
+                hasBeenFiltered = hasBeenFiltered || filterComponents.blacklistFilter.filterMessage(message, filterSettings.get)
         }
         hasBeenFiltered
     }
@@ -102,7 +100,7 @@ class TwitchBotEventListener @Inject()(
         if (commandOpt.isDefined && getUserPermissionLevel(commandEvent) >= commandOpt.get.permissionLevel)
             commandOpt.get.execute(commandEvent)
         else {
-            val customCommandOpt: Option[CustomCommand] = CustomCommand.get(mtrConfigRef.guildId, commandEvent.getCommand)
+            val customCommandOpt: Option[CustomCommand] = daoComponents.customCommandDAO.get(mtrConfigRef.guildId, commandEvent.getCommand)
             if (customCommandOpt.isDefined && getUserPermissionLevel(commandEvent) >= customCommandOpt.get.getPermissionLevel)
                 twitchMessageUtil.sendMessageToChannel(commandEvent.getChannel, customCommandOpt.get.commandContent, commandEvent.getArgs: _*)
         }
@@ -137,7 +135,7 @@ class TwitchBotEventListener @Inject()(
                 )
             case UserNoticeMessageId.GIFTED_SUBSCRIPTION =>
                 val massGiftedSubCountOpt: Option[Int] = cache.get(s"twitch.massGiftedSub.${twitchSubEvent.displayName}.subCount").flatten
-                if(massGiftedSubCountOpt.isEmpty) {
+                if (massGiftedSubCountOpt.isEmpty) {
                     val recipientDisplayName: String = if (twitchSubEvent.recipientDisplayName.startsWith("@"))
                         twitchSubEvent.recipientDisplayName
                     else
@@ -167,7 +165,7 @@ class TwitchBotEventListener @Inject()(
                 cache.set(s"twitch.massGiftedSub.${twitchSubEvent.displayName}.subCount", twitchSubEvent.mysteryGiftedSubCount, mtrConfigRef.mysteryGiftedSubsCacheTimeout)
                 cache.set(s"twitch.massGiftedSub.${twitchSubEvent.displayName}.senderCount", twitchSubEvent.mysteryGiftedSubSenderCount, mtrConfigRef.mysteryGiftedSubsCacheTimeout)
             case UserNoticeMessageId.GIFT_PAID_UPGRADE =>
-                val senderName = if(twitchSubEvent.senderName.startsWith("@"))
+                val senderName = if (twitchSubEvent.senderName.startsWith("@"))
                     twitchSubEvent.senderName
                 else
                     "@" + twitchSubEvent.senderName
@@ -186,7 +184,7 @@ class TwitchBotEventListener @Inject()(
             PermissionLevel.OWNER
         else if (twitchEvent.isMod)
             PermissionLevel.MODERATORS
-        else if (TwitchRegular.getByGuildId(mtrConfigRef.guildId).exists(_.twitchUsername.equalsIgnoreCase(twitchEvent.displayName)))
+        else if (daoComponents.twitchRegularDAO.getByGuildId(mtrConfigRef.guildId).exists(_.twitchUsername.equalsIgnoreCase(twitchEvent.displayName)))
             PermissionLevel.REGULARS
         else if (twitchEvent.isSub)
             PermissionLevel.SUBSCRIBERS

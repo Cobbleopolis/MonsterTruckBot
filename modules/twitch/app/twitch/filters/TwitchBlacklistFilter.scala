@@ -1,10 +1,8 @@
 package twitch.filters
 
-import javax.inject.Inject
-
 import common.DefaultLang
 import common.api.filters.BlacklistFilter
-import common.models.FilterSettings
+import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import twitch.api.TwitchFilter
 import twitch.events.TwitchMessageEvent

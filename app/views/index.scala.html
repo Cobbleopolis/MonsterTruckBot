@@ -1,6 +1,8 @@
 @import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
-@()(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent])
+
+@this(main: views.html.main)
+@()(implicit messages: Messages, session: Session, requestHeader: RequestHeader)
 
 @main(buildinfo.BuildInfo.displayName){
 
@@ -8,7 +10,7 @@
     <div class="container">
         <div class="row">
             <div class="col mt-3">
-                @request.messages("index.welcome")
+                @messages("index.welcome")
             </div>
         </div>
     </div>

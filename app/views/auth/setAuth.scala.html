@@ -1,6 +1,8 @@
 @import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
-@(redirectUrl: String, errorMessage: Option[String] = None)(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent])
+
+@this(main: views.html.main)
+@(redirectUrl: String, errorMessage: Option[String] = None)(implicit messages: Messages, session: Session, requestHeader: RequestHeader)
 
 @main("") {
     @if(errorMessage.isEmpty) {
@@ -12,18 +14,18 @@
             <div class="col mt-3">
                 @if(errorMessage.isDefined) {
                     <div class="card border-danger mb-3">
-                        <div class="card-header text-white bg-danger">@request.messages("error.auth.setAuth.header")</div>
+                        <div class="card-header text-white bg-danger">@messages("error.auth.setAuth.header")</div>
                         <div class="card-body text-danger">
-                            <h4 class="card-title">@request.messages("error.auth.setAuth.title")</h4>
-                            <p class="card-text">@request.messages("error.auth.setAuth.text")<pre>@errorMessage.get</pre></p>
+                            <h4 class="card-title">@messages("error.auth.setAuth.title")</h4>
+                            <p class="card-text">@messages("error.auth.setAuth.text")<pre>@errorMessage.get</pre></p>
                         </div>
                     </div>
                 } else {
                     <div class="card bg-default mb-3">
-                        <div class="card-header">@request.messages("auth.setAuth.header")</div>
+                        <div class="card-header">@messages("auth.setAuth.header")</div>
                         <div class="card-body">
-                            <h4 class="card-title">@request.messages("auth.setAuth.title")</h4>
-                            <p class="card-text">@Html(request.messages("auth.setAuth.text", redirectUrl))</p>
+                            <h4 class="card-title">@messages("auth.setAuth.title")</h4>
+                            <p class="card-text">@Html(messages("auth.setAuth.text", redirectUrl))</p>
                         </div>
                     </div>
                 }

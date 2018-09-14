@@ -2,9 +2,10 @@
 @import common.api.bitTracking.{BitTrackingMode, BitTrackingState}
 @import common.models.bitTrackingFormData.BitTrackingFormData
 @import common.ref.MtrConfigRef
-@import discord.DiscordBot
 @import org.webjars.play.WebJarsUtil
-@(bitTrackingForm: Form[BitTrackingFormData], bitTrackingState: BitTrackingState)(implicit webJarsUtil: WebJarsUtil, discordBot: DiscordBot, request: MessagesRequest[AnyContent], flash: Flash, mtrConfigRef: MtrConfigRef)
+
+@this(dashboardPage: views.html.dashboardPage)
+@(bitTrackingForm: Form[BitTrackingFormData], bitTrackingState: BitTrackingState)(implicit messages: Messages, session: Session, flash: Flash, requestHeader: RequestHeader)
 
     @fieldLabelColWidth = @{2}
 
@@ -21,7 +22,7 @@
 
         @if(bitTrackingState.getIsPaused) {
             <div class="alert alert-warning" role="alert">
-                <i class="fa fa-warning"></i>&nbsp;@request.messages("dashboard.bitTracking.currentlyPaused")
+                <i class="fa fa-warning"></i>&nbsp;@messages("dashboard.bitTracking.currentlyPaused")
             </div>
         }
         @b4.form(routes.Dashboard.submitBitTracking()) {
@@ -40,17 +41,17 @@
             )
             @b4.textarea(bitTrackingForm("gameMessage"),
                 '_label -> s"dashboard.bitTracking.gameMessage.label",
-                '_help -> request.messages("dashboard.bitTracking.variables", bitTrackingState.getFormattingVariablesString),
+                '_help -> messages("dashboard.bitTracking.variables", bitTrackingState.getFormattingVariablesString),
                 'rows -> 5
             )
             @b4.textarea(bitTrackingForm("bitsMessage"),
                 '_label -> s"dashboard.bitTracking.bitsMessage.label",
-                '_help -> request.messages("dashboard.bitTracking.variables", bitTrackingState.getFormattingVariablesString),
+                '_help -> messages("dashboard.bitTracking.variables", bitTrackingState.getFormattingVariablesString),
                 'rows -> 5
             )
             @b4.textarea(bitTrackingForm("goalMessage"),
                 '_label -> s"dashboard.bitTracking.goalMessage.label",
-                '_help -> request.messages("dashboard.bitTracking.variables", bitTrackingState.getGoalFormattingVariablesString),
+                '_help -> messages("dashboard.bitTracking.variables", bitTrackingState.getGoalFormattingVariablesString),
                 'rows -> 5
             )
             @b4.number(bitTrackingForm("toNextGoal"),
@@ -74,7 +75,7 @@
                 '_help -> s"dashboard.bitTracking.goalIncrementAmount.help"
             )
             @b4.submit('class -> "btn btn-success") {
-                @request.messages("global.forms.save")
+                @messages("global.forms.save")
             }
         }
     }
