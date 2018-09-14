@@ -17,8 +17,8 @@ import play.api.cache.SyncCacheApi
 import twitch.api.TwitchChatMessageEvent
 import twitch.api.usernotice.UserNoticeMessageId
 import twitch.api.usernotice.UserNoticeMessageId.UserNoticeMessageId
+import twitch.components.TwitchFilterComponents
 import twitch.events.{TwitchCheerEvent, TwitchCommandExecutionEvent, TwitchMessageEvent, TwitchSubEvent}
-import twitch.filters.{TwitchBlacklistFilter, TwitchCapsFilter, TwitchLinksFilter}
 import twitch.util.TwitchMessageUtil
 
 class TwitchBotEventListener @Inject()(
@@ -27,9 +27,7 @@ class TwitchBotEventListener @Inject()(
                                           twitchCommandRegistry: TwitchCommandRegistry,
                                           daoComponents: DaoComponents,
                                           cache: SyncCacheApi,
-                                          capsFilter: TwitchCapsFilter,
-                                          linksFilter: TwitchLinksFilter,
-                                          blacklistFilter: TwitchBlacklistFilter,
+                                          filterComponents: TwitchFilterComponents,
                                           twitchMessageUtil: TwitchMessageUtil,
                                           twitchBotCheerEventHandler: TwitchBotCheerEventHandler
                                       ) {
@@ -87,11 +85,11 @@ class TwitchBotEventListener @Inject()(
         if (filterSettings.isDefined) {
             val userPermissionLevel: PermissionLevel = getUserPermissionLevel(message)
             if (filterSettings.get.capsFilterEnabled && userPermissionLevel < filterSettings.get.getCapsFilterExemptionLevel)
-                hasBeenFiltered = hasBeenFiltered || capsFilter.filterMessage(message, filterSettings.get)
+                hasBeenFiltered = hasBeenFiltered || filterComponents.capsFilter.filterMessage(message, filterSettings.get)
             if (filterSettings.get.linksFilterEnabled && userPermissionLevel < filterSettings.get.getLinksFilterExemptionLevel)
-                hasBeenFiltered = hasBeenFiltered || linksFilter.filterMessage(message, filterSettings.get)
+                hasBeenFiltered = hasBeenFiltered || filterComponents.linksFilter.filterMessage(message, filterSettings.get)
             if (filterSettings.get.blacklistFilterEnabled && userPermissionLevel < filterSettings.get.getBlackListFilterExemptionLevel)
-                hasBeenFiltered = hasBeenFiltered || blacklistFilter.filterMessage(message, filterSettings.get)
+                hasBeenFiltered = hasBeenFiltered || filterComponents.blacklistFilter.filterMessage(message, filterSettings.get)
         }
         hasBeenFiltered
     }

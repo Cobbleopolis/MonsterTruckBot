@@ -1,7 +1,5 @@
 package discord.commands
 
-import javax.inject.Inject
-
 import common.api.TwitchChannelInfo
 import common.api.commands.SubCountCommand
 import common.ref.MtrConfigRef
@@ -9,6 +7,7 @@ import common.util.TwitchApiUtil
 import discord.api.DiscordCommand
 import discord.event.DiscordCommandExecutionEvent
 import discord.util.DiscordMessageUtil
+import javax.inject.Inject
 
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}

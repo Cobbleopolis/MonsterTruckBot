@@ -1,8 +1,7 @@
 package twitch.commands
 
-import javax.inject.{Inject, Provider}
-
 import common.api.commands.BitTestCommand
+import javax.inject.{Inject, Provider}
 import twitch.TwitchBot
 import twitch.api.TwitchCommand
 import twitch.events.{TwitchCheerEvent, TwitchCommandExecutionEvent}
