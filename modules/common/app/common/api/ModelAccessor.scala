@@ -13,16 +13,22 @@ trait ModelAccessor[T <: Model, A] {
     val tableName: String
     val idSymbol: Symbol
     val getByQueryList: Map[Class[_ <: Model], SqlQuery] = Map()
-    val insertQuery: String
+//    val insertQuery: String
     val parser: RowParser[T]
 
     val insertParser: RowParser[A]
 
+    def getCacheIdSuffix(id: A): String = id.toString
+    
+    def getCacheId(id: A): String = s"$tableName.${getCacheIdSuffix(id)}"
 
-    def get(id: Long)(implicit db: Database, cache: SyncCacheApi, mtrConfigRef: MtrConfigRef): Option[T] = {
-        cache.getOrElseUpdate[Option[T]](s"$tableName.${java.lang.Long.toUnsignedString(id)}", mtrConfigRef.cacheTimeout) {
+    def getIdNamedParameter(id: A): NamedParameter
+
+
+    def get(id: A)(implicit db: Database, cache: SyncCacheApi, mtrConfigRef: MtrConfigRef): Option[T] = {
+        cache.getOrElseUpdate[Option[T]](getCacheId(id), mtrConfigRef.cacheTimeout) {
             db.withConnection(implicit conn => {
-                getQuery.on(idSymbol -> id).as(parser.singleOpt)
+                getQuery.on(getIdNamedParameter(id)).as(parser.singleOpt)
             })
         }
     }
@@ -44,15 +50,21 @@ trait ModelAccessor[T <: Model, A] {
         }
     }
 
+    def getInsertQuery(params: Seq[NamedParameter]): String = {
+        val paramNames = params.map(_.name)
+        s"INSERT INTO $tableName (${paramNames.mkString(", ")}) VALUES (${paramNames.mkString("{", "}, {", "}")})"
+    }
 
-    def insert(id: Long, model: T)(implicit db: Database, cache: SyncCacheApi, mtrConfigRef: MtrConfigRef): Unit = {
-        cache.set(s"$tableName.${java.lang.Long.toUnsignedString(id)}", model, mtrConfigRef.cacheTimeout)
+    def insert(id: A, model: T)(implicit db: Database, cache: SyncCacheApi, mtrConfigRef: MtrConfigRef): Unit = {
+        cache.set(getCacheId(id), model, mtrConfigRef.cacheTimeout)
         insert(model.namedParameters: _*)
     }
 
     def insert(params: NamedParameter*)(implicit db: Database): Unit = {
+//        val paramNames: Seq[String] = params.map(_.name)
+//        val insertQ: String = s"INSERT INTO $tableName (${paramNames.mkString(", ")}) VALUES (${paramNames.mkString("{", "}, {", "}")})"
         db.withConnection(implicit conn => {
-            SQL(insertQuery).on(params: _*).executeInsert(insertParser.singleOpt)
+            SQL(getInsertQuery(params)).on(params: _*).executeInsert(insertParser.singleOpt)
         })
     }
 
@@ -64,13 +76,15 @@ trait ModelAccessor[T <: Model, A] {
     def insertBatchParams(params: Seq[Seq[NamedParameter]])(implicit db: Database): Unit = {
         val p: Seq[Seq[NamedParameter]] = params.filter(m => m.forall(p => p.value.show != ""))
         try {
-            if (p.nonEmpty)
+            if (p.nonEmpty) {
+                val insertQuery = getInsertQuery(p.head)
                 db.withConnection(implicit conn => {
                     if (p.length == 1)
                         BatchSql(insertQuery, p.head).execute()
                     else
                         BatchSql(insertQuery, p.head, p.tail.flatten).execute()
                 })
+            }
         } catch {
             case t: Throwable =>
                 println(p)
@@ -78,14 +92,14 @@ trait ModelAccessor[T <: Model, A] {
         }
     }
 
-    def update(id: Long, model: T)(implicit db: Database, cache: SyncCacheApi, mtrConfigRef: MtrConfigRef): Int = {
-        cache.set(s"$tableName.${java.lang.Long.toUnsignedString(id)}", model, mtrConfigRef.cacheTimeout)
+    def update(id: A, model: T)(implicit db: Database, cache: SyncCacheApi, mtrConfigRef: MtrConfigRef): Int = {
+        cache.set(getCacheId(id), model, mtrConfigRef.cacheTimeout)
         update(id, model.namedParameters: _*)
     }
 
-    def update(id: Long, params: NamedParameter*)(implicit db: Database): Int = {
+    def update(id: A, params: NamedParameter*)(implicit db: Database): Int = {
         if (params.nonEmpty) {
-            val idParam: NamedParameter = idSymbol -> id
+            val idParam: NamedParameter = getIdNamedParameter(id)
             db.withConnection(implicit conn => {
                 SQL(s"UPDATE $tableName SET ${params.filterNot(_.name == idSymbol.name).map(p => s"${p.name} = {${p.name}}").mkString(", ")} WHERE ${idSymbol.name} = {${idSymbol.name}}").on(params :+ idParam: _*).executeUpdate()
             })
@@ -93,10 +107,10 @@ trait ModelAccessor[T <: Model, A] {
             0
     }
 
-    def delete(id: Long)(implicit db: Database, cache: SyncCacheApi): Int = {
-        cache.remove(s"$tableName.${java.lang.Long.toUnsignedString(id)}")
+    def delete(id: A)(implicit db: Database, cache: SyncCacheApi): Int = {
+        cache.remove(getCacheId(id))
         db.withConnection(implicit conn => {
-            deleteQuery.on(idSymbol -> id).executeUpdate()
+            deleteQuery.on(getIdNamedParameter(id)).executeUpdate()
         })
     }
 }
