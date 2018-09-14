@@ -1,18 +1,15 @@
 package discord
 
-import javax.inject.{Inject, Provider}
-
 import common.api.PermissionLevel
 import common.api.PermissionLevel.PermissionLevel
+import common.components.DaoComponents
 import common.models.{CustomCommand, FilterSettings}
-import common.ref.{MessageRef, MtrConfigRef}
+import common.ref.MtrConfigRef
 import discord.api.DiscordCommand
 import discord.event.DiscordCommandExecutionEvent
 import discord.filters.{DiscordBlacklistFilter, DiscordCapsFilter, DiscordLinksFilter}
 import discord.util.DiscordMessageUtil
-import play.api.cache.SyncCacheApi
-import play.api.db.Database
-import play.api.i18n.MessagesApi
+import javax.inject.{Inject, Provider}
 import sx.blah.discord.api.events.EventSubscriber
 import sx.blah.discord.handle.impl.events.ReadyEvent
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
@@ -20,7 +17,16 @@ import sx.blah.discord.handle.obj.{IGuild, IMessage, IUser}
 
 import scala.collection.JavaConverters._
 
-class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBot: Provider[DiscordBot], messages: MessagesApi, discordCommandRegistry: DiscordCommandRegistry, capsFilter: DiscordCapsFilter, linksFilter: DiscordLinksFilter, blacklistFilter: DiscordBlacklistFilter, database: Database, cache: SyncCacheApi, discordMessageUtil: DiscordMessageUtil) {
+class DiscordBotEventListener @Inject()(
+                                           implicit config: MtrConfigRef,
+                                           discordBot: Provider[DiscordBot],
+                                           discordCommandRegistry: DiscordCommandRegistry,
+                                           capsFilter: DiscordCapsFilter,
+                                           linksFilter: DiscordLinksFilter,
+                                           blacklistFilter: DiscordBlacklistFilter,
+                                           daoComponents: DaoComponents,
+                                           discordMessageUtil: DiscordMessageUtil
+                                       ) {
 
     @EventSubscriber
     def onReadyEvent(event: ReadyEvent): Unit = {
@@ -51,7 +57,7 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
 
     def filterMessage(message: IMessage): Boolean = {
         var hasBeenFiltered: Boolean = false
-        val filterSettings: Option[FilterSettings] = FilterSettings.get(config.guildId)
+        val filterSettings: Option[FilterSettings] = daoComponents.filterSettingsDAO.get(config.guildId)
         if (filterSettings.isDefined && !message.getChannel.isPrivate) {
             val userPermissionLevel: PermissionLevel = getUserPermissionLevel(message.getAuthor)
             if (filterSettings.get.capsFilterEnabled && userPermissionLevel < filterSettings.get.getCapsFilterExemptionLevel)
@@ -72,7 +78,7 @@ class DiscordBotEventListener @Inject()(implicit config: MtrConfigRef, discordBo
         if (commandOpt.isDefined && userPermissionLevel >= commandOpt.get.permissionLevel) {
             commandOpt.get.execute(event)
         } else {
-            val customCommandOpt: Option[CustomCommand] = CustomCommand.get(config.guildId, event.getCommand)
+            val customCommandOpt: Option[CustomCommand] = daoComponents.customCommandDAO.get(config.guildId, event.getCommand)
             if (customCommandOpt.isDefined && userPermissionLevel >= customCommandOpt.get.getPermissionLevel)
                 discordMessageUtil.replyToMessageWithoutAt(message, customCommandOpt.get.commandContent)
         }

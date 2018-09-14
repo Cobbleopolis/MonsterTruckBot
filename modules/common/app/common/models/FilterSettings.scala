@@ -1,8 +1,8 @@
 package common.models
 
-import anorm.{Macro, NamedParameter, RowParser, SqlParser, SqlQuery}
+import anorm.NamedParameter
 import common.api.PermissionLevel.PermissionLevel
-import common.api.{MTRModelAccessor, Model, PermissionLevel}
+import common.api.{Model, PermissionLevel}
 
 case class FilterSettings(
                              guildId: Long,
@@ -34,17 +34,4 @@ case class FilterSettings(
 
     val getBlackListFilterExemptionLevel: PermissionLevel = PermissionLevel(blacklistFilterExemptionLevel)
 
-}
-
-object FilterSettings extends MTRModelAccessor[FilterSettings] {
-
-    override val tableName: String = "filter_settings"
-
-    override val idSymbol: Symbol = 'guild_id
-
-    override val getByQueryList: Map[Class[_ <: Model], SqlQuery] = Map()
-
-    override val parser: RowParser[FilterSettings] = Macro.parser[FilterSettings]("guild_id", "caps_filter_enabled", "caps_filter_exemption_level", "caps_filter_threshold", "links_filter_enabled", "links_filter_exemption_level", "blacklist_filter_enabled", "blacklist_filter_exemption_level", "blacklist_filter_words")
-
-    override val insertParser: RowParser[Long] = SqlParser.scalar[Long]
 }

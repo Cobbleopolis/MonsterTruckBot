@@ -18,12 +18,3 @@ case class BitTrackingSettings(guildId: Long, currentMode: Int = 0, bitGameMessa
     def getCurrentMode: BitTrackingMode = BitTrackingMode(currentMode)
 
 }
-
-object BitTrackingSettings extends MTRModelAccessor[BitTrackingSettings] {
-
-    override val tableName = "bit_tracking_settings"
-
-    override val idSymbol = 'guild_id
-
-    override val parser: RowParser[BitTrackingSettings] = Macro.parser[BitTrackingSettings]("guild_id", "current_mode", "bit_game_message", "bits_message", "goal_message")
-}

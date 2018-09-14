@@ -1,25 +1,22 @@
 package data
 
-import javax.inject.{Inject, Singleton}
-
+import common.components.DaoComponents
 import common.models.{BitTrackingSettings, BotInstance, FilterSettings}
 import common.ref.MtrConfigRef
-import play.api.Configuration
-import play.api.cache.SyncCacheApi
-import play.api.db.Database
+import javax.inject.{Inject, Singleton}
 
 @Singleton
-class DatabaseCreation @Inject()(implicit db: Database, conf: Configuration, cache: SyncCacheApi, mtrConfigRef: MtrConfigRef) {
+class DatabaseCreation @Inject()(daoComponents: DaoComponents, mtrConfigRef: MtrConfigRef) {
 
-    val botInstanceOpt: Option[BotInstance] = BotInstance.get(mtrConfigRef.guildId)
+    val botInstanceOpt: Option[BotInstance] = daoComponents.botInstanceDAO.get(mtrConfigRef.guildId)
     if (botInstanceOpt.isEmpty)
-        BotInstance.insert(mtrConfigRef.guildId, BotInstance(mtrConfigRef.guildId))
+        daoComponents.botInstanceDAO.insert(mtrConfigRef.guildId, BotInstance(mtrConfigRef.guildId))
 
-    val filterSettingsOpt: Option[FilterSettings] = FilterSettings.get(mtrConfigRef.guildId)
+    val filterSettingsOpt: Option[FilterSettings] = daoComponents.filterSettingsDAO.get(mtrConfigRef.guildId)
     if (filterSettingsOpt.isEmpty)
-        FilterSettings.insert(mtrConfigRef.guildId, FilterSettings(mtrConfigRef.guildId))
+        daoComponents.filterSettingsDAO.insert(mtrConfigRef.guildId, FilterSettings(mtrConfigRef.guildId))
 
-    val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(mtrConfigRef.guildId)
+    val bitTrackingSettingsOpt: Option[BitTrackingSettings] = daoComponents.bitTrackingSettingsDAO.get(mtrConfigRef.guildId)
     if (bitTrackingSettingsOpt.isEmpty)
-        BitTrackingSettings.insert(mtrConfigRef.guildId, BitTrackingSettings(mtrConfigRef.guildId))
+        daoComponents.bitTrackingSettingsDAO.insert(mtrConfigRef.guildId, BitTrackingSettings(mtrConfigRef.guildId))
 }

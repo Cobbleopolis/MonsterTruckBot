@@ -1,8 +1,11 @@
 package common.api
 
 import anorm.{NamedParameter, RowParser, SqlParser}
+import common.ref.MtrConfigRef
+import play.api.cache.SyncCacheApi
+import play.api.db.Database
 
-trait MTRModelAccessor[T <: Model] extends ModelAccessor[T, Long] {
+abstract class MTRModelAccessor[T <: Model](db: Database, cache: SyncCacheApi, configRef: MtrConfigRef) extends ModelAccessor[T, Long](db, cache, configRef) {
 
     override val idSymbol: Symbol = 'guild_id
 

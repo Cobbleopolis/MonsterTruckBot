@@ -1,6 +1,7 @@
 package common.api.bitTracking
 
 import common.api.bitTracking.BitTrackingMode.BitTrackingMode
+import common.components.DaoComponents
 import common.models.BitTrackingSettings
 import common.models.bitTrackingFormData.BitTrackingFormData
 import common.ref.MtrConfigRef
@@ -11,7 +12,7 @@ import play.api.db.Database
 
 import scala.collection.mutable
 
-class BitTrackingState @Inject()(implicit db: Database, cache: SyncCacheApi, config: MtrConfigRef) {
+class BitTrackingState @Inject()(daoComponents: DaoComponents, configRef: MtrConfigRef, cache: SyncCacheApi) {
 
     private val numberFormatString: String = "%,d"
 
@@ -21,7 +22,7 @@ class BitTrackingState @Inject()(implicit db: Database, cache: SyncCacheApi, con
     private val BIT_TRACKING_MODE_SUFFIX: String = "bitTrackingMode"
 
     def getCurrentBitTrackingMode: BitTrackingMode = {
-        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(config.guildId)
+        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = daoComponents.bitTrackingSettingsDAO.get(configRef.guildId)
         if (bitTrackingSettingsOpt.isDefined)
             BitTrackingMode(bitTrackingSettingsOpt.get.currentMode)
         else
@@ -38,7 +39,7 @@ class BitTrackingState @Inject()(implicit db: Database, cache: SyncCacheApi, con
     def setIsPaused(isPaused: Boolean): Unit = cache.set(PAUSED_LOCATION, isPaused)
 
     def getGameMessage: String = {
-        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(config.guildId)
+        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = daoComponents.bitTrackingSettingsDAO.get(configRef.guildId)
         if (bitTrackingSettingsOpt.isDefined)
             bitTrackingSettingsOpt.get.bitGameMessage
         else
@@ -46,7 +47,7 @@ class BitTrackingState @Inject()(implicit db: Database, cache: SyncCacheApi, con
     }
 
     def getBitsMessage: String = {
-        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(config.guildId)
+        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = daoComponents.bitTrackingSettingsDAO.get(configRef.guildId)
         if (bitTrackingSettingsOpt.isDefined)
             bitTrackingSettingsOpt.get.bitsMessage
         else
@@ -54,7 +55,7 @@ class BitTrackingState @Inject()(implicit db: Database, cache: SyncCacheApi, con
     }
 
     def getGoalMessage: String = {
-        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = BitTrackingSettings.get(config.guildId)
+        val bitTrackingSettingsOpt: Option[BitTrackingSettings] = daoComponents.bitTrackingSettingsDAO.get(configRef.guildId)
         if (bitTrackingSettingsOpt.isDefined)
             bitTrackingSettingsOpt.get.goalMessage
         else
@@ -112,7 +113,7 @@ class BitTrackingState @Inject()(implicit db: Database, cache: SyncCacheApi, con
 
 
     def getBitTrackingFormData: BitTrackingFormData = BitTrackingFormData(
-        config.guildId,
+        configRef.guildId,
         getCurrentBitTrackingMode.id,
         getIsPaused,
         getGameMessage,

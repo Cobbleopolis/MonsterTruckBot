@@ -1,7 +1,7 @@
-@(isYes: Boolean, yesClass: String = "text-success", noClass: String = "text-danger")(implicit request: MessagesRequest[AnyContent])
+@(isYes: Boolean, yesClass: String = "text-success", noClass: String = "text-danger")(implicit messages: Messages)
 
 @if(isYes) {
-    <span class="@yesClass">@request.messages("global.yes")</span>
+    <span class="@yesClass">@messages("global.yes")</span>
 } else {
-    <span class="@noClass">@request.messages("global.no")</span>
+    <span class="@noClass">@messages("global.no")</span>
 }
