@@ -13,8 +13,9 @@ import play.api.Logger
 import play.api.i18n.I18nSupport
 import play.api.libs.ws.WSClient
 import play.api.mvc._
+import twitch.TwitchBot
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 
 class Dashboard @Inject()(
@@ -26,6 +27,7 @@ class Dashboard @Inject()(
                              dashboardSettingsForms: DashboardSettingsForms,
                              dtc: DashboardTemplateComponents,
                              discordBot: DiscordBot,
+                             twitchBot: TwitchBot,
                              mtrConfigRef: MtrConfigRef,
                              bitTrackingState: BitTrackingState,
                              ec: ExecutionContext
@@ -51,7 +53,7 @@ class Dashboard @Inject()(
             filterSettings => {
                 val numUpdated: Int = daoComponent.filterSettingsDAO.update(filterSettings.guildId, filterSettings)
                 if (numUpdated != 0)
-                    Redirect(routes.Dashboard.filterSettings()).flashing("success" -> request.messages("dashboard.filters.saved"))
+                    Redirect(routes.Dashboard.filterSettings()).flashing("success" -> "dashboard.filters.saved")
                 else {
                     val filterSettings: Option[FilterSettings] = daoComponent.filterSettingsDAO.get(mtrConfigRef.guildId)
                     InternalServerError(dtc.filterSettingsTemplate(dashboardSettingsForms.filterForm.fill(filterSettings.get)))
@@ -81,7 +83,7 @@ class Dashboard @Inject()(
                     BadRequest(dtc.customCommandTemplate(dashboardSettingsForms.commandForm.fill(newCustomCommand).withError(dashboardSettingsForms.existingCommandFormError), commandForms))
                 else {
                     daoComponent.customCommandDAO.insert(newCustomCommand)
-                    Redirect(routes.Dashboard.customCommands()).flashing("success" -> request.messages("dashboard.customCommands.newCommand.saved"))
+                    Redirect(routes.Dashboard.customCommands()).flashing("success" -> "dashboard.customCommands.newCommand.saved")
                 }
             }
         )
@@ -122,7 +124,7 @@ class Dashboard @Inject()(
                 Logger.info("Update")
                 daoComponent.bitTrackingSettingsDAO.update(mtrConfigRef.guildId, bitTrackingFormData.getBitTrackingSettings)
                 bitTrackingState.setBitTrackingFormData(bitTrackingFormData)
-                Redirect(routes.Dashboard.bitTracking()).flashing("success" -> request.messages("dashboard.bitTracking.saved"))
+                Redirect(routes.Dashboard.bitTracking()).flashing("success" -> "dashboard.bitTracking.saved")
             }
         )
     }
@@ -163,6 +165,26 @@ class Dashboard @Inject()(
             result.flashing("danger" -> request.messages("dashboard.twitchRegulars.deleteTwitchRegular.errorDeleting", twitchUsername))
         else
             result.flashing("success" -> request.messages("dashboard.twitchRegulars.deleteTwitchRegular.twitchRegularDeleted", twitchUsername))
+    }
+
+    def reconnectDiscord: Action[AnyContent] = (messagesAction andThen secureAction).async { implicit request: MessagesRequest[AnyContent] =>
+        discordBot.reconnect().map(_ => {
+            if (discordBot.client.isReady) {
+                Redirect(routes.Dashboard.dashboard()).flashing("success" -> "dashboard.core.reconnect.discord.success")
+            } else {
+                Redirect(routes.Dashboard.dashboard()).flashing("danger" -> "dashboard.core.reconnect.discord.failure")
+            }
+        })
+    }
+
+    def reconnectTwitch: Action[AnyContent] = (messagesAction andThen secureAction).async { implicit request: MessagesRequest[AnyContent] =>
+        twitchBot.reconnect().map(_ => {
+            if (discordBot.client.isReady) {
+                Redirect(routes.Dashboard.dashboard()).flashing("success" -> "dashboard.core.reconnect.twitch.success")
+            } else {
+                Redirect(routes.Dashboard.dashboard()).flashing("danger" -> "dashboard.core.reconnect.twitch.failure")
+            }
+        })
     }
 }
 
