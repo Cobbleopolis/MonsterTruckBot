@@ -14,7 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait UptimeCommand extends Command with DefaultLang {
 
-    override val name: String = "uptime"
+    override val name: String = "streamuptime"
 
     override val permissionLevel: PermissionLevel = PermissionLevel.EVERYONE
 
