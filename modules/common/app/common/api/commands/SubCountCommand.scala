@@ -12,7 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait SubCountCommand extends Command with DefaultLang {
 
-    override val name: String = "count"
+    override val name: String = "subcount"
 
     override val permissionLevel: PermissionLevel = PermissionLevel.MODERATORS
 
