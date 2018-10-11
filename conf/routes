@@ -11,6 +11,8 @@ GET         /messages                                               controllers.
 GET         /messages/:page                                         controllers.Application.jsMessages(page)
 
 GET         /dashboard                                              controllers.Dashboard.dashboard()
+GET         /dashboard/reconnect/discord                            controllers.Dashboard.reconnectDiscord()
+GET         /dashboard/reconnect/twitch                             controllers.Dashboard.reconnectTwitch()
 GET         /dashboard/filterSettings                               controllers.Dashboard.filterSettings()
 POST        /dashboard/filterSettings                               controllers.Dashboard.submitFilterSettings()
 GET         /dashboard/customCommands                               controllers.Dashboard.customCommands()

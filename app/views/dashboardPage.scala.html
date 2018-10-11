@@ -41,7 +41,7 @@
                     @for(flashType <- flash.data) {
                         <div class="alert alert-dismissible alert-@flashType._1">
                             <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            @flash.get(flashType._1)
+                            @messages(flash.get(flashType._1).getOrElse("global.notAvailable"))
                         </div>
                     }
                     <br>

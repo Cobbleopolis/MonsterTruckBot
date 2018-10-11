@@ -30,13 +30,32 @@ class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBo
     var subscriberRole: Option[IRole] = None
 
     clientBuilder.withToken(conf.discordToken)
-    client = clientBuilder.login()
+    client = clientBuilder.build()
+    connect()
     val dispatcher: EventDispatcher = client.getDispatcher
     dispatcher.registerListener(eventListener)
-    lifecycle.addStopHook(() => Future {
+    lifecycle.addStopHook(() => disconnect())
+
+    def connect(): Unit = {
+        DiscordLogger.info("Monster Truck Bot logging in...")
+        client.login()
+        DiscordLogger.info("Monster Truck Bot has begun the login process")
+    }
+
+    def disconnect(): Future[Unit] = Future {
         DiscordLogger.info("Monster Truck Bot logging out...")
         client.logout()
+        while (client.isLoggedIn)
+            Thread.sleep(0)
         DiscordLogger.info("Monster Truck Bot finished logging out")
+    }
+
+    def reconnect(): Future[Unit] = disconnect().map(_ => {
+        DiscordLogger.info("Monster Truck Bot reconnecting...")
+        connect()
+        while (!client.isReady)
+            Thread.sleep(0)
+        DiscordLogger.info("Monster Truck Bot has reconnected")
     })
 
     def getInviteLink(redirectTo: String): String = {
