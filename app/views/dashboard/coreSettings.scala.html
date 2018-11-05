@@ -21,7 +21,7 @@
 }
 
 @dashboardPage("coreSettings") {
-
+    <script src="@routes.Assets.at("js/dashboardCore.js")"></script>
 } {
     @renderField("commandPrefix") {
         @configRef.commandPrefix
@@ -65,7 +65,7 @@
                 @messages("error.unknownRole")
             }
         }
-        <a class="btn btn-warning mb-3" href="@routes.Dashboard.reconnectDiscord()">@messages("dashboard.core.reconnect.discord.label")</a>
+        <a class="btn btn-warning mb-3 load-btn" href="@routes.Dashboard.reconnectDiscord()" data-loading-text="@messages("dashboard.core.reconnect.reconnecting")">@messages("dashboard.core.reconnect.discord.label")</a>
     </fieldset>
     <fieldset>
         <legend>@messages("dashboard.core.twitch.title")</legend>
@@ -97,6 +97,6 @@
                 </div>
             }
         </fieldset>
-        <a class="btn btn-warning mb-3" href="@routes.Dashboard.reconnectTwitch()">@messages("dashboard.core.reconnect.twitch.label")</a>
+        <a class="btn btn-warning mb-3 load-btn" href="@routes.Dashboard.reconnectTwitch()" role="button" data-loading-text="@messages("dashboard.core.reconnect.reconnecting")">@messages("dashboard.core.reconnect.twitch.label")</a>
     </fieldset>
 }

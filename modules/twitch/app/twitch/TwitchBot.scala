@@ -46,7 +46,11 @@ class TwitchBot @Inject()(implicit mtrConfigRef: MtrConfigRef, lifecycle: Applic
 
     def reconnect(): Future[Unit] = Future {
         TwitchLogger.info("Monster Truck Bot reconnecting...")
+        isConnected = false
         client.reconnect("Requested by mods")
+        while(!isConnected)
+            Thread.sleep(0)
+        client.addChannel(mtrConfigRef.twitchChannels.values.toSeq.map(_.ircChannelName): _*)
         TwitchLogger.info("Monster Truck Bot has reconnected")
     }
 
