@@ -13,7 +13,7 @@ import javax.inject.{Inject, Provider}
 import sx.blah.discord.api.events.EventSubscriber
 import sx.blah.discord.handle.impl.events.ReadyEvent
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
-import sx.blah.discord.handle.obj.{IGuild, IMessage, IUser}
+import sx.blah.discord.handle.obj._
 
 import scala.collection.JavaConverters._
 
@@ -34,7 +34,7 @@ class DiscordBotEventListener @Inject()(
         discordBot.get().regularRole = Option(discordBot.get.client.getRoleByID(config.regularRoleId))
         discordBot.get().subscriberRole = Option(discordBot.get.client.getRoleByID(config.subscriberRoleId))
         discordBot.get().client.changeUsername(config.discordUsername)
-        discordBot.get().client.changePlayingText(config.discordGame)
+        discordBot.get().client.changePresence(StatusType.ONLINE, ActivityType.PLAYING, config.discordGame)
     }
 
     @EventSubscriber

@@ -4,7 +4,7 @@ val displayName: String = "Monster Truck Bot"
 
 val projectVersion: String = "2.7.1-SNAPSHOT"
 
-val discord4JVersion: String = "2.9.1"
+val discord4JVersion: String = "2.10.1"
 
 val kittehIRCVersion: String = "4.0.2"
 
