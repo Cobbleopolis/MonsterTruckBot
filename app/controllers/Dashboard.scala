@@ -10,12 +10,13 @@ import discord.DiscordBot
 import javax.inject.Inject
 import models.DashboardSettingsForms
 import play.api.Logger
-import play.api.i18n.I18nSupport
+import play.api.libs.concurrent.Futures
+import play.api.libs.concurrent.Futures._
 import play.api.libs.ws.WSClient
 import play.api.mvc._
 import twitch.TwitchBot
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 
 class Dashboard @Inject()(
@@ -30,7 +31,8 @@ class Dashboard @Inject()(
                              twitchBot: TwitchBot,
                              mtrConfigRef: MtrConfigRef,
                              bitTrackingState: BitTrackingState,
-                             ec: ExecutionContext
+                             ec: ExecutionContext,
+                             futures: Futures
                          ) extends AbstractController(cc) {
 
     def dashboard(): Action[AnyContent] = (messagesAction andThen secureAction) { implicit request: MessagesRequest[AnyContent] =>
@@ -168,23 +170,29 @@ class Dashboard @Inject()(
     }
 
     def reconnectDiscord: Action[AnyContent] = (messagesAction andThen secureAction).async { implicit request: MessagesRequest[AnyContent] =>
-        discordBot.reconnect().map(_ => {
+        discordBot.reconnect().withTimeout(mtrConfigRef.botReconnectTimeout).map(_ => {
             if (discordBot.client.isReady) {
                 Redirect(routes.Dashboard.dashboard()).flashing("success" -> "dashboard.core.reconnect.discord.success")
             } else {
                 Redirect(routes.Dashboard.dashboard()).flashing("danger" -> "dashboard.core.reconnect.discord.failure")
             }
-        })
+        }).recover {
+            case _: scala.concurrent.TimeoutException =>
+                Redirect(routes.Dashboard.dashboard()).flashing("danger" -> "dashboard.core.reconnect.discord.timeout")
+        }
     }
 
     def reconnectTwitch: Action[AnyContent] = (messagesAction andThen secureAction).async { implicit request: MessagesRequest[AnyContent] =>
-        twitchBot.reconnect().map(_ => {
-            if (discordBot.client.isReady) {
+        twitchBot.reconnect().withTimeout(mtrConfigRef.botReconnectTimeout).map(_ => {
+            if (twitchBot.isConnected) {
                 Redirect(routes.Dashboard.dashboard()).flashing("success" -> "dashboard.core.reconnect.twitch.success")
             } else {
                 Redirect(routes.Dashboard.dashboard()).flashing("danger" -> "dashboard.core.reconnect.twitch.failure")
             }
-        })
+        }).recover{
+            case _: scala.concurrent.TimeoutException =>
+                Redirect(routes.Dashboard.dashboard()).flashing("danger" -> "dashboard.core.reconnect.twitch.timeout")
+        }
     }
 }
 

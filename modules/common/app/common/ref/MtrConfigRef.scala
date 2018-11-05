@@ -25,6 +25,8 @@ class MtrConfigRef @Inject()(implicit conf: Configuration) {
 
     val cacheTimeout: Duration = conf.getMillis("mtrBot.cacheTimeout").milliseconds
 
+    val botReconnectTimeout: FiniteDuration = conf.getMillis("mtrBot.reconnectTimeout").milliseconds
+
     val discordUsername: String = conf.get[String]("mtrBot.discord.username")
 
     val discordGame: String = conf.get[String]("mtrBot.discord.game")
