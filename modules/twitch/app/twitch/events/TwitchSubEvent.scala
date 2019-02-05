@@ -36,7 +36,7 @@ class TwitchSubEvent(userNoticeEvent: UserNoticeEvent) extends TwitchEvent {
     val isResub: Boolean = msgId == UserNoticeMessageId.RESUBSCRIPTION
 
     val resubMonthCount: Option[Int] = {
-        val paramMontsTag: Optional[MessageTag] = getTag("msg-param-months")
+        val paramMontsTag: Optional[MessageTag] = getTag("msg-param-cumulative-months")
         if (paramMontsTag.isPresent && paramMontsTag.get().getValue.isPresent)
             Some(paramMontsTag.get.getValue.get().toInt)
         else
