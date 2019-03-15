@@ -1,4 +1,4 @@
-import com.typesafe.sbt.packager.docker.ExecCmd
+import com.typesafe.sbt.packager.docker.{Cmd, ExecCmd}
 
 val projectName: String = "MonsterTruckBot"
 
@@ -26,8 +26,9 @@ val dockerSettings = Seq(
     dockerExposedPorts := Seq(9000),
     dockerExposedVolumes := Seq(s"${(defaultLinuxInstallLocation in Docker).value}/conf"),
     dockerCommands in Docker := dockerCommands.value.take(3) ++ Seq(
-        ExecCmd("RUN", "useradd", "-s", "/bin/bash", (daemonUser in Docker).value)
-//        ExecCmd("RUN", "apk", "add", "--no-cache", "bash"),
+        ExecCmd("RUN", "useradd", "-s", "/bin/bash", (daemonUser in Docker).value),
+        Cmd("RUN", "apt-get", "-qq", "update", "&&", "apt-get", "-qq", "install", "-y","--no-install-recommends", "curl", ">", "/dev/null", "2>&1", "&&", "rm", "-rf", "/var/lib/apt/lists/*"),
+        Cmd("HEALTHCHECK", "--interval=5m", "--start-period=1m", "CMD curl --fail 'http://localhost:9000/discord/alive' || exit 1")
 //        ExecCmd("RUN", "addgroup", "-S", (daemonGroup in Docker).value),
 //        ExecCmd("RUN", "adduser", "-D", "-H", "-S","-s", "/bin/bash", "-G", (daemonGroup in Docker).value, (daemonUser in Docker).value)
     ) ++ (dockerCommands in Docker).value.drop(3),

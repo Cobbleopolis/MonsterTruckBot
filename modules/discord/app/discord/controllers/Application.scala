@@ -11,7 +11,7 @@ class Application @Inject()(controllerComponents: ControllerComponents, discordB
         if (discordBot.client.isReady)
             Ok("Hap! Hap! Hap!")
         else
-            Ok("Not ready")
+            ServiceUnavailable("Not ready")
     }
 
 }
