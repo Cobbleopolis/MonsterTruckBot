@@ -11,7 +11,7 @@ class Application @Inject()(controllerComponents: ControllerComponents, twitchBo
         if (twitchBot.isConnected)
             Ok("Hap! Hap! Hap!")
         else
-            Ok("Not ready")
+            ServiceUnavailable("Not ready")
     }
 
 }

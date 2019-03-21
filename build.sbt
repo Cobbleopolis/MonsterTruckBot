@@ -1,8 +1,12 @@
+import com.typesafe.sbt.packager.docker.{Cmd, ExecCmd}
+
 val projectName: String = "MonsterTruckBot"
 
 val displayName: String = "Monster Truck Bot"
 
-val projectVersion: String = "2.7.2"
+val dockerImageName: String = displayName.toLowerCase.split(" ").mkString("-")
+
+val projectVersion: String = "2.8.0-SNAPSHOT"
 
 val discord4JVersion: String = "2.10.1"
 
@@ -14,6 +18,24 @@ lazy val commonDependencies = Seq(
     guice,
     ws,
     "com.typesafe.play" %% "play-json" % "2.6.6"
+)
+
+val dockerSettings = Seq(
+    maintainer in Docker := "Cobbleopolis <cobbleopolis@gmail.com>",
+    daemonUser in Docker := packageName.value,
+    dockerExposedPorts := Seq(9000),
+    dockerExposedVolumes := Seq(s"${(defaultLinuxInstallLocation in Docker).value}/conf"),
+    dockerCommands in Docker := dockerCommands.value.take(3) ++ Seq(
+        ExecCmd("RUN", "useradd", "-s", "/bin/bash", (daemonUser in Docker).value),
+        Cmd("RUN", "apt-get", "-qq", "update", "&&", "apt-get", "-qq", "install", "-y","--no-install-recommends", "curl", ">", "/dev/null", "2>&1", "&&", "rm", "-rf", "/var/lib/apt/lists/*"),
+        Cmd("HEALTHCHECK", "--interval=5m", "--start-period=1m", "CMD curl --fail 'http://localhost:9000/discord/alive' || exit 1")
+//        ExecCmd("RUN", "addgroup", "-S", (daemonGroup in Docker).value),
+//        ExecCmd("RUN", "adduser", "-D", "-H", "-S","-s", "/bin/bash", "-G", (daemonGroup in Docker).value, (daemonUser in Docker).value)
+    ) ++ (dockerCommands in Docker).value.drop(3),
+    dockerUsername := Some("cobbleopolis"),
+    packageName in Docker := dockerImageName,
+    dockerUpdateLatest in Docker := !isSnapshot.value,
+    dockerBaseImage := "openjdk:jre-slim"
 )
 
 lazy val commonSettings = Seq(
@@ -38,15 +60,18 @@ lazy val commonSettings = Seq(
     javaOptions in Universal ++= Seq(
         "-Dplay.evolutions.db.default.autoApply=true",
         "-Dplay.http.session.secure=true",
+        "-Dconfig.resource=production.conf"
+    ),
+    javaOptions in Debian ++= Seq(
         s"-Dpidfile.path=/var/run/${packageName.value}/RUNNING_PID",
         s"-Dconfig.file=/usr/share/${packageName.value}/conf/production.conf",
         s"-Dlogger.file=/usr/share/${packageName.value}/conf/production-logback.xml"
     ),
     daemonUser := packageName.value,
     daemonGroup := packageName.value
-)
+) ++ dockerSettings
 
-lazy val monstertruckbot = Project(id = "monstertruckbot", base = file(".")).enablePlugins(PlayScala, JavaServerAppPackaging, DebianPlugin, SystemdPlugin).settings(commonSettings: _*)
+lazy val monstertruckbot = Project(id = "monstertruckbot", base = file(".")).enablePlugins(PlayScala, JavaServerAppPackaging, DebianPlugin, SystemdPlugin, DockerPlugin).settings(commonSettings: _*)
     .settings(
         name := projectName,
         resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
@@ -71,7 +96,6 @@ lazy val monstertruckbot = Project(id = "monstertruckbot", base = file(".")).ena
         routesGenerator := InjectedRoutesGenerator
     )
     .dependsOn(discord, twitch, common)
-    .aggregate(discord, twitch, common)
 
 lazy val discord = Project(id = "discord", base = file("modules/discord")).enablePlugins(PlayScala).settings(commonSettings: _*)
     .settings(

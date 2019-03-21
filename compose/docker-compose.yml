@@ -1,0 +1,66 @@
+version: '3.4'
+services:
+  bot_server:
+    container_name: mtr_bot_server
+    image: cobbleopolis/monster-truck-bot
+    restart: on-failure
+    labels:
+      - "autoheal=true"
+    volumes:
+      - ./conf/monstertruckbot/:/opt/docker/conf
+    depends_on:
+      - db
+    networks:
+      bot_network:
+      frontend:
+        aliases:
+          - bot_server
+  db:
+    container_name: mtr_db
+    image: postgres
+    restart: always
+    volumes:
+      - ./conf/postgres/postgresql.conf:/conf/postgresql/postgresql.conf
+      - ./data/postgres/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: monster_truck_bot
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_DB: mtr_bot
+    networks:
+      bot_network:
+          aliases:
+            - database
+    secrets:
+      - postgres_password
+  web:
+    container_name: mtr_caddy
+    image: abiosoft/caddy:no-stats
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./conf/caddy/Caddyfile:/etc/Caddyfile
+      - ./data/caddy:/root/.caddy
+    environment:
+      ACME_AGREE: "true"
+    networks:
+      - frontend
+    depends_on:
+      - bot_server
+  autoheal:
+    container_name: mtr_autoheal
+    image: willfarrell/autoheal
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  bot_network:
+    driver: bridge
+  frontend:
+    driver: bridge
+
+secrets:
+  postgres_password:
+    file: ./secrets/postgres/postgres_password
