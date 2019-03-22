@@ -26,7 +26,10 @@ class DiscordBotEventListener @Inject()(
 
     def onReadyEvent(event: ReadyEvent): Unit = {
         DiscordLogger.info("Monster Truck Bot ready")
-        //        discordBot.get().guild = Option(discordBot.get.webClient.exchange())
+        discordBot.get().guild = discordBot.get.botClient.getGuildById(discordBot.get.guildSnowflake).blockOptional
+        discordBot.get().moderatorRole = discordBot.get.botClient.getRoleById(discordBot.get().guildSnowflake, discordBot.get().moderatorRoleSnowflake).blockOptional
+        discordBot.get().regularRole = discordBot.get.botClient.getRoleById(discordBot.get().guildSnowflake, discordBot.get().regularRoleSnowflake).blockOptional
+        discordBot.get().subscriberRole= discordBot.get.botClient.getRoleById(discordBot.get().guildSnowflake, discordBot.get().subscriberRoleSnowflake).blockOptional
         //        discordBot.get().moderatorRole = Option(discordBot.get.botClient.getRoleByID(config.moderatorRoleId))
         //        discordBot.get().regularRole = Option(discordBot.get.botClient.getRoleByID(config.regularRoleId))
         //        discordBot.get().subscriberRole = Option(discordBot.get.botClient.getRoleByID(config.subscriberRoleId))
@@ -35,7 +38,7 @@ class DiscordBotEventListener @Inject()(
         //        discordBot.get().botClient.changePresence(StatusType.ONLINE, ActivityType.PLAYING, config.discordGame)
     }
 
-        def onCommandExecution(messageEvent: Flux[MessageCreateEvent]): Publisher[Message] = {
+        def onCommandExecution(messageEvent: Flux[MessageCreateEvent]): Publisher[Any] = {
             messageEvent.map[Message](_.getMessage)
                 .filter((msg: Message) => msg.getContent.asScala.exists(_.startsWith(config.commandPrefix)))
                 .map[DiscordCommandExecutionEvent](msg => {
@@ -47,9 +50,8 @@ class DiscordBotEventListener @Inject()(
                         msg.getAuthor.get()
                     )
                 })
-                .flatMap[Message]((event: DiscordCommandExecutionEvent) => {
+                .flatMap[Any]((event: DiscordCommandExecutionEvent) => {
                     val commandOpt: Option[DiscordCommand] = discordCommandRegistry.commands.get(event.getCommand)
-                    DiscordLogger.debug(commandOpt.toString)
                     if (commandOpt.isDefined)
                         commandOpt.get.execute(event)
                     else

@@ -9,20 +9,22 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.google.inject.Inject
 import common.ref.MtrConfigRef
 import discord4j.common.jackson.{PossibleModule, UnknownPropertyHandler}
-import discord4j.core.`object`.entity.{Guild, Message, Role}
+import discord4j.core.`object`.entity.{Guild, Role}
 import discord4j.core.`object`.presence.{Activity, Presence}
 import discord4j.core.`object`.util.{Permission, PermissionSet, Snowflake}
 import discord4j.core.event.EventDispatcher
 import discord4j.core.event.domain.lifecycle.ReadyEvent
 import discord4j.core.event.domain.message.MessageCreateEvent
 import discord4j.core.{DiscordClient, DiscordClientBuilder}
+import discord4j.rest.RestClient
 import discord4j.rest.http.ExchangeStrategies
 import discord4j.rest.http.client.DiscordWebClient
+import discord4j.rest.request.{DefaultRouter, Router}
 import javax.inject.Singleton
 import play.api.inject.ApplicationLifecycle
 import reactor.core.Disposable
-import reactor.core.publisher.Hooks
 import reactor.core.scala.publisher._
+import reactor.core.scheduler.Schedulers
 import reactor.netty.http.client.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBotEventListener, lifecycle: ApplicationLifecycle, context: ExecutionContext) {
 
-    Hooks.onOperatorDebug()
+    //    Hooks.onOperatorDebug()
 
     private val clientBuilder: DiscordClientBuilder = new DiscordClientBuilder(conf.discordToken)
         .setInitialPresence(Presence.online(Activity.playing(conf.discordGame)))
@@ -39,6 +41,10 @@ class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBo
     private var loginDisposable: Option[Disposable] = None
 
     val guildSnowflake: Snowflake = Snowflake.of(conf.guildId)
+    val moderatorRoleSnowflake: Snowflake = Snowflake.of(conf.moderatorRoleId)
+    val regularRoleSnowflake: Snowflake = Snowflake.of(conf.regularRoleId)
+    val subscriberRoleSnowflake: Snowflake = Snowflake.of(conf.subscriberRoleId)
+    val maintainerUserSnowflake: Option[Snowflake] = conf.maintainerUserId.map(Snowflake.of)
 
     var guild: Option[Guild] = None
     var moderatorRole: Option[Role] = None
@@ -52,6 +58,8 @@ class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBo
         .registerModules(new PossibleModule, new Jdk8Module)
     val webClient: DiscordWebClient = new DiscordWebClient(HttpClient.create().compress(true),
         ExchangeStrategies.jackson(mapper), conf.discordToken)
+    private val router: Router = new DefaultRouter(webClient, Schedulers.elastic(), Schedulers.elastic())
+    val restClient: RestClient = new RestClient(router)
 
     private val dispatcher: EventDispatcher = botClient.getEventDispatcher
 
@@ -65,7 +73,7 @@ class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBo
             .subscribe(e => eventListener.onReadyEvent(e))
 
         dispatcher.on(classOf[MessageCreateEvent])
-            .transform[Message](eventListener.onCommandExecution)
+            .transform[Any](eventListener.onCommandExecution)
             .subscribe()
     }
 
