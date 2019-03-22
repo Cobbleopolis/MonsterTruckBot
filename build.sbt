@@ -8,7 +8,7 @@ val dockerImageName: String = displayName.toLowerCase.split(" ").mkString("-")
 
 val projectVersion: String = "2.8.0-SNAPSHOT"
 
-val discord4JVersion: String = "2.10.1"
+val discord4JVersion: String = "3.0.1"
 
 val kittehIRCVersion: String = "4.0.2"
 
@@ -100,7 +100,9 @@ lazy val monstertruckbot = Project(id = "monstertruckbot", base = file(".")).ena
 lazy val discord = Project(id = "discord", base = file("modules/discord")).enablePlugins(PlayScala).settings(commonSettings: _*)
     .settings(
         libraryDependencies ++= Seq(
-            "com.github.austinv11" % "Discord4j" % discord4JVersion
+            "com.discord4j" % "discord4j-core" % discord4JVersion,
+            "com.discord4j" % "discord4j-rest" % discord4JVersion,
+            "io.projectreactor" %% "reactor-scala-extensions" % "0.3.7",
         )
     )
     .dependsOn(common)

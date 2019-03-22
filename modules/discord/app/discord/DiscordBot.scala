@@ -2,50 +2,85 @@ package discord
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import javax.inject.Singleton
 
-import common.ref.MtrConfigRef
+import com.fasterxml.jackson.annotation.{JsonAutoDetect, PropertyAccessor}
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.google.inject.Inject
+import common.ref.MtrConfigRef
+import discord4j.common.jackson.{PossibleModule, UnknownPropertyHandler}
+import discord4j.core.`object`.entity.{Guild, Message, Role}
+import discord4j.core.`object`.presence.{Activity, Presence}
+import discord4j.core.`object`.util.{Permission, PermissionSet, Snowflake}
+import discord4j.core.event.EventDispatcher
+import discord4j.core.event.domain.lifecycle.ReadyEvent
+import discord4j.core.event.domain.message.MessageCreateEvent
+import discord4j.core.{DiscordClient, DiscordClientBuilder}
+import discord4j.rest.http.ExchangeStrategies
+import discord4j.rest.http.client.DiscordWebClient
+import javax.inject.Singleton
 import play.api.inject.ApplicationLifecycle
-import sx.blah.discord.api.events.EventDispatcher
-import sx.blah.discord.api.{ClientBuilder, IDiscordClient}
-import sx.blah.discord.handle.obj.{IGuild, IRole, Permissions}
-import sx.blah.discord.modules.Configuration
-import sx.blah.discord.util.BotInviteBuilder
+import reactor.core.Disposable
+import reactor.core.publisher.Hooks
+import reactor.core.scala.publisher._
+import reactor.netty.http.client.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
+
 
 @Singleton
 class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBotEventListener, lifecycle: ApplicationLifecycle, context: ExecutionContext) {
 
-    Configuration.AUTOMATICALLY_ENABLE_MODULES = false
-    Configuration.LOAD_EXTERNAL_MODULES = false
+    Hooks.onOperatorDebug()
 
-    private val clientBuilder: ClientBuilder = new ClientBuilder().setDaemon(true)
-    var client: IDiscordClient = _
+    private val clientBuilder: DiscordClientBuilder = new DiscordClientBuilder(conf.discordToken)
+        .setInitialPresence(Presence.online(Activity.playing(conf.discordGame)))
 
-    var guild: Option[IGuild] = None
-    var moderatorRole: Option[IRole] = None
-    var regularRole: Option[IRole] = None
-    var subscriberRole: Option[IRole] = None
+    private var loginDisposable: Option[Disposable] = None
 
-    clientBuilder.withToken(conf.discordToken)
-    client = clientBuilder.build()
+    val guildSnowflake: Snowflake = Snowflake.of(conf.guildId)
+
+    var guild: Option[Guild] = None
+    var moderatorRole: Option[Role] = None
+    var regularRole: Option[Role] = None
+    var subscriberRole: Option[Role] = None
+    var botClient: DiscordClient = clientBuilder.build()
+
+    private val mapper: ObjectMapper = new ObjectMapper()
+        .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+        .addHandler(new UnknownPropertyHandler(true))
+        .registerModules(new PossibleModule, new Jdk8Module)
+    val webClient: DiscordWebClient = new DiscordWebClient(HttpClient.create().compress(true),
+        ExchangeStrategies.jackson(mapper), conf.discordToken)
+
+    private val dispatcher: EventDispatcher = botClient.getEventDispatcher
+
+    setupEventListeners()
     connect()
-    val dispatcher: EventDispatcher = client.getDispatcher
-    dispatcher.registerListener(eventListener)
+
     lifecycle.addStopHook(() => disconnect())
+
+    def setupEventListeners(): Unit = {
+        dispatcher.on(classOf[ReadyEvent]).log()
+            .subscribe(e => eventListener.onReadyEvent(e))
+
+        dispatcher.on(classOf[MessageCreateEvent])
+            .transform[Message](eventListener.onCommandExecution)
+            .subscribe()
+    }
 
     def connect(): Unit = {
         DiscordLogger.info("Monster Truck Bot logging in...")
-        client.login()
+        loginDisposable = Some(botClient.login().subscribe())
         DiscordLogger.info("Monster Truck Bot has begun the login process")
     }
 
     def disconnect(): Future[Unit] = Future {
         DiscordLogger.info("Monster Truck Bot logging out...")
-        client.logout()
-        while (client.isLoggedIn)
+        if (loginDisposable.isDefined)
+            loginDisposable.get.dispose()
+        botClient.logout()
+        while (botClient.isConnected)
             Thread.sleep(0)
         DiscordLogger.info("Monster Truck Bot finished logging out")
     }
@@ -53,22 +88,25 @@ class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBo
     def reconnect(): Future[Unit] = disconnect().map(_ => {
         DiscordLogger.info("Monster Truck Bot reconnecting...")
         connect()
-        while (!client.isReady)
+        while (!botClient.isConnected)
             Thread.sleep(0)
         DiscordLogger.info("Monster Truck Bot has reconnected")
     })
 
     def getInviteLink(redirectTo: String): String = {
-        val inviteBuilder: BotInviteBuilder = new BotInviteBuilder(client)
-        inviteBuilder.withPermissions(java.util.EnumSet.of[Permissions](
-            Permissions.ADMINISTRATOR,
-            Permissions.KICK,
-            Permissions.BAN,
-            Permissions.READ_MESSAGES,
-            Permissions.SEND_MESSAGES,
-            Permissions.EMBED_LINKS,
-            Permissions.MENTION_EVERYONE
-        ))
-        inviteBuilder.build() + "&guild_id=" + java.lang.Long.toUnsignedString(conf.guildId) + "&response_type=code&redirect_uri=" + URLEncoder.encode(redirectTo, StandardCharsets.UTF_8.name())
+        val permissions: PermissionSet = PermissionSet.of(
+            Permission.ADMINISTRATOR,
+            Permission.KICK_MEMBERS,
+            Permission.BAN_MEMBERS,
+            Permission.READ_MESSAGE_HISTORY,
+            Permission.SEND_MESSAGES,
+            Permission.EMBED_LINKS,
+            Permission.MENTION_EVERYONE
+        )
+        "https://discordapp.com/oauth2/authorize" +
+            s"?client_id=${conf.discordClientId}" +
+            s"&scope=bot&permissions=${permissions.getRawValue}" +
+            s"&guild_id=${java.lang.Long.toUnsignedString(conf.guildId)}" +
+            s"&redirect_uri=${URLEncoder.encode(redirectTo, StandardCharsets.UTF_8.name())}"
     }
 }

@@ -171,7 +171,7 @@ class Dashboard @Inject()(
 
     def reconnectDiscord: Action[AnyContent] = (messagesAction andThen secureAction).async { implicit request: MessagesRequest[AnyContent] =>
         discordBot.reconnect().withTimeout(mtrConfigRef.botReconnectTimeout).map(_ => {
-            if (discordBot.client.isReady) {
+            if (discordBot.botClient.isConnected) {
                 Redirect(routes.Dashboard.dashboard()).flashing("success" -> "dashboard.core.reconnect.discord.success")
             } else {
                 Redirect(routes.Dashboard.dashboard()).flashing("danger" -> "dashboard.core.reconnect.discord.failure")

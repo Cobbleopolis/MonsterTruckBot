@@ -1,21 +1,19 @@
 package discord
 
-import common.api.PermissionLevel
-import common.api.PermissionLevel.PermissionLevel
 import common.components.DaoComponents
-import common.models.{CustomCommand, FilterSettings}
 import common.ref.MtrConfigRef
 import discord.api.DiscordCommand
 import discord.components.DiscordFilterComponents
 import discord.event.DiscordCommandExecutionEvent
 import discord.util.DiscordMessageUtil
+import discord4j.core.`object`.entity.Message
+import discord4j.core.event.domain.lifecycle.ReadyEvent
+import discord4j.core.event.domain.message.MessageCreateEvent
 import javax.inject.{Inject, Provider}
-import sx.blah.discord.api.events.EventSubscriber
-import sx.blah.discord.handle.impl.events.ReadyEvent
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
-import sx.blah.discord.handle.obj._
+import org.reactivestreams.Publisher
+import reactor.core.scala.publisher._
 
-import scala.collection.JavaConverters._
+import scala.compat.java8.OptionConverters._
 
 class DiscordBotEventListener @Inject()(
                                            implicit config: MtrConfigRef,
@@ -26,75 +24,102 @@ class DiscordBotEventListener @Inject()(
                                            discordMessageUtil: DiscordMessageUtil
                                        ) {
 
-    @EventSubscriber
     def onReadyEvent(event: ReadyEvent): Unit = {
         DiscordLogger.info("Monster Truck Bot ready")
-        discordBot.get().guild = Option(discordBot.get.client.getGuildByID(config.guildId))
-        discordBot.get().moderatorRole = Option(discordBot.get.client.getRoleByID(config.moderatorRoleId))
-        discordBot.get().regularRole = Option(discordBot.get.client.getRoleByID(config.regularRoleId))
-        discordBot.get().subscriberRole = Option(discordBot.get.client.getRoleByID(config.subscriberRoleId))
-        discordBot.get().client.changeUsername(config.discordUsername)
-        discordBot.get().client.changePresence(StatusType.ONLINE, ActivityType.PLAYING, config.discordGame)
+        //        discordBot.get().guild = Option(discordBot.get.webClient.exchange())
+        //        discordBot.get().moderatorRole = Option(discordBot.get.botClient.getRoleByID(config.moderatorRoleId))
+        //        discordBot.get().regularRole = Option(discordBot.get.botClient.getRoleByID(config.regularRoleId))
+        //        discordBot.get().subscriberRole = Option(discordBot.get.botClient.getRoleByID(config.subscriberRoleId))
+        //        discordBot.get().botClient.getSelf.map(_.asMember(Snowflake.of(config.guildId)))
+        //        discordBot.get().botClient.changeUsername(config.discordUsername)
+        //        discordBot.get().botClient.changePresence(StatusType.ONLINE, ActivityType.PLAYING, config.discordGame)
     }
 
-    @EventSubscriber
-    def onMessageReceivedEvent(event: MessageReceivedEvent): Unit = {
-        implicit val message: IMessage = event.getMessage
-        if (!message.getAuthor.isBot && (message.getChannel.isPrivate || message.getGuild.getLongID == config.guildId)) {
-            if (!filterMessage(message) && message.getContent.startsWith(config.commandPrefix)) {
-                val contentSplit: Array[String] = message.getContent.split("\\s")
-                discordBot.get().client.getDispatcher.dispatch(new DiscordCommandExecutionEvent(
-                    message,
-                    contentSplit.head.substring(config.commandPrefix.length).toLowerCase,
-                    contentSplit.tail,
-                    message.getAuthor
-                ))
-            }
+        def onCommandExecution(messageEvent: Flux[MessageCreateEvent]): Publisher[Message] = {
+            messageEvent.map[Message](_.getMessage)
+                .filter((msg: Message) => msg.getContent.asScala.exists(_.startsWith(config.commandPrefix)))
+                .map[DiscordCommandExecutionEvent](msg => {
+                    val contentSplit: Array[String] = msg.getContent.asScala.getOrElse("").split("\\s")
+                    new DiscordCommandExecutionEvent(
+                        msg,
+                        contentSplit.headOption.map(_.substring(config.commandPrefix.length).toLowerCase).getOrElse(""),
+                        contentSplit.tail,
+                        msg.getAuthor.get()
+                    )
+                })
+                .flatMap[Message]((event: DiscordCommandExecutionEvent) => {
+                    val commandOpt: Option[DiscordCommand] = discordCommandRegistry.commands.get(event.getCommand)
+                    DiscordLogger.debug(commandOpt.toString)
+                    if (commandOpt.isDefined)
+                        commandOpt.get.execute(event)
+                    else
+                        Mono.empty
+                })
         }
-    }
+//    def onCommandExecution(messageEvent: Flux[MessageCreateEvent]): Publisher[Message] = {
+//        messageEvent.map[Message](_.getMessage)
+//            .filter((msg: Message) => msg.getContent.asScala.exists(_.startsWith(config.commandPrefix)))
+//            .flatMap[Message]((msg: Message) => msg.getChannel.block().createMessage("pong!"))
+//    }
 
-    def filterMessage(message: IMessage): Boolean = {
-        var hasBeenFiltered: Boolean = false
-        val filterSettings: Option[FilterSettings] = daoComponents.filterSettingsDAO.get(config.guildId)
-        if (filterSettings.isDefined && !message.getChannel.isPrivate) {
-            val userPermissionLevel: PermissionLevel = getUserPermissionLevel(message.getAuthor)
-            if (filterSettings.get.capsFilterEnabled && userPermissionLevel < filterSettings.get.getCapsFilterExemptionLevel)
-                hasBeenFiltered = hasBeenFiltered || filterComponents.capsFilter.filterMessage(message, filterSettings.get)
-            if (filterSettings.get.linksFilterEnabled && userPermissionLevel < filterSettings.get.getLinksFilterExemptionLevel)
-                hasBeenFiltered = hasBeenFiltered || filterComponents.linksFilter.filterMessage(message, filterSettings.get)
-            if (filterSettings.get.blacklistFilterEnabled && userPermissionLevel < filterSettings.get.getBlackListFilterExemptionLevel)
-                hasBeenFiltered = hasBeenFiltered || filterComponents.blacklistFilter.filterMessage(message, filterSettings.get)
-        }
-        hasBeenFiltered
-    }
-
-    @EventSubscriber
-    def onCommandExecutionEvent(event: DiscordCommandExecutionEvent): Unit = {
-        implicit val message: IMessage = event.getMessage
-        val commandOpt: Option[DiscordCommand] = discordCommandRegistry.commands.get(event.getCommand)
-        val userPermissionLevel: PermissionLevel = getUserPermissionLevel(event.getUser)
-        if (commandOpt.isDefined && userPermissionLevel >= commandOpt.get.permissionLevel) {
-            commandOpt.get.execute(event)
-        } else {
-            val customCommandOpt: Option[CustomCommand] = daoComponents.customCommandDAO.get(config.guildId, event.getCommand)
-            if (customCommandOpt.isDefined && userPermissionLevel >= customCommandOpt.get.getPermissionLevel)
-                discordMessageUtil.replyToMessageWithoutAt(message, customCommandOpt.get.commandContent)
-        }
-    }
-
-    def getUserPermissionLevel(user: IUser): PermissionLevel = {
-        val guild: IGuild = discordBot.get().client.getGuildByID(config.guildId)
-        val userRoleIds = user.getRolesForGuild(guild).asScala.map(_.getLongID)
-        if (user.getLongID == guild.getOwnerLongID)
-            PermissionLevel.OWNER
-        else if (userRoleIds.contains(config.moderatorRoleId))
-            PermissionLevel.MODERATORS
-        else if (userRoleIds.contains(config.regularRoleId))
-            PermissionLevel.REGULARS
-        else if (userRoleIds.contains(config.subscriberRoleId))
-            PermissionLevel.SUBSCRIBERS
-        else
-            PermissionLevel.EVERYONE
-    }
+    //    @EventSubscriber
+    //    def onMessageReceivedEvent(event: MessageCreateEvent): Unit = {
+    //        implicit val message: IMessage = event.getMessage
+    //        if (!message.getAuthor.isBot && (message.getChannel.isPrivate || message.getGuild.getLongID == config.guildId)) {
+    //            if (!filterMessage(message) && message.getContent.startsWith(config.commandPrefix)) {
+    //                val contentSplit: Array[String] = message.getContent.split("\\s")
+    //                discordBot.get().botClient.getDispatcher.dispatch(new DiscordCommandExecutionEvent(
+    //                    message,
+    //                    contentSplit.head.substring(config.commandPrefix.length).toLowerCase,
+    //                    contentSplit.tail,
+    //                    message.getAuthor
+    //                ))
+    //            }
+    //        }
+    //    }
+    //
+    //    def filterMessage(message: IMessage): Boolean = {
+    //        var hasBeenFiltered: Boolean = false
+    //        val filterSettings: Option[FilterSettings] = daoComponents.filterSettingsDAO.get(config.guildId)
+    //        if (filterSettings.isDefined && !message.getChannel.isPrivate) {
+    //            val userPermissionLevel: PermissionLevel = getUserPermissionLevel(message.getAuthor)
+    //            if (filterSettings.get.capsFilterEnabled && userPermissionLevel < filterSettings.get.getCapsFilterExemptionLevel)
+    //                hasBeenFiltered = hasBeenFiltered || filterComponents.capsFilter.filterMessage(message, filterSettings.get)
+    //            if (filterSettings.get.linksFilterEnabled && userPermissionLevel < filterSettings.get.getLinksFilterExemptionLevel)
+    //                hasBeenFiltered = hasBeenFiltered || filterComponents.linksFilter.filterMessage(message, filterSettings.get)
+    //            if (filterSettings.get.blacklistFilterEnabled && userPermissionLevel < filterSettings.get.getBlackListFilterExemptionLevel)
+    //                hasBeenFiltered = hasBeenFiltered || filterComponents.blacklistFilter.filterMessage(message, filterSettings.get)
+    //        }
+    //        hasBeenFiltered
+    //    }
+    //
+    //    @EventSubscriber
+    //    def onCommandExecutionEvent(event: DiscordCommandExecutionEvent): Unit = {
+    //        implicit val message: IMessage = event.getMessage
+    //        val commandOpt: Option[DiscordCommand] = discordCommandRegistry.commands.get(event.getCommand)
+    //        val userPermissionLevel: PermissionLevel = getUserPermissionLevel(event.getUser)
+    //        if (commandOpt.isDefined && userPermissionLevel >= commandOpt.get.permissionLevel) {
+    //            commandOpt.get.execute(event)
+    //        } else {
+    //            val customCommandOpt: Option[CustomCommand] = daoComponents.customCommandDAO.get(config.guildId, event.getCommand)
+    //            if (customCommandOpt.isDefined && userPermissionLevel >= customCommandOpt.get.getPermissionLevel)
+    //                discordMessageUtil.replyToMessageWithoutAt(message, customCommandOpt.get.commandContent)
+    //        }
+    //    }
+    //
+    //    def getUserPermissionLevel(user: IUser): PermissionLevel = {
+    //        val guild: IGuild = discordBot.get().botClient.getGuildByID(config.guildId)
+    //        val userRoleIds = user.getRolesForGuild(guild).asScala.map(_.getLongID)
+    //        if (user.getLongID == guild.getOwnerLongID)
+    //            PermissionLevel.OWNER
+    //        else if (userRoleIds.contains(config.moderatorRoleId))
+    //            PermissionLevel.MODERATORS
+    //        else if (userRoleIds.contains(config.regularRoleId))
+    //            PermissionLevel.REGULARS
+    //        else if (userRoleIds.contains(config.subscriberRoleId))
+    //            PermissionLevel.SUBSCRIBERS
+    //        else
+    //            PermissionLevel.EVERYONE
+    //    }
 
 }
