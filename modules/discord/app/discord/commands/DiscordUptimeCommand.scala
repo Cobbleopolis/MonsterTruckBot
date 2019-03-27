@@ -21,15 +21,13 @@ class DiscordUptimeCommand @Inject()(implicit val messageUtil: DiscordMessageUti
         if (event.getArgs.headOption.isDefined && mtrConfigRef.twitchChannels.contains(event.getArgs.head.toLowerCase()))
             twitchChannel = mtrConfigRef.twitchChannels.get(event.getArgs.head.toLowerCase())
 
-        messageUtil.replyNoAt("Working on that one...")
-
-//        getStreamUptime(twitchChannel, twitchApiUtil)(executionContext, messageUtil.messagesApi).onComplete {
-//            case Success(uptime) =>
-//                messageUtil.replyNoAt(uptime)
-//            case Failure(t) =>
-//                messageUtil.reply("bot.commandExecutionError", t.getMessage)
-//                discord.DiscordLogger.error("Error getting twitch uptime", t)
-//        }
+        Mono.fromFuture(getStreamUptime(twitchChannel, twitchApiUtil)(executionContext, messageUtil.messagesApi).transformWith {
+            case Success(uptime) =>
+                messageUtil.replyNoAt(uptime).toFuture
+            case Failure(t) =>
+                discord.DiscordLogger.error("Error getting twitch uptime", t)
+                messageUtil.reply("bot.commandExecutionError", t.getMessage).toFuture
+        })
     }
 
 }
