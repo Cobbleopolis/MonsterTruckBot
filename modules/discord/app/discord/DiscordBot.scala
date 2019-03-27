@@ -73,7 +73,8 @@ class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBo
             .subscribe(e => eventListener.onReadyEvent(e))
 
         dispatcher.on(classOf[MessageCreateEvent])
-            .transform[Any](eventListener.onCommandExecution)
+            .transform[MessageCreateEvent](eventListener.baseTransform)
+            .transform[Any](eventListener.onMessageCreate)
             .subscribe()
     }
 
