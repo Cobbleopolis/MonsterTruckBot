@@ -21,24 +21,17 @@ class DiscordSubCountCommand @Inject()(implicit val messageUtil: DiscordMessageU
         if (event.getArgs.headOption.isDefined && mtrConfigRef.twitchChannels.contains(event.getArgs.head.toLowerCase()))
             twitchChannel = mtrConfigRef.twitchChannels.get(event.getArgs.head.toLowerCase())
 
-
-        val channelName: String = twitchChannel.get.name.toLowerCase
-        if (messageUtil.isDefined("bot.count." + channelName))
-            messageUtil.replyNoAt("bot.count." + channelName, "?")
-        else
-            messageUtil.replyNoAt("bot.count.default", "?")
-
-//        getTotalSubCount(twitchChannel, twitchApiUtil)(executionContext, messageUtil.messagesApi).flatMap {
-//            case Success(subCount) =>
-//                val channelName: String = twitchChannel.get.name.toLowerCase
-//                if (messageUtil.isDefined("bot.count." + channelName))
-//                    messageUtil.replyNoAt("bot.count." + channelName, subCount)
-//                else
-//                    messageUtil.replyNoAt("bot.count.default", subCount)
-//            case Failure(t) =>
-//                discord.DiscordLogger.error("Error getting twitch sub count", t)
-//                messageUtil.reply("bot.count.error", t.getMessage)
-//        }
+        Mono.fromFuture(getTotalSubCount(twitchChannel, twitchApiUtil)(executionContext, messageUtil.messagesApi).transformWith {
+            case Success(subCount) =>
+                val channelName: String = twitchChannel.get.name.toLowerCase
+                if (messageUtil.isDefined(s"bot.count.$channelName"))
+                    messageUtil.replyNoAt(s"bot.count.$channelName", subCount).toFuture
+                else
+                    messageUtil.replyNoAt(s"bot.count.default", subCount).toFuture
+            case Failure(t) =>
+                discord.DiscordLogger.error("Error getting twitch sub count", t)
+                messageUtil.reply("bot.count.error", t.getMessage).toFuture
+        })
     }
 
 }
