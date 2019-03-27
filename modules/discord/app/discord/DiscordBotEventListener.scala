@@ -5,7 +5,7 @@ import common.ref.MtrConfigRef
 import discord.api.DiscordCommand
 import discord.components.DiscordFilterComponents
 import discord.event.DiscordCommandExecutionEvent
-import discord.util.DiscordMessageUtil
+import discord.util.{DiscordMessageUtil, DiscordUtil}
 import discord4j.core.`object`.entity.Message
 import discord4j.core.event.domain.lifecycle.ReadyEvent
 import discord4j.core.event.domain.message.MessageCreateEvent
@@ -21,7 +21,8 @@ class DiscordBotEventListener @Inject()(
                                            discordCommandRegistry: DiscordCommandRegistry,
                                            filterComponents: DiscordFilterComponents,
                                            daoComponents: DaoComponents,
-                                           discordMessageUtil: DiscordMessageUtil
+                                           discordMessageUtil: DiscordMessageUtil,
+                                           discordUtil: DiscordUtil
                                        ) {
 
     def onReadyEvent(event: ReadyEvent): Unit = {
@@ -29,40 +30,34 @@ class DiscordBotEventListener @Inject()(
         discordBot.get().guild = discordBot.get.botClient.getGuildById(discordBot.get.guildSnowflake).blockOptional
         discordBot.get().moderatorRole = discordBot.get.botClient.getRoleById(discordBot.get().guildSnowflake, discordBot.get().moderatorRoleSnowflake).blockOptional
         discordBot.get().regularRole = discordBot.get.botClient.getRoleById(discordBot.get().guildSnowflake, discordBot.get().regularRoleSnowflake).blockOptional
-        discordBot.get().subscriberRole= discordBot.get.botClient.getRoleById(discordBot.get().guildSnowflake, discordBot.get().subscriberRoleSnowflake).blockOptional
-        //        discordBot.get().moderatorRole = Option(discordBot.get.botClient.getRoleByID(config.moderatorRoleId))
-        //        discordBot.get().regularRole = Option(discordBot.get.botClient.getRoleByID(config.regularRoleId))
-        //        discordBot.get().subscriberRole = Option(discordBot.get.botClient.getRoleByID(config.subscriberRoleId))
-        //        discordBot.get().botClient.getSelf.map(_.asMember(Snowflake.of(config.guildId)))
-        //        discordBot.get().botClient.changeUsername(config.discordUsername)
-        //        discordBot.get().botClient.changePresence(StatusType.ONLINE, ActivityType.PLAYING, config.discordGame)
+        discordBot.get().subscriberRole = discordBot.get.botClient.getRoleById(discordBot.get().guildSnowflake, discordBot.get().subscriberRoleSnowflake).blockOptional
     }
 
-        def onCommandExecution(messageEvent: Flux[MessageCreateEvent]): Publisher[Any] = {
-            messageEvent.map[Message](_.getMessage)
-                .filter((msg: Message) => msg.getContent.asScala.exists(_.startsWith(config.commandPrefix)))
-                .map[DiscordCommandExecutionEvent](msg => {
-                    val contentSplit: Array[String] = msg.getContent.asScala.getOrElse("").split("\\s")
-                    new DiscordCommandExecutionEvent(
-                        msg,
-                        contentSplit.headOption.map(_.substring(config.commandPrefix.length).toLowerCase).getOrElse(""),
-                        contentSplit.tail,
-                        msg.getAuthor.get()
-                    )
-                })
-                .flatMap[Any]((event: DiscordCommandExecutionEvent) => {
-                    val commandOpt: Option[DiscordCommand] = discordCommandRegistry.commands.get(event.getCommand)
-                    if (commandOpt.isDefined)
-                        commandOpt.get.execute(event)
-                    else
-                        Mono.empty
-                })
-        }
-//    def onCommandExecution(messageEvent: Flux[MessageCreateEvent]): Publisher[Message] = {
-//        messageEvent.map[Message](_.getMessage)
-//            .filter((msg: Message) => msg.getContent.asScala.exists(_.startsWith(config.commandPrefix)))
-//            .flatMap[Message]((msg: Message) => msg.getChannel.block().createMessage("pong!"))
-//    }
+    def onCommandExecution(messageEvent: Flux[MessageCreateEvent]): Publisher[Any] = {
+        messageEvent.map[Message](_.getMessage)
+            .filter((msg: Message) => msg.getContent.asScala.exists(_.startsWith(config.commandPrefix)))
+            .map[DiscordCommandExecutionEvent](msg => {
+            val contentSplit: Array[String] = msg.getContent.asScala.getOrElse("").split("\\s")
+            new DiscordCommandExecutionEvent(
+                msg,
+                contentSplit.headOption.map(_.substring(config.commandPrefix.length).toLowerCase).getOrElse(""),
+                contentSplit.tail,
+                msg.getAuthor.get()
+            )
+        }).flatMap[Any]((event: DiscordCommandExecutionEvent) => {
+            val commandOpt: Option[DiscordCommand] = discordCommandRegistry.commands.get(event.getCommand)
+            if (commandOpt.isDefined && discordUtil.getUserPermissionLevel(event.getUser) >= commandOpt.get.permissionLevel)
+                commandOpt.get.execute(event)
+            else
+                Mono.empty
+        })
+    }
+
+    //    def onCommandExecution(messageEvent: Flux[MessageCreateEvent]): Publisher[Message] = {
+    //        messageEvent.map[Message](_.getMessage)
+    //            .filter((msg: Message) => msg.getContent.asScala.exists(_.startsWith(config.commandPrefix)))
+    //            .flatMap[Message]((msg: Message) => msg.getChannel.block().createMessage("pong!"))
+    //    }
 
     //    @EventSubscriber
     //    def onMessageReceivedEvent(event: MessageCreateEvent): Unit = {
@@ -109,19 +104,6 @@ class DiscordBotEventListener @Inject()(
     //        }
     //    }
     //
-    //    def getUserPermissionLevel(user: IUser): PermissionLevel = {
-    //        val guild: IGuild = discordBot.get().botClient.getGuildByID(config.guildId)
-    //        val userRoleIds = user.getRolesForGuild(guild).asScala.map(_.getLongID)
-    //        if (user.getLongID == guild.getOwnerLongID)
-    //            PermissionLevel.OWNER
-    //        else if (userRoleIds.contains(config.moderatorRoleId))
-    //            PermissionLevel.MODERATORS
-    //        else if (userRoleIds.contains(config.regularRoleId))
-    //            PermissionLevel.REGULARS
-    //        else if (userRoleIds.contains(config.subscriberRoleId))
-    //            PermissionLevel.SUBSCRIBERS
-    //        else
-    //            PermissionLevel.EVERYONE
-    //    }
+
 
 }
