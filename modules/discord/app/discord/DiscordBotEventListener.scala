@@ -46,10 +46,17 @@ class DiscordBotEventListener @Inject()(
             )
         }).flatMap[Any]((event: DiscordCommandExecutionEvent) => {
             val commandOpt: Option[DiscordCommand] = discordCommandRegistry.commands.get(event.getCommand)
-            if (commandOpt.isDefined && discordUtil.getUserPermissionLevel(event.getUser) >= commandOpt.get.permissionLevel)
+            if (commandOpt.isDefined
+                && discordUtil.getUserPermissionLevel(event.getUser) >= commandOpt.get.permissionLevel)
                 commandOpt.get.execute(event)
-            else
-                Mono.empty
+            else {
+                val customCommandOpt = daoComponents.customCommandDAO.get(config.guildId, event.getCommand)
+                if (customCommandOpt.isDefined
+                    && discordUtil.getUserPermissionLevel(event.getUser) >= customCommandOpt.get.getPermissionLevel)
+                    discordMessageUtil.replyToMessageWithoutAt(event.getMessage, customCommandOpt.get.commandContent)
+                else
+                    Mono.empty
+            }
         })
     }
 
