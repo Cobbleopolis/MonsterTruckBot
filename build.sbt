@@ -8,7 +8,7 @@ val dockerImageName: String = displayName.toLowerCase.split(" ").mkString("-")
 
 val projectVersion: String = "2.8.0-SNAPSHOT"
 
-val discord4JVersion: String = "2.10.1"
+val ackCordVersion: String = "0.14.0"
 
 val kittehIRCVersion: String = "4.0.2"
 
@@ -49,6 +49,7 @@ lazy val commonSettings = Seq(
     libraryDependencies ++= commonDependencies,
     resolvers ++= Seq(
         Resolver.jcenterRepo,
+        Resolver.JCenterRepository,
         "jitpack" at "https://jitpack.io"
     ),
     JsEngineKeys.engineType := JsEngineKeys.EngineType.Node,
@@ -100,7 +101,7 @@ lazy val monstertruckbot = Project(id = "monstertruckbot", base = file(".")).ena
 lazy val discord = Project(id = "discord", base = file("modules/discord")).enablePlugins(PlayScala).settings(commonSettings: _*)
     .settings(
         libraryDependencies ++= Seq(
-            "com.github.austinv11" % "Discord4j" % discord4JVersion
+            "net.katsstuff" %% "ackcord" % ackCordVersion
         )
     )
     .dependsOn(common)

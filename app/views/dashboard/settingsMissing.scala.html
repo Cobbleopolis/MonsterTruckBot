@@ -13,7 +13,7 @@
             <h3 class="panel-title">@messages("error.settingsMissing.title")</h3>
         </div>
         <div class="panel-body">
-            <strong>@messages("error.ohSnap")</strong> @messages("error.settingsMissing.message", messages(s"error.settingsMissing.settingsTypes.$missingSetting"), if(discordBot.guild.isDefined) discordBot.guild.get.getStringID else messages("error.unknownGuild"))
+            <strong>@messages("error.ohSnap")</strong> @messages("error.settingsMissing.message", messages(s"error.settingsMissing.settingsTypes.$missingSetting"), if(discordBot.guild.isDefined) discordBot.guild.get.id else messages("error.unknownGuild"))
         </div>
     </div>
 }

@@ -8,7 +8,7 @@ import play.api.mvc._
 class Application @Inject()(controllerComponents: ControllerComponents, discordBot: DiscordBot) extends AbstractController(controllerComponents) {
 
     def alive = Action {
-        if (discordBot.client.isReady)
+        if (discordBot.isReady)
             Ok("Hap! Hap! Hap!")
         else
             ServiceUnavailable("Not ready")

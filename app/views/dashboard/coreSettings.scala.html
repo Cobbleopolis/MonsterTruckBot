@@ -39,28 +39,28 @@
         }
         @renderField("discord.guild"){
             @if(discordBot.guild.isDefined) {
-                @discordBot.guild.get.getName (@java.lang.Long.toUnsignedString(discordBot.guild.get.getLongID))
+                @discordBot.guild.get.name (@java.lang.Long.toUnsignedString(discordBot.guild.get.id))
             } else {
                 @messages("error.unknownGuild")
             }
         }
         @renderField("discord.moderatorRole"){
             @if(discordBot.moderatorRole.isDefined) {
-                @discordBot.moderatorRole.get.getName (@java.lang.Long.toUnsignedString(discordBot.moderatorRole.get.getLongID))
+                @discordBot.moderatorRole.get.name (@java.lang.Long.toUnsignedString(discordBot.moderatorRole.get.id))
             } else {
                 @messages("error.unknownRole")
             }
         }
         @renderField("discord.regularRole"){
             @if(discordBot.regularRole.isDefined) {
-                @discordBot.regularRole.get.getName (@java.lang.Long.toUnsignedString(discordBot.regularRole.get.getLongID))
+                @discordBot.regularRole.get.name (@java.lang.Long.toUnsignedString(discordBot.regularRole.get.id))
             } else {
                 @messages("error.unknownRole")
             }
         }
         @renderField("discord.subscriberRole"){
             @if(discordBot.subscriberRole.isDefined) {
-                @discordBot.subscriberRole.get.getName (@java.lang.Long.toUnsignedString(discordBot.subscriberRole.get.getLongID))
+                @discordBot.subscriberRole.get.name (@java.lang.Long.toUnsignedString(discordBot.subscriberRole.get.id))
             } else {
                 @messages("error.unknownRole")
             }

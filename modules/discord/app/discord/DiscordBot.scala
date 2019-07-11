@@ -1,74 +1,103 @@
 package discord
 
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
-import javax.inject.Singleton
-
-import common.ref.MtrConfigRef
+import ackcord.data.raw.RawGuild
+import ackcord.data.{Guild, GuildId, Role}
+import ackcord.requests.GetGuild
+import ackcord.{APIMessage, ClientSettings, DiscordClient, Id}
+import akka.actor.ActorSystem
 import com.google.inject.Inject
+import common.ref.MtrConfigRef
+import javax.inject.Singleton
 import play.api.inject.ApplicationLifecycle
-import sx.blah.discord.api.events.EventDispatcher
-import sx.blah.discord.api.{ClientBuilder, IDiscordClient}
-import sx.blah.discord.handle.obj.{IGuild, IRole, Permissions}
-import sx.blah.discord.modules.Configuration
-import sx.blah.discord.util.BotInviteBuilder
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @Singleton
-class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBotEventListener, lifecycle: ApplicationLifecycle, context: ExecutionContext) {
+class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBotEventListener, lifecycle: ApplicationLifecycle, actorSystem: ActorSystem) {
 
-    Configuration.AUTOMATICALLY_ENABLE_MODULES = false
-    Configuration.LOAD_EXTERNAL_MODULES = false
+    var isReady: Boolean = false
 
-    private val clientBuilder: ClientBuilder = new ClientBuilder().setDaemon(true)
-    var client: IDiscordClient = _
+    private val clientSettings: ClientSettings = ClientSettings(
+        token = conf.discordToken,
+        system = actorSystem
+    )
+    var futureClient: Future[DiscordClient[Id]] = clientSettings.createClient()
 
-    var guild: Option[IGuild] = None
-    var moderatorRole: Option[IRole] = None
-    var regularRole: Option[IRole] = None
-    var subscriberRole: Option[IRole] = None
+    import clientSettings.executionContext
 
-    clientBuilder.withToken(conf.discordToken)
-    client = clientBuilder.build()
+    val guildId = GuildId(conf.guildId)
+
+    var guild: Option[Guild] = None
+    var moderatorRole: Option[Role] = None
+    var regularRole: Option[Role] = None
+    var subscriberRole: Option[Role] = None
+
+    DiscordLogger.info("TEST")
+    futureClient.foreach(client => {
+        DiscordLogger.info("TEST 2")
+        client.onEvent[Id] {
+            client.withCache[Id, APIMessage] { implicit cache => {
+                case APIMessage.Ready(_) =>
+                    DiscordLogger.info("Monster Truck Bot is ready")
+                    val guildOpt = guildId.resolve
+                    DiscordLogger.info(guildOpt.toString)
+                    guildOpt.map(g => {
+                        DiscordLogger.info("GUILD")
+                        guild = Some(g)
+                    })
+                    var guildR: RawGuild = null
+                    for {
+                        _ <- client.sourceRequesterRunner.run(GetGuild(guildId)).map(g => {
+                            DiscordLogger.info("G")
+                            DiscordLogger.info(g.toString)
+                        })
+                    } yield ()
+
+                case _ => client.sourceRequesterRunner.unit
+            }
+            }
+        }
+        client.login()
+    })
+
     connect()
-    val dispatcher: EventDispatcher = client.getDispatcher
-    dispatcher.registerListener(eventListener)
+
     lifecycle.addStopHook(() => disconnect())
 
     def connect(): Unit = {
         DiscordLogger.info("Monster Truck Bot logging in...")
-        client.login()
+        //        futureClient.login()
         DiscordLogger.info("Monster Truck Bot has begun the login process")
     }
 
     def disconnect(): Future[Unit] = Future {
         DiscordLogger.info("Monster Truck Bot logging out...")
-        client.logout()
-        while (client.isLoggedIn)
-            Thread.sleep(0)
+        //        futureClient.logout()
+        //        while (futureClient.isLoggedIn)
+        //            Thread.sleep(0)
         DiscordLogger.info("Monster Truck Bot finished logging out")
     }
 
     def reconnect(): Future[Unit] = disconnect().map(_ => {
         DiscordLogger.info("Monster Truck Bot reconnecting...")
         connect()
-        while (!client.isReady)
-            Thread.sleep(0)
+        //        while (!futureClient.isReady)
+        //            Thread.sleep(0)
         DiscordLogger.info("Monster Truck Bot has reconnected")
     })
 
     def getInviteLink(redirectTo: String): String = {
-        val inviteBuilder: BotInviteBuilder = new BotInviteBuilder(client)
-        inviteBuilder.withPermissions(java.util.EnumSet.of[Permissions](
-            Permissions.ADMINISTRATOR,
-            Permissions.KICK,
-            Permissions.BAN,
-            Permissions.READ_MESSAGES,
-            Permissions.SEND_MESSAGES,
-            Permissions.EMBED_LINKS,
-            Permissions.MENTION_EVERYONE
-        ))
-        inviteBuilder.build() + "&guild_id=" + java.lang.Long.toUnsignedString(conf.guildId) + "&response_type=code&redirect_uri=" + URLEncoder.encode(redirectTo, StandardCharsets.UTF_8.name())
+        //        val inviteBuilder: BotInviteBuilder = new BotInviteBuilder(futureClient)
+        //        inviteBuilder.withPermissions(java.util.EnumSet.of[Permissions](
+        //            Permissions.ADMINISTRATOR,
+        //            Permissions.KICK,
+        //            Permissions.BAN,
+        //            Permissions.READ_MESSAGES,
+        //            Permissions.SEND_MESSAGES,
+        //            Permissions.EMBED_LINKS,
+        //            Permissions.MENTION_EVERYONE
+        //        ))
+        //        inviteBuilder.build() + "&guild_id=" + java.lang.Long.toUnsignedString(conf.guildId) + "&response_type=code&redirect_uri=" + URLEncoder.encode(redirectTo, StandardCharsets.UTF_8.name())
+        redirectTo //TODO Fix this shit!
     }
 }

@@ -1,5 +1,5 @@
 @import common.ref.MtrConfigRef
-@import sx.blah.discord.handle.obj.IGuild
+@import ackcord.data.Channel
 @import org.webjars.play.WebJarsUtil
 @import discord.DiscordBot
 
@@ -17,7 +17,7 @@
                     <li class="nav-item">
                         <span class="nav-link navbar-brand px-3 mr-0 w-100">
                         @if(discordBot.guild.isDefined) {
-                            @discordBot.guild.get.getName
+                            @discordBot.guild.get.name
                         } else {
                             @messages("error.unknownGuild")
                         }
