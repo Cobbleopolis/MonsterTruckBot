@@ -1,9 +1,10 @@
 package discord
 
+import ackcord._
 import ackcord.data.raw.RawGuild
-import ackcord.data.{Guild, GuildId, Role}
-import ackcord.requests.GetGuild
-import ackcord.{APIMessage, ClientSettings, DiscordClient, Id}
+import ackcord.data.{Guild, GuildId, Role, RoleId}
+import ackcord.syntax._
+import ackcord.requests.{CreateMessage, GetGuild, GetGuildRoles}
 import akka.actor.ActorSystem
 import com.google.inject.Inject
 import common.ref.MtrConfigRef
@@ -18,14 +19,14 @@ class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBo
     var isReady: Boolean = false
 
     private val clientSettings: ClientSettings = ClientSettings(
-        token = conf.discordToken,
-        system = actorSystem
+        token = conf.discordToken
     )
-    var futureClient: Future[DiscordClient[Id]] = clientSettings.createClient()
+    var futureClient: Future[DiscordClient] = clientSettings.createClient()
 
     import clientSettings.executionContext
 
-    val guildId = GuildId(conf.guildId)
+    val guildId: GuildId = GuildId(conf.guildId)
+    DiscordLogger.info(guildId.toString)
 
     var guild: Option[Guild] = None
     var moderatorRole: Option[Role] = None
@@ -35,24 +36,20 @@ class DiscordBot @Inject()(implicit conf: MtrConfigRef, eventListener: DiscordBo
     DiscordLogger.info("TEST")
     futureClient.foreach(client => {
         DiscordLogger.info("TEST 2")
-        client.onEvent[Id] {
-            client.withCache[Id, APIMessage] { implicit cache => {
+        client.onEvent {
+            client.withCache[SourceRequest, APIMessage] { implicit cache => {
                 case APIMessage.Ready(_) =>
+                    import client.sourceRequesterRunner._
                     DiscordLogger.info("Monster Truck Bot is ready")
-                    val guildOpt = guildId.resolve
-                    DiscordLogger.info(guildOpt.toString)
-                    guildOpt.map(g => {
-                        DiscordLogger.info("GUILD")
-                        guild = Some(g)
-                    })
-                    var guildR: RawGuild = null
+                    val x = for {
+                        g <- optionPure(guildId.resolve)
+                        modRole <- optionPure(g.roleById(RoleId(conf.moderatorRoleId)))
+                        regRole <- optionPure(g.roleById(RoleId(conf.regularRoleId)))
+                        subRole <- optionPure(g.roleById(RoleId(conf.subscriberRoleId)))
+                    } yield (g, modRole, regRole, subRole)
                     for {
-                        _ <- client.sourceRequesterRunner.run(GetGuild(guildId)).map(g => {
-                            DiscordLogger.info("G")
-                            DiscordLogger.info(g.toString)
-                        })
+                        g <- optionPure(guildId.resolve)
                     } yield ()
-
                 case _ => client.sourceRequesterRunner.unit
             }
             }

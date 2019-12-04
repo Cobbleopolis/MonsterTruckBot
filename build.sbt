@@ -8,7 +8,7 @@ val dockerImageName: String = displayName.toLowerCase.split(" ").mkString("-")
 
 val projectVersion: String = "2.8.0-SNAPSHOT"
 
-val ackCordVersion: String = "0.14.0"
+val ackCordVersion: String = "0.15.0"
 
 val kittehIRCVersion: String = "4.0.2"
 

@@ -1,6 +1,6 @@
 package discord.util
 
-import ackcord.{CacheSnapshot, Id}
+import ackcord.CacheSnapshot
 import ackcord.data.{Channel, Message, User}
 import ackcord.requests.{GetChannel, GetUser}
 import javax.inject.{Inject, Singleton}
@@ -19,7 +19,7 @@ class DiscordMessageUtil @Inject()(implicit val messagesApi: MessagesApi) extend
 
     def replyDM(content: String, args: Any*)(implicit event: DiscordCommandExecutionEvent): Unit = sendDM(event.getUser, content, args: _*)
 
-    def sendDM(user: User, content: String, args: Any*): Unit = ???
+    def sendDM(user: User, content: String, args: Any*): Unit = {}
 
     def replyToMessage(message: Message, content: String, args: Any*): Unit = sendMessage(message, formatMessage(Some(""), content, args: _*))
 

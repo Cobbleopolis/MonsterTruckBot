@@ -10,7 +10,7 @@ import ackcord.syntax._
 class DiscordBlacklistFilter @Inject()(discordMessageUtil: DiscordMessageUtil) extends DiscordFilter with BlacklistFilter {
 
     override def onMessageFilter(message: Message): Unit = {
-        message.delete()
+//        message.delete()
 //        discordMessageUtil.replyToMessage(message, "bot.filter.blacklistedWord.message")
     }
 
